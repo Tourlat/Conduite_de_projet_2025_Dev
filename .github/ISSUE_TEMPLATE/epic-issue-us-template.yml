@@ -1,0 +1,36 @@
+name: Issue/Epic/User Story
+description: Template for an issue/epic/us
+type: Task
+labels: ["issue"]
+projects:
+  - team-the-merge-doctors
+body:
+  - type: textarea
+    attributes:
+      label: User Story
+      description: User story for this Epic.
+      placeholder: As a user, I want to ..., so that ...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Description
+      description: Provide a detailed description of the epic.
+      placeholder: A brief description of what this epic is, how it benefits the user, and why it matters.
+    validations:
+      required: false
+  - type: dropdown
+    id: story_points
+    attributes:
+      label: Story Points
+      description: Estimate the effort using story points
+      options:
+        - "1"
+        - "2"
+        - "3"
+        - "5"
+        - "8"
+        - "13"
+        - "21"
+      default: 3
+  

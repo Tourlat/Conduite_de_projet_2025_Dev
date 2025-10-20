@@ -1,0 +1,24 @@
+name: Task
+description: Issue template for a task (tâche)
+type: Feature
+labels: ["tâche"]
+projects:
+  - team-the-merge-doctors
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: Provide a detailed description of the feature.
+      placeholder: A brief description of what this feature does, how it benefits the user, and why it matters.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Definitions of Done
+      description: Define the conditions that must be true to consider this complete.
+      placeholder: |
+        - [ ] The API returns expected data
+        - [ ] The UI reflects changes without reload
+        - [ ] Error handling is in place for edge cases
+    validations:
+      required: false
