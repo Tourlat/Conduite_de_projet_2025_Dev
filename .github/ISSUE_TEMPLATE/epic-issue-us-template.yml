@@ -11,13 +11,6 @@ body:
       placeholder: As a user, I want to ..., so that ...
     validations:
       required: true
-  - type: textarea
-    attributes:
-      label: Description
-      description: Provide a detailed description of the epic.
-      placeholder: A brief description of what this epic is, how it benefits the user, and why it matters.
-    validations:
-      required: false
   - type: dropdown
     id: story_points
     attributes:
