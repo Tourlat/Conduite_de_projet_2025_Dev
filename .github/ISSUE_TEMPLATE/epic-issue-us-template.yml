@@ -1,6 +1,5 @@
 name: Issue/Epic/User Story
 description: Template for an issue/epic/us
-type: Task
 labels: ["issue"]
 projects:
   - team-the-merge-doctors
