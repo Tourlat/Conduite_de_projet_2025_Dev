@@ -1,6 +1,5 @@
 name: Task
 description: Issue template for a task (tâche)
-type: Feature
 labels: ["tâche"]
 projects:
   - team-the-merge-doctors
