@@ -44,3 +44,9 @@ The backend will start on the port specified in `application.properties` (defaul
    npm run dev
    ```
 The frontend will start on the port specified in the `.env` file (default is 5173).
+
+### Running using Docker
+
+Execute `docker compose --build` in the root directory of the project. This will start the docker containers for the frontend and backend. These containers use the same default ports as described above.
+
+To stop the docker containers execute `docker compose down -v`.
