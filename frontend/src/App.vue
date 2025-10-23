@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import AuthTestInterface from './components/AuthTestInterface.vue'
+import AuthInterface from './components/AuthInterface.vue'
 </script>
 
 <template>
-  <AuthTestInterface />
+  <AuthInterface />
 </template>
 
 
