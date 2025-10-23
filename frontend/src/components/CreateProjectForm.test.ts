@@ -25,11 +25,15 @@ describe('CreateProjectForm - US4: Création de Projet', () => {
 
   it('devrait valider que le nom du projet est requis', async () => {
     const wrapper = mount(CreateProjectForm)
-    const submitButton = wrapper.find('button[type="submit"]')
     
-    await submitButton.trigger('click')
+    await wrapper.find('form').trigger('submit.prevent')
+    await wrapper.vm.$nextTick()
     
-    expect(wrapper.text()).toContain('requis')
+    const errorMessages = wrapper.findAll('.error-message')
+    expect(errorMessages.length).toBeGreaterThan(0)
+    if (errorMessages[0]) {
+      expect(errorMessages[0].text()).toMatch(/nom.*requis/i)
+    }
   })
 
   it('devrait valider la longueur minimale du nom', async () => {

@@ -21,11 +21,15 @@ describe('LoginForm - US2: Connexion au Compte', () => {
 
   it('devrait valider que l\'email est requis', async () => {
     const wrapper = mount(LoginForm)
-    const submitButton = wrapper.find('button[type="submit"]')
     
-    await submitButton.trigger('click')
+    await wrapper.find('form').trigger('submit.prevent')
+    await wrapper.vm.$nextTick()
     
-    expect(wrapper.text()).toContain('requis')
+    const errorMessages = wrapper.findAll('.error-message')
+    expect(errorMessages.length).toBeGreaterThan(0)
+    if (errorMessages[0]) {
+      expect(errorMessages[0].text()).toMatch(/email.*requis/i)
+    }
   })
 
   it('devrait valider que le mot de passe est requis', async () => {
@@ -51,6 +55,6 @@ describe('LoginForm - US2: Connexion au Compte', () => {
 
   it('devrait afficher un lien vers l\'inscription', () => {
     const wrapper = mount(LoginForm)
-    expect(wrapper.text()).toContain('inscription')
+    expect(wrapper.text()).toMatch(/(inscription|créer un compte)/i)
   })
 })

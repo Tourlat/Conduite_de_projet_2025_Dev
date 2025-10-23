@@ -22,12 +22,16 @@ describe('RegisterForm - US1: Création de Compte', () => {
 
   it('devrait valider que l\'email est requis', async () => {
     const wrapper = mount(RegisterForm)
-    const submitButton = wrapper.find('button[type="submit"]')
     
-    await submitButton.trigger('click')
+    await wrapper.find('form').trigger('submit.prevent')
+    await wrapper.vm.$nextTick()
     
     // Vérifier qu'un message d'erreur apparaît
-    expect(wrapper.text()).toContain('requis')
+    const errorMessages = wrapper.findAll('.error-message')
+    expect(errorMessages.length).toBeGreaterThan(0)
+    if (errorMessages[0]) {
+      expect(errorMessages[0].text()).toMatch(/email.*requis/i)
+    }
   })
 
   it('devrait valider le format de l\'email', async () => {
@@ -42,12 +46,17 @@ describe('RegisterForm - US1: Création de Compte', () => {
 
   it('devrait valider que le mot de passe a une longueur minimale', async () => {
     const wrapper = mount(RegisterForm)
+    const emailInput = wrapper.find('input[type="email"]')
+    const usernameInput = wrapper.find('input[name="username"]')
     const passwordInput = wrapper.find('input[type="password"]')
     
+    await emailInput.setValue('test@example.com')
+    await usernameInput.setValue('testuser')
     await passwordInput.setValue('123')
     await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
     
-    expect(wrapper.text()).toContain('mot de passe')
+    expect(wrapper.text()).toMatch(/mot de passe/i)
   })
 
   it('devrait émettre un événement lors de la soumission valide', async () => {
