@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import RegisterForm from './RegisterForm.vue'
+import RegisterForm from '../auth/RegisterForm.vue'
 
 describe('RegisterForm - US1: Création de Compte (T1.4)', () => {
   it('devrait afficher le formulaire d\'inscription', () => {

@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import LoginForm from './LoginForm.vue'
-import RegisterForm from './RegisterForm.vue'
+import LoginForm from './auth/LoginForm.vue'
+import RegisterForm from './auth/RegisterForm.vue'
 
 type View = 'login' | 'register'
 

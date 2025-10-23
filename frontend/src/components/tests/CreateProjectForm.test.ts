@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import CreateProjectForm from './CreateProjectForm.vue'
+import CreateProjectForm from '../CreateProjectForm.vue'
 
 describe('CreateProjectForm - US4: Création de Projet (T4.3)', () => {
   it('devrait afficher le formulaire de création de projet', () => {

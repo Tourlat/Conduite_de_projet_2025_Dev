@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import LoginForm from './LoginForm.vue'
+import LoginForm from '../auth/LoginForm.vue'
 
 describe('LoginForm - US2: Connexion au Compte (T2.3)', () => {
   it('devrait afficher le formulaire de connexion', () => {
