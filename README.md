@@ -20,6 +20,16 @@ This repository contains the source code for the Conduite de Projet 2025 develop
 
 In frontend you need to create a .env file based on the .env.example file. - Copy the `.env.example` file to `.env`. - Update the `VITE_BACKEND_URL` and `VITE_PORT` variables as needed.
 
+### Commit Hooks
+
+Execute `git config core.hooksPath hooks` in this repository to adjust the path of the git hooks directory.
+
+Make hooks in the [hooks](./hooks/) folder executable by running `chmod +x <path to hook>` on all hooks.
+
+### Linting
+
+For the backend install SonarQube in your IDE/Editor to give you linting suggestions.
+
 ## Running the Application
 
 ### Backend
