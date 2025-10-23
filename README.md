@@ -44,3 +44,26 @@ The backend will start on the port specified in `application.properties` (defaul
    npm run dev
    ```
 The frontend will start on the port specified in the `.env` file (default is 5173).
+
+## Testing
+
+### Frontend Tests
+
+The frontend uses Vitest with Vue Test Utils for unit testing.
+
+### Lancer les tests
+
+```bash
+
+# Mode watch (recommended during development)
+npm test
+
+# Run all tests once
+npm run test:run
+
+# UI interface for tests
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+```

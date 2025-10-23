@@ -1,5 +1,43 @@
-# Vue 3 + TypeScript + Vite
+# Frontend - Conduite de Projet 2025
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Application Vue 3 + TypeScript avec interface d'authentification et gestion de projets.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## 🚀 Installation
+
+```bash
+npm install
+```
+
+## 🧪 Tests
+
+Le projet utilise Vitest avec Vue Test Utils pour les tests unitaires.
+
+### Lancer les tests
+
+```bash
+# Mode watch (recommandé pendant le développement)
+npm test
+
+# Lancer tous les tests une fois
+npm run test:run
+
+# Interface UI pour les tests
+npm run test:ui
+
+# Générer un rapport de couverture
+npm run test:coverage
+```
+
+## 💻 Développement
+
+```bash
+# Démarrer le serveur de développement
+npm run dev
+
+# Builder pour la production
+npm run build
+
+# Prévisualiser le build de production
+npm run preview
+```
+
