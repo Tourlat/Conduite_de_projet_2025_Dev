@@ -1,6 +1,6 @@
 # Frontend - Conduite de Projet 2025
 
-Application Vue 3 + TypeScript avec interface d'authentification et gestion de projets.
+Vue 3 + TypeScript application with authentication interface and project management features.
 
 ## 🚀 Installation
 
@@ -10,34 +10,33 @@ npm install
 
 ## 🧪 Tests
 
-Le projet utilise Vitest avec Vue Test Utils pour les tests unitaires.
+The project uses Vitest with Vue Test Utils for unit testing.
 
-### Lancer les tests
+### Run tests
 
 ```bash
-# Mode watch (recommandé pendant le développement)
+# Watch mode (recommended during development)
 npm test
 
-# Lancer tous les tests une fois
+# Run all tests once
 npm run test:run
 
-# Interface UI pour les tests
+# UI for running tests
 npm run test:ui
 
-# Générer un rapport de couverture
+# Generate coverage report
 npm run test:coverage
 ```
 
-## 💻 Développement
+## 💻 Development
 
 ```bash
-# Démarrer le serveur de développement
+# Start the development server
 npm run dev
 
-# Builder pour la production
+# Build for production
 npm run build
 
-# Prévisualiser le build de production
+# Preview the production build
 npm run preview
 ```
-

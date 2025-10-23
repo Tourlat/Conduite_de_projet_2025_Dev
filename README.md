@@ -51,7 +51,7 @@ The frontend will start on the port specified in the `.env` file (default is 517
 
 The frontend uses Vitest with Vue Test Utils for unit testing.
 
-### Lancer les tests
+### Running Tests
 
 ```bash
 
