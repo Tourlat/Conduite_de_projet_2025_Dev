@@ -56,18 +56,17 @@ const handleLogin = async (data: LoginData) => {
   console.log('Login attempt with:', data)
   
   try {
-    // TODO: Implémenter l'appel API réel
-    // const response = await fetch('/api/auth/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(data)
-    // })
-    // const result = await response.json()
-    // if (response.ok) {
-    //   localStorage.setItem('token', result.token)
-    //   // Redirection vers le dashboard
-    // }
-    
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    const result = await response.json()
+    if (response.ok) {
+      localStorage.setItem('token', result.token)
+      //   // Redirection vers le dashboard
+    }
+
     alert(`Connexion réussie pour: ${data.email}`)
   } catch (error) {
     console.error('Erreur de connexion:', error)
@@ -79,18 +78,17 @@ const handleRegister = async (data: RegisterData) => {
   console.log('Register attempt with:', data)
   
   try {
-    // TODO: Implémenter l'appel API réel
-    // const response = await fetch('/api/utilisateurs/inscription', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(data)
-    // })
-    // const result = await response.json()
-    // if (response.ok) {
-    //   alert(`Inscription réussie pour: ${result.email}`)
-    //   currentView.value = 'login'
-    // }
-    
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    const result = await response.json()
+    if (response.ok) {
+      alert(`Inscription réussie pour: ${result.email}`)
+      currentView.value = 'login'
+    }
+
     alert(`Inscription réussie pour: ${data.email}`)
     currentView.value = 'login'
   } catch (error) {
