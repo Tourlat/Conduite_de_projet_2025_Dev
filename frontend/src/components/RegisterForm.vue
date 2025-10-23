@@ -111,43 +111,139 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
+form {
+  width: 100%;
+}
+
+h2 {
+  margin: 0 0 1.5rem 0;
+  color: var(--terminal-fg);
+  font-size: 1.75rem;
+  font-weight: 700;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+h2::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--terminal-accent);
+  font-weight: bold;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 label {
   display: block;
   margin-bottom: 0.5rem;
+  color: var(--terminal-fg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: 'Fira Code', monospace;
+}
+
+label::before {
+  content: '$ ';
+  color: var(--terminal-accent);
+  font-weight: bold;
 }
 
 input {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border: 2px solid var(--terminal-border);
   border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--terminal-fg);
+  font-size: 1rem;
+  font-family: 'Fira Code', monospace;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 0 3px var(--terminal-shadow);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 input.error {
-  border-color: red;
+  border-color: var(--terminal-error);
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 .error-message {
-  color: red;
+  color: var(--terminal-error);
   font-size: 0.875rem;
-  margin-top: 0.25rem;
-  display: block;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Fira Code', monospace;
+}
+
+.error-message::before {
+  content: '✗';
+  font-weight: bold;
 }
 
 button {
-  background-color: #42b983;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
+  width: 100%;
+  background: linear-gradient(135deg, var(--terminal-accent) 0%, var(--terminal-magenta) 100%);
+  color: #ffffff;
+  padding: 0.875rem 1.5rem;
+  border: 2px solid transparent;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Fira Code', monospace;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 button:hover {
-  background-color: #35a372;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--terminal-shadow);
+  border-color: var(--terminal-accent);
+}
+
+button:active {
+  transform: translateY(0);
 }
 </style>

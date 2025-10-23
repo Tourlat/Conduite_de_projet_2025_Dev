@@ -1,11 +1,24 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  /* Terminal Theme - Violet/Magenta Palette */
+  --terminal-bg: #292a2d;
+  --terminal-fg: #e4e4e5;
+  --terminal-accent: #b967ff;
+  --terminal-accent-dark: #7928ca;
+  --terminal-magenta: #ff2e88;
+  --terminal-violet: #9d50bb;
+  --terminal-purple: #6a1b9a;
+  --terminal-border: #454a52;
+  --terminal-hover: #383a3f;
+  --terminal-success: #00ff95;
+  --terminal-error: #ff5370;
+  --terminal-shadow: rgba(185, 103, 255, 0.2);
+  
+  font-family: 'Fira Code', 'Courier New', monospace, system-ui;
+  line-height: 1.6;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--terminal-fg);
+  background-color: var(--terminal-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,67 +26,154 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: var(--terminal-accent);
+  text-decoration: none;
+  position: relative;
 }
+
 a:hover {
-  color: #535bf2;
+  color: var(--terminal-magenta);
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background: var(--terminal-accent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+a:hover::after {
+  transform: scaleX(1);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--terminal-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--terminal-fg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 2.5em;
+  line-height: 1.2;
+  background: linear-gradient(135deg, var(--terminal-accent) 0%, var(--terminal-magenta) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: 4px;
+  border: 1px solid var(--terminal-border);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--terminal-bg);
+  color: var(--terminal-fg);
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.card {
-  padding: 2em;
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--terminal-accent), transparent);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 15px var(--terminal-shadow);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 2px solid var(--terminal-accent);
+  outline-offset: 2px;
+}
+
+input, textarea {
+  font-family: inherit;
+  color: var(--terminal-fg);
+  background-color: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 0 3px var(--terminal-shadow);
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
+
+::-webkit-scrollbar-track {
+  background: var(--terminal-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terminal-border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-accent);
+}
+
+/* Selection */
+::selection {
+  background: var(--terminal-accent);
+  color: var(--terminal-bg);
+}
+
+::-moz-selection {
+  background: var(--terminal-accent);
+  color: var(--terminal-bg);
+}
+
