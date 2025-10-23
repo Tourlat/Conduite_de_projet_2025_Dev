@@ -3,14 +3,14 @@
     <div class="container">
       <nav class="tabs">
         <button 
-          @click="currentView = 'login'" 
-          :class="{ active: currentView === 'login' }"
+          :class="{ active: currentView === 'login' }" 
+          @click="currentView = 'login'"
         >
           Connexion
         </button>
         <button 
-          @click="currentView = 'register'" 
-          :class="{ active: currentView === 'register' }"
+          :class="{ active: currentView === 'register' }" 
+          @click="currentView = 'register'"
         >
           Inscription
         </button>
@@ -20,7 +20,7 @@
         <LoginForm 
           v-if="currentView === 'login'" 
           @login="handleLogin"
-          @switchToRegister="currentView = 'register'"
+          @switch-to-register="currentView = 'register'"
         />
         
         <RegisterForm 
@@ -53,8 +53,6 @@ interface RegisterData {
 }
 
 const handleLogin = async (data: LoginData) => {
-  console.log('Login attempt with:', data)
-  
   try {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
@@ -75,8 +73,6 @@ const handleLogin = async (data: LoginData) => {
 }
 
 const handleRegister = async (data: RegisterData) => {
-  console.log('Register attempt with:', data)
-  
   try {
     const response = await fetch('/api/register', {
       method: 'POST',

@@ -131,6 +131,7 @@ const validateForm = (): boolean => {
 
 const handleSubmit = () => {
   if (validateForm()) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...dataToSend } = formData
     emit('register', { ...dataToSend })
   }
