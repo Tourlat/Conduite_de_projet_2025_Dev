@@ -1,19 +1,17 @@
 :root {
-  /* Terminal Theme - Violet/Magenta Palette */
-  --terminal-bg: #292a2d;
-  --terminal-fg: #e4e4e5;
-  --terminal-accent: #b967ff;
-  --terminal-accent-dark: #7928ca;
-  --terminal-magenta: #ff2e88;
-  --terminal-violet: #9d50bb;
-  --terminal-purple: #6a1b9a;
-  --terminal-border: #454a52;
-  --terminal-hover: #383a3f;
-  --terminal-success: #00ff95;
-  --terminal-error: #ff5370;
-  --terminal-shadow: rgba(185, 103, 255, 0.2);
+  /* Terminal Theme - Violet/Magenta Palette - Sobre */
+  --terminal-bg: #1a1b26;
+  --terminal-fg: #c0caf5;
+  --terminal-accent: #bb9af7;
+  --terminal-accent-dark: #9d7cd8;
+  --terminal-magenta: #f7768e;
+  --terminal-border: #414868;
+  --terminal-hover: #24283b;
+  --terminal-success: #9ece6a;
+  --terminal-error: #f7768e;
+  --terminal-shadow: rgba(187, 154, 247, 0.15);
   
-  font-family: 'Fira Code', 'Courier New', monospace, system-ui;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
@@ -34,27 +32,11 @@ a {
   font-weight: 500;
   color: var(--terminal-accent);
   text-decoration: none;
-  position: relative;
+  transition: color 0.2s ease;
 }
 
 a:hover {
   color: var(--terminal-magenta);
-}
-
-a::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  bottom: -2px;
-  left: 0;
-  background: var(--terminal-accent);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-a:hover::after {
-  transform: scaleX(1);
 }
 
 body {
@@ -68,59 +50,35 @@ body {
 h1, h2, h3, h4, h5, h6 {
   color: var(--terminal-fg);
   font-weight: 600;
-  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 2.5em;
+  font-size: 2em;
   line-height: 1.2;
-  background: linear-gradient(135deg, var(--terminal-accent) 0%, var(--terminal-magenta) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 button {
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--terminal-border);
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: var(--terminal-bg);
-  color: var(--terminal-fg);
+  background-color: var(--terminal-accent);
+  color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, var(--terminal-accent), transparent);
-  transition: left 0.5s ease;
-}
-
-button:hover::before {
-  left: 100%;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  border-color: var(--terminal-accent);
-  box-shadow: 0 0 15px var(--terminal-shadow);
-  transform: translateY(-2px);
+  background-color: var(--terminal-accent-dark);
+  transform: translateY(-1px);
 }
 
 button:active {
   transform: translateY(0);
 }
 
-button:focus,
 button:focus-visible {
   outline: 2px solid var(--terminal-accent);
   outline-offset: 2px;
@@ -131,13 +89,12 @@ input, textarea {
   color: var(--terminal-fg);
   background-color: var(--terminal-bg);
   border: 1px solid var(--terminal-border);
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease;
 }
 
 input:focus, textarea:focus {
   outline: none;
   border-color: var(--terminal-accent);
-  box-shadow: 0 0 0 3px var(--terminal-shadow);
 }
 
 #app {
@@ -149,8 +106,8 @@ input:focus, textarea:focus {
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -159,7 +116,7 @@ input:focus, textarea:focus {
 
 ::-webkit-scrollbar-thumb {
   background: var(--terminal-border);
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -169,11 +126,11 @@ input:focus, textarea:focus {
 /* Selection */
 ::selection {
   background: var(--terminal-accent);
-  color: var(--terminal-bg);
+  color: white;
 }
 
 ::-moz-selection {
   background: var(--terminal-accent);
-  color: var(--terminal-bg);
+  color: white;
 }
 

@@ -159,103 +159,45 @@ const handleCreateProject = async (data: ProjectData) => {
 }
 
 header {
-  background: linear-gradient(135deg, var(--terminal-purple) 0%, var(--terminal-accent-dark) 50%, var(--terminal-magenta) 100%);
-  color: var(--terminal-fg);
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(185, 103, 255, 0.3);
-  border-bottom: 2px solid var(--terminal-accent);
-  position: relative;
-}
-
-header::before {
-  content: '>';
-  position: absolute;
-  left: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 2rem;
-  color: var(--terminal-success);
-  animation: blink 1.5s infinite;
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  background: var(--terminal-hover);
+  border-bottom: 1px solid var(--terminal-border);
+  padding: 1.5rem 2rem;
 }
 
 header h1 {
-  margin: 0 0 1.5rem 0;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #ffffff 0%, var(--terminal-fg) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 30px var(--terminal-shadow);
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--terminal-fg);
 }
 
 nav {
   display: flex;
-  gap: 1rem;
-  justify-content: center;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 nav button {
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--terminal-border);
-  background: rgba(185, 103, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--terminal-border);
+  background: transparent;
   color: var(--terminal-fg);
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'Fira Code', monospace;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-nav button::before {
-  content: '$ ';
-  color: var(--terminal-accent);
-  font-weight: bold;
-}
-
-nav button::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--terminal-accent);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 nav button:hover {
-  background: rgba(185, 103, 255, 0.2);
+  background: var(--terminal-hover);
   border-color: var(--terminal-accent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px var(--terminal-shadow);
-}
-
-nav button:hover::after {
-  transform: scaleX(1);
 }
 
 nav button.active {
-  background: linear-gradient(135deg, var(--terminal-accent) 0%, var(--terminal-magenta) 100%);
-  color: #ffffff;
-  border-color: var(--terminal-magenta);
-  box-shadow: 0 0 20px var(--terminal-shadow);
-}
-
-nav button.active::before {
-  color: #ffffff;
+  background: var(--terminal-accent);
+  color: white;
+  border-color: var(--terminal-accent);
 }
 
 main {
@@ -264,85 +206,28 @@ main {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: var(--terminal-bg);
-  position: relative;
-}
-
-main::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    linear-gradient(90deg, var(--terminal-border) 1px, transparent 1px),
-    linear-gradient(0deg, var(--terminal-border) 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.03;
-  pointer-events: none;
 }
 
 .form-container {
-  background: rgba(41, 42, 45, 0.95);
-  padding: 2.5rem;
+  background: var(--terminal-hover);
+  padding: 2rem;
   border-radius: 8px;
-  border: 2px solid var(--terminal-border);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(185, 103, 255, 0.1),
-    inset 0 0 20px rgba(185, 103, 255, 0.05);
+  border: 1px solid var(--terminal-border);
   width: 100%;
-  max-width: 500px;
-  animation: fadeIn 0.4s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.form-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--terminal-accent) 0%, var(--terminal-magenta) 100%);
-  animation: slideProgress 2s ease infinite;
-}
-
-@keyframes slideProgress {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  max-width: 450px;
 }
 
 footer {
-  background: var(--terminal-bg);
+  background: var(--terminal-hover);
+  border-top: 1px solid var(--terminal-border);
   color: var(--terminal-fg);
   text-align: center;
-  padding: 1.5rem;
+  padding: 1rem;
   font-size: 0.875rem;
-  border-top: 2px solid var(--terminal-border);
-  font-family: 'Fira Code', monospace;
+  opacity: 0.7;
 }
 
 footer p {
   margin: 0;
-}
-
-footer p::before {
-  content: '// ';
-  color: var(--terminal-accent);
-  font-weight: bold;
 }
 </style>
