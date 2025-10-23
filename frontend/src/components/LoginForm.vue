@@ -29,7 +29,7 @@
     <button type="submit">Se connecter</button>
     
     <p class="signup-link">
-      Pas encore de compte ? <a href="/inscription">Créer un compte</a>
+      Pas encore de compte ? <a href="#" @click.prevent="$emit('switchToRegister')">Créer un compte</a>
     </p>
   </form>
 </template>
@@ -49,6 +49,7 @@ interface Errors {
 
 const emit = defineEmits<{
   login: [data: FormData]
+  switchToRegister: []
 }>()
 
 const formData = reactive<FormData>({

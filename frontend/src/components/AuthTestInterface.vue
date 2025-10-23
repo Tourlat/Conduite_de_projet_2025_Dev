@@ -29,6 +29,7 @@
         <LoginForm 
           v-if="currentView === 'login'" 
           @login="handleLogin"
+          @switchToRegister="currentView = 'register'"
         />
         
         <RegisterForm 
@@ -65,8 +66,8 @@ interface LoginData {
 }
 
 interface RegisterData {
+  nom: string
   email: string
-  username: string
   password: string
 }
 
@@ -75,23 +76,77 @@ interface ProjectData {
   description: string
 }
 
-const handleLogin = (data: LoginData) => {
+const handleLogin = async (data: LoginData) => {
   console.log('Login attempt with:', data)
-  alert(`Connexion avec: ${data.email}`)
-  // TODO: Appeler l'API backend pour la connexion
+  try {
+    // TODO: Remplacer par un véritable appel API POST /api/auth/login
+    // const response = await fetch('/api/auth/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(data)
+    // })
+    // const result = await response.json()
+    // if (response.ok) {
+    //   localStorage.setItem('token', result.token)
+    //   // Redirection vers le dashboard
+    // }
+    
+    alert(`Connexion avec: ${data.email}`)
+  } catch (error) {
+    console.error('Erreur de connexion:', error)
+    alert('Erreur: Email ou mot de passe incorrect')
+  }
 }
 
-const handleRegister = (data: RegisterData) => {
+const handleRegister = async (data: RegisterData) => {
   console.log('Registration attempt with:', data)
-  alert(`Inscription réussie pour: ${data.username}`)
-  // TODO: Appeler l'API backend pour l'inscription
-  currentView.value = 'login'
+  try {
+    // TODO: Remplacer par un véritable appel API POST /api/utilisateurs/inscription
+    // const response = await fetch('/api/utilisateurs/inscription', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(data)
+    // })
+    // const result = await response.json()
+    // if (response.ok) {
+    //   alert('Inscription réussie !')
+    //   currentView.value = 'login'
+    // } else if (response.status === 409) {
+    //   alert('Cet email existe déjà')
+    // }
+    
+    alert(`Inscription réussie pour: ${data.nom}`)
+    currentView.value = 'login'
+  } catch (error) {
+    console.error('Erreur d\'inscription:', error)
+    alert('Erreur lors de l\'inscription')
+  }
 }
 
-const handleCreateProject = (data: ProjectData) => {
+const handleCreateProject = async (data: ProjectData) => {
   console.log('Project creation with:', data)
-  alert(`Projet créé: ${data.name}`)
-  // TODO: Appeler l'API backend pour créer le projet
+  try {
+    // TODO: Remplacer par un véritable appel API POST /api/projets avec JWT
+    // const token = localStorage.getItem('token')
+    // const response = await fetch('/api/projets', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${token}`
+    //   },
+    //   body: JSON.stringify(data)
+    // })
+    // const result = await response.json()
+    // if (response.ok) {
+    //   alert(`Projet créé: ${result.nom}`)
+    //   // Redirection vers la page du projet ou liste des projets
+    // }
+    
+    alert(`Projet créé: ${data.name}`)
+  } catch (error) {
+    console.error('Erreur de création de projet:', error)
+    alert('Erreur lors de la création du projet')
+  }
 }
 </script>
 

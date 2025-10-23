@@ -3,6 +3,18 @@
     <h2>Créer un compte</h2>
     
     <div class="form-group">
+      <label for="nom">Nom</label>
+      <input 
+        id="nom"
+        v-model="formData.nom"
+        type="text" 
+        name="nom"
+        :class="{ error: errors.nom }"
+      />
+      <span v-if="errors.nom" class="error-message">{{ errors.nom }}</span>
+    </div>
+
+    <div class="form-group">
       <label for="email">Email</label>
       <input 
         id="email"
@@ -12,18 +24,6 @@
         :class="{ error: errors.email }"
       />
       <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
-    </div>
-
-    <div class="form-group">
-      <label for="username">Nom d'utilisateur</label>
-      <input 
-        id="username"
-        v-model="formData.username"
-        type="text" 
-        name="username"
-        :class="{ error: errors.username }"
-      />
-      <span v-if="errors.username" class="error-message">{{ errors.username }}</span>
     </div>
 
     <div class="form-group">
@@ -38,6 +38,18 @@
       <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
     </div>
 
+    <div class="form-group">
+      <label for="confirmPassword">Confirmer le mot de passe</label>
+      <input 
+        id="confirmPassword"
+        v-model="formData.confirmPassword"
+        type="password" 
+        name="confirmPassword"
+        :class="{ error: errors.confirmPassword }"
+      />
+      <span v-if="errors.confirmPassword" class="error-message">{{ errors.confirmPassword }}</span>
+    </div>
+
     <button type="submit">S'inscrire</button>
   </form>
 </template>
@@ -46,33 +58,42 @@
 import { reactive } from 'vue'
 
 interface FormData {
+  nom: string
   email: string
-  username: string
   password: string
+  confirmPassword: string
 }
 
 interface Errors {
+  nom?: string
   email?: string
-  username?: string
   password?: string
+  confirmPassword?: string
 }
 
 const emit = defineEmits<{
-  register: [data: FormData]
+  register: [data: Omit<FormData, 'confirmPassword'>]
 }>()
 
 const formData = reactive<FormData>({
+  nom: '',
   email: '',
-  username: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 })
 
 const errors = reactive<Errors>({})
 
 const validateForm = (): boolean => {
+  errors.nom = undefined
   errors.email = undefined
-  errors.username = undefined
   errors.password = undefined
+  errors.confirmPassword = undefined
+
+  if (!formData.nom) {
+    errors.nom = 'Le nom est requis'
+    return false
+  }
 
   if (!formData.email) {
     errors.email = 'L\'email est requis'
@@ -82,11 +103,6 @@ const validateForm = (): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(formData.email)) {
     errors.email = 'Format d\'email invalide'
-    return false
-  }
-
-  if (!formData.username) {
-    errors.username = 'Le nom d\'utilisateur est requis'
     return false
   }
 
@@ -100,12 +116,23 @@ const validateForm = (): boolean => {
     return false
   }
 
+  if (!formData.confirmPassword) {
+    errors.confirmPassword = 'Veuillez confirmer votre mot de passe'
+    return false
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    errors.confirmPassword = 'Les mots de passe ne correspondent pas'
+    return false
+  }
+
   return true
 }
 
 const handleSubmit = () => {
   if (validateForm()) {
-    emit('register', { ...formData })
+    const { confirmPassword, ...dataToSend } = formData
+    emit('register', { ...dataToSend })
   }
 }
 </script>

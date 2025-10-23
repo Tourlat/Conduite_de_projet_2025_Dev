@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import LoginForm from './LoginForm.vue'
 
-describe('LoginForm - US2: Connexion au Compte', () => {
+describe('LoginForm - US2: Connexion au Compte (T2.3)', () => {
   it('devrait afficher le formulaire de connexion', () => {
     const wrapper = mount(LoginForm)
     expect(wrapper.find('form').exists()).toBe(true)
@@ -38,11 +38,12 @@ describe('LoginForm - US2: Connexion au Compte', () => {
     
     await emailInput.setValue('test@example.com')
     await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
     
-    expect(wrapper.text()).toContain('mot de passe')
+    expect(wrapper.text()).toMatch(/mot de passe/i)
   })
 
-  it('devrait émettre un événement lors de la soumission', async () => {
+  it('devrait émettre un événement avec email et password lors de la soumission', async () => {
     const wrapper = mount(LoginForm)
     
     await wrapper.find('input[type="email"]').setValue('test@example.com')
@@ -51,6 +52,13 @@ describe('LoginForm - US2: Connexion au Compte', () => {
     await wrapper.find('form').trigger('submit')
     
     expect(wrapper.emitted()).toHaveProperty('login')
+    const emitted = wrapper.emitted('login')
+    if (emitted && emitted[0] && emitted[0][0]) {
+      expect(emitted[0][0]).toMatchObject({
+        email: 'test@example.com',
+        password: 'password123'
+      })
+    }
   })
 
   it('devrait afficher un lien vers l\'inscription', () => {
