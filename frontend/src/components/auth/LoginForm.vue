@@ -93,11 +93,9 @@ const handleSubmit = async () => {
       alert(`Connexion réussie pour: ${formData.email}`)
       // TODO: Redirection vers le dashboard
     } else {
-      const error = await response.json()
-      alert(error.message || 'Erreur lors de la connexion')
+      alert('Erreur lors de la connexion')
     }
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
+  } catch {
     alert('Erreur lors de la connexion')
   }
 }

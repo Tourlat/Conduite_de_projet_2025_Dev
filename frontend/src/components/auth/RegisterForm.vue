@@ -135,8 +135,8 @@ const handleSubmit = async () => {
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...dataToSend } = formData
+
     
     const response = await fetch('/api/register', {
       method: 'POST',
@@ -148,19 +148,24 @@ const handleSubmit = async () => {
       const result = await response.json()
       alert(`Inscription réussie pour: ${result.email}`)
       emit('switchToLogin')
-    } else {
-      const error = await response.json()
+    } 
+    
+    else {
 
       if (response.status === 409) {
         alert('Cet email existe déjà')
-      } else if (response.status === 400) {
+      } 
+      
+      else if (response.status === 400) {
         alert('Données d\'inscription invalides')
-      } else {
-        alert(error.message || 'Erreur lors de l\'inscription')
+      } 
+      
+      else {
+        alert('Erreur lors de l\'inscription')
       }
+
     }
-  } catch (error) {
-    console.error('Erreur d\'inscription:', error)
+  } catch {
     alert('Erreur lors de l\'inscription')
   }
 }
