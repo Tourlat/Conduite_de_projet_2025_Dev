@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: conduitedeprojet
+  datasource:
+    url: jdbc:postgresql://database:5432/conduitedeprojet_db
+    username: admin
+    password: admin
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  frontend:
+    url: http://localhost:5173
