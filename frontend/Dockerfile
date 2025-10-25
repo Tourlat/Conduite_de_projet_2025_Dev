@@ -11,9 +11,6 @@ RUN npm ci
 
 COPY . .
 
-# ARG NODE_ENV=development
-# ENV NODE_ENV=${NODE_ENV}
-
 RUN npm run build
 
 # Stage 2
@@ -27,8 +24,5 @@ RUN npm install -g serve
 COPY --from=build /app/dist ./dist
 
 EXPOSE 5173
-
-# ARG NODE_ENV=development
-# ENV NODE_ENV=${NODE_ENV}
 
 CMD ["serve", "-s", "dist", "-l", "5173"]

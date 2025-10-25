@@ -65,6 +65,6 @@ docker compose up --build database
 
 ### Running using Docker
 
-Execute `docker compose --build` in the root directory of the project. This will start the docker containers for the frontend and backend. These containers use the same default ports as described above.
+Execute `docker compose up --build` in the root directory of the project. This will start the docker containers for the frontend and backend. These containers use the same default ports as described above.
 
 To stop the docker containers execute `docker compose down -v`.

@@ -20,7 +20,7 @@ services:
         condition: service_healthy
 
   database:
-    image: postgres
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_PASSWORD: admin
