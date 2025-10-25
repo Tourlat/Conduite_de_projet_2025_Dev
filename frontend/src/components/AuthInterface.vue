@@ -79,16 +79,30 @@ const handleRegister = async (data: RegisterData) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
-    const result = await response.json()
+    
     if (response.ok) {
+      const result = await response.json()
       alert(`Inscription réussie pour: ${result.email}`)
       currentView.value = 'login'
-    }
+    } else {
 
-    alert(`Inscription réussie pour: ${data.email}`)
-    currentView.value = 'login'
+      const error = await response.json()
+
+      if (response.status === 409) {
+        alert('Cet email existe déjà')
+      
+      } 
+
+      else if (response.status === 400) {
+        alert('Données d\'inscription invalides')
+      }
+
+      else {
+        alert(error.message || 'Erreur lors de l\'inscription')
+      }
+
+    }
   } catch (error) {
-    console.error('Erreur d\'inscription:', error)
     alert('Erreur lors de l\'inscription')
   }
 }
