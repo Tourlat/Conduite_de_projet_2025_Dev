@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import LoginForm from '../auth/LoginForm.vue'
 
@@ -43,22 +43,32 @@ describe('LoginForm - US2: Connexion au Compte (T2.3)', () => {
     expect(wrapper.text()).toMatch(/mot de passe/i)
   })
 
-  it('devrait émettre un événement avec email et password lors de la soumission', async () => {
+  it('devrait appeler l\'API et gérer la connexion lors de la soumission', async () => {
+    // Mock fetch pour simuler une réponse réussie
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ token: 'fake-jwt-token', user: { id: 1, email: 'test@example.com' } })
+      } as Response)
+    )
+
     const wrapper = mount(LoginForm)
     
     await wrapper.find('input[type="email"]').setValue('test@example.com')
     await wrapper.find('input[type="password"]').setValue('password123')
     
     await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
     
-    expect(wrapper.emitted()).toHaveProperty('login')
-    const emitted = wrapper.emitted('login')
-    if (emitted && emitted[0] && emitted[0][0]) {
-      expect(emitted[0][0]).toMatchObject({
-        email: 'test@example.com',
-        password: 'password123'
+    // Vérifie que fetch a été appelé avec les bonnes données
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      '/api/login',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test@example.com', password: 'password123' })
       })
-    }
+    )
   })
 
   it('devrait afficher un lien vers l\'inscription', () => {

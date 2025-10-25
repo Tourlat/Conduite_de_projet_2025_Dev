@@ -72,7 +72,7 @@ interface Errors {
 }
 
 const emit = defineEmits<{
-  register: [data: Omit<FormData, 'confirmPassword'>]
+  switchToLogin: []
 }>()
 
 const formData = reactive<FormData>({
@@ -129,11 +129,39 @@ const validateForm = (): boolean => {
   return true
 }
 
-const handleSubmit = () => {
-  if (validateForm()) {
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    return
+  }
+
+  try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...dataToSend } = formData
-    emit('register', { ...dataToSend })
+    
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    })
+    
+    if (response.ok) {
+      const result = await response.json()
+      alert(`Inscription réussie pour: ${result.email}`)
+      emit('switchToLogin')
+    } else {
+      const error = await response.json()
+
+      if (response.status === 409) {
+        alert('Cet email existe déjà')
+      } else if (response.status === 400) {
+        alert('Données d\'inscription invalides')
+      } else {
+        alert(error.message || 'Erreur lors de l\'inscription')
+      }
+    }
+  } catch (error) {
+    console.error('Erreur d\'inscription:', error)
+    alert('Erreur lors de l\'inscription')
   }
 }
 </script>

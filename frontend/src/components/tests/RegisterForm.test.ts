@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import RegisterForm from '../auth/RegisterForm.vue'
 
@@ -85,7 +85,15 @@ describe('RegisterForm - US1: Création de Compte (T1.4)', () => {
     expect(wrapper.text()).toMatch(/ne correspondent pas/i)
   })
 
-  it('devrait émettre un événement lors de la soumission valide sans confirmPassword', async () => {
+  it('devrait appeler l\'API lors de la soumission valide sans confirmPassword', async () => {
+    // Mock fetch pour simuler une réponse réussie
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ id: 1, nom: 'John Doe', email: 'test@example.com' })
+      } as Response)
+    )
+
     const wrapper = mount(RegisterForm)
     
     await wrapper.find('input[name="nom"]').setValue('John Doe')
@@ -94,17 +102,21 @@ describe('RegisterForm - US1: Création de Compte (T1.4)', () => {
     await wrapper.find('input[name="confirmPassword"]').setValue('Password123!')
     
     await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
     
-    expect(wrapper.emitted()).toHaveProperty('register')
-    const emitted = wrapper.emitted('register')
-    if (emitted && emitted[0] && emitted[0][0]) {
-      expect(emitted[0][0]).toMatchObject({
-        nom: 'John Doe',
-        email: 'test@example.com',
-        password: 'Password123!'
+    // Vérifie que fetch a été appelé avec les bonnes données (sans confirmPassword)
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      '/api/register',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom: 'John Doe', email: 'test@example.com', password: 'Password123!' })
       })
-      // Ne devrait PAS contenir confirmPassword
-      expect(emitted[0][0]).not.toHaveProperty('confirmPassword')
-    }
+    )
+    
+    // Vérifie que confirmPassword n'est PAS dans le body
+    const callArgs = (globalThis.fetch as any).mock.calls[0]
+    const body = JSON.parse(callArgs[1].body)
+    expect(body).not.toHaveProperty('confirmPassword')
   })
 })

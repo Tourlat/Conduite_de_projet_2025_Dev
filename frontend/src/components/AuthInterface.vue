@@ -19,13 +19,12 @@
       <div class="form-container">
         <LoginForm 
           v-if="currentView === 'login'" 
-          @login="handleLogin"
           @switch-to-register="currentView = 'register'"
         />
         
         <RegisterForm 
           v-if="currentView === 'register'" 
-          @register="handleRegister"
+          @switch-to-login="currentView = 'login'"
         />
       </div>
     </div>
@@ -40,72 +39,6 @@ import RegisterForm from './auth/RegisterForm.vue'
 type View = 'login' | 'register'
 
 const currentView = ref<View>('login')
-
-interface LoginData {
-  email: string
-  password: string
-}
-
-interface RegisterData {
-  nom: string
-  email: string
-  password: string
-}
-
-const handleLogin = async (data: LoginData) => {
-  try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    const result = await response.json()
-    if (response.ok) {
-      localStorage.setItem('token', result.token)
-      //   // Redirection vers le dashboard
-    }
-
-    alert(`Connexion réussie pour: ${data.email}`)
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
-    alert('Erreur lors de la connexion')
-  }
-}
-
-const handleRegister = async (data: RegisterData) => {
-  try {
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    
-    if (response.ok) {
-      const result = await response.json()
-      alert(`Inscription réussie pour: ${result.email}`)
-      currentView.value = 'login'
-    } else {
-
-      const error = await response.json()
-
-      if (response.status === 409) {
-        alert('Cet email existe déjà')
-      
-      } 
-
-      else if (response.status === 400) {
-        alert('Données d\'inscription invalides')
-      }
-
-      else {
-        alert(error.message || 'Erreur lors de l\'inscription')
-      }
-
-    }
-  } catch (error) {
-    alert('Erreur lors de l\'inscription')
-  }
-}
 </script>
 
 <style scoped>

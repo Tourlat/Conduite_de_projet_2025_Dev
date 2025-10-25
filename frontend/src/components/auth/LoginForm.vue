@@ -48,7 +48,6 @@ interface Errors {
 }
 
 const emit = defineEmits<{
-  login: [data: FormData]
   switchToRegister: []
 }>()
 
@@ -76,9 +75,30 @@ const validateForm = (): boolean => {
   return true
 }
 
-const handleSubmit = () => {
-  if (validateForm()) {
-    emit('login', { ...formData })
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    return
+  }
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    
+    if (response.ok) {
+      const result = await response.json()
+      localStorage.setItem('token', result.token)
+      alert(`Connexion réussie pour: ${formData.email}`)
+      // TODO: Redirection vers le dashboard
+    } else {
+      const error = await response.json()
+      alert(error.message || 'Erreur lors de la connexion')
+    }
+  } catch (error) {
+    console.error('Erreur de connexion:', error)
+    alert('Erreur lors de la connexion')
   }
 }
 </script>
