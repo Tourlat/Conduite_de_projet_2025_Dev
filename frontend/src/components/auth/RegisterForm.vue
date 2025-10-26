@@ -264,7 +264,7 @@ button:active {
 }
 
 .message.success {
-  background: rgba(187, 154, 247, 0.1);
+  background: rgba(154, 247, 200, 0.1);
   border: 1px solid var(--terminal-accent);
   color: var(--terminal-accent);
 }
