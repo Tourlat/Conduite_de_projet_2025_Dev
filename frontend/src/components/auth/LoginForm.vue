@@ -115,12 +115,12 @@ const handleSubmit = async () => {
         errors.password = ' '
       } else {
         const error = await response.json()
-        message.value = { text: error.message || 'Une erreur est survenue lors de la connexion', type: 'error' }
+        message.value = { text: error.message || 'Erreur serveur. Veuillez réessayer plus tard.', type: 'error' }
       }
     }
   } catch (error) {
     console.error('Erreur de connexion:', error)
-    message.value = { text: 'Erreur réseau. Veuillez vérifier votre connexion internet.', type: 'error' }
+    message.value = { text: 'Erreur de connexion. Vérifiez votre connexion internet.', type: 'error' }
   }
 }
 </script>

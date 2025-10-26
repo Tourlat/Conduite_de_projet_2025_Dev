@@ -171,12 +171,13 @@ const handleSubmit = async () => {
       } 
       
       else {
-        message.value = { text: 'Erreur lors de l\'inscription', type: 'error' }
+        message.value = { text: 'Erreur serveur. Veuillez réessayer plus tard.', type: 'error' }
       }
 
     }
-  } catch {
-    message.value = { text: 'Erreur lors de l\'inscription', type: 'error' }
+  } catch (error) {
+    console.error('Erreur réseau:', error)
+    message.value = { text: 'Erreur de connexion. Vérifiez votre connexion internet.', type: 'error' }
   }
 }
 </script>
