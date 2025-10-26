@@ -2,6 +2,8 @@
   <form @submit.prevent="handleSubmit">
     <h2>Créer un compte</h2>
     
+    <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
+    
     <div class="form-group">
       <label for="nom">Nom</label>
       <input 
@@ -55,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 interface FormData {
   nom: string
@@ -71,6 +73,11 @@ interface Errors {
   confirmPassword?: string
 }
 
+interface Message {
+  text: string
+  type: 'success' | 'error'
+}
+
 const emit = defineEmits<{
   switchToLogin: []
 }>()
@@ -83,6 +90,7 @@ const formData = reactive<FormData>({
 })
 
 const errors = reactive<Errors>({})
+const message = ref<Message | null>(null)
 
 const validateForm = (): boolean => {
   errors.nom = undefined
@@ -134,6 +142,8 @@ const handleSubmit = async () => {
     return
   }
 
+  message.value = null
+
   try {
     const { confirmPassword, ...dataToSend } = formData
 
@@ -146,27 +156,27 @@ const handleSubmit = async () => {
     
     if (response.ok) {
       const result = await response.json()
-      alert(`Inscription réussie pour: ${result.email}`)
-      emit('switchToLogin')
+      message.value = { text: `Inscription réussie pour: ${result.email}`, type: 'success' }
+      setTimeout(() => emit('switchToLogin'), 1500)
     } 
     
     else {
 
       if (response.status === 409) {
-        alert('Cet email existe déjà')
+        message.value = { text: 'Cet email existe déjà', type: 'error' }
       } 
       
       else if (response.status === 400) {
-        alert('Données d\'inscription invalides')
+        message.value = { text: 'Données d\'inscription invalides', type: 'error' }
       } 
       
       else {
-        alert('Erreur lors de l\'inscription')
+        message.value = { text: 'Erreur lors de l\'inscription', type: 'error' }
       }
 
     }
   } catch {
-    alert('Erreur lors de l\'inscription')
+    message.value = { text: 'Erreur lors de l\'inscription', type: 'error' }
   }
 }
 </script>
@@ -243,5 +253,24 @@ button:hover {
 
 button:active {
   transform: translateY(0);
+}
+
+.message {
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.message.success {
+  background: rgba(187, 154, 247, 0.1);
+  border: 1px solid var(--terminal-accent);
+  color: var(--terminal-accent);
+}
+
+.message.error {
+  background: rgba(247, 118, 142, 0.1);
+  border: 1px solid var(--terminal-error);
+  color: var(--terminal-error);
 }
 </style>
