@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { authStore } from '../../stores/authStore'
 
 interface FormData {
   email: string
@@ -49,6 +50,7 @@ interface Errors {
 
 const emit = defineEmits<{
   switchToRegister: []
+  loginSuccess: [token: string]
 }>()
 
 const formData = reactive<FormData>({
@@ -89,14 +91,28 @@ const handleSubmit = async () => {
     
     if (response.ok) {
       const result = await response.json()
-      localStorage.setItem('token', result.token)
-      alert(`Connexion réussie pour: ${formData.email}`)
-      // TODO: Redirection vers le dashboard
+      
+      authStore.login(result.token, result.user)
+      
+      // Émettre l'événement de succès pour le composant parent
+      emit('loginSuccess', result.token)
+      
+      alert(`Connexion réussie ! Redirection vers le dashboard...`)
+      
+      // Redirection vers le dashboard après connexion réussie
     } else {
-      alert('Erreur lors de la connexion')
+      // Gestion des erreurs spécifiques
+      if (response.status === 401) {
+        errors.email = 'Email ou mot de passe incorrect'
+        errors.password = ' '
+      } else {
+        const error = await response.json()
+        alert(error.message || 'Une erreur est survenue lors de la connexion')
+      }
     }
-  } catch {
-    alert('Erreur lors de la connexion')
+  } catch (error) {
+    console.error('Erreur de connexion:', error)
+    alert('Erreur réseau. Veuillez vérifier votre connexion internet.')
   }
 }
 </script>

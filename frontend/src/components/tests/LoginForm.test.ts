@@ -75,4 +75,90 @@ describe('LoginForm - US2: Connexion au Compte (T2.3)', () => {
     const wrapper = mount(LoginForm)
     expect(wrapper.text()).toMatch(/(inscription|créer un compte)/i)
   })
+
+  it('devrait afficher un message d\'erreur clair en cas d\'échec 401', async () => {
+    // Mock fetch pour simuler une erreur 401
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 401,
+        json: () => Promise.resolve({ message: 'Unauthorized' })
+      } as Response)
+    )
+
+    const wrapper = mount(LoginForm)
+    
+    await wrapper.find('input[type="email"]').setValue('test@example.com')
+    await wrapper.find('input[type="password"]').setValue('wrongpassword')
+    
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+    
+    // Vérifie que le message d'erreur est affiché
+    expect(wrapper.text()).toMatch(/email ou mot de passe incorrect/i)
+  })
+
+  it('devrait stocker le token JWT dans localStorage en cas de succès', async () => {
+    const mockToken = 'fake-jwt-token-12345'
+    
+    // Mock localStorage
+    const localStorageMock = {
+      setItem: vi.fn(),
+      getItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      length: 0,
+      key: vi.fn()
+    }
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true
+    })
+
+    // Mock fetch pour simuler une réponse réussie
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ token: mockToken, user: { id: 1, email: 'test@example.com' } })
+      } as Response)
+    )
+
+    const wrapper = mount(LoginForm)
+    
+    await wrapper.find('input[type="email"]').setValue('test@example.com')
+    await wrapper.find('input[type="password"]').setValue('password123')
+    
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+    
+    // Vérifie que le token a été stocké dans localStorage
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockToken)
+  })
+
+  it('devrait émettre loginSuccess avec le token en cas de succès', async () => {
+    const mockToken = 'fake-jwt-token-12345'
+    
+    // Mock fetch pour simuler une réponse réussie
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ token: mockToken, user: { id: 1, email: 'test@example.com' } })
+      } as Response)
+    )
+
+    const wrapper = mount(LoginForm)
+    
+    await wrapper.find('input[type="email"]').setValue('test@example.com')
+    await wrapper.find('input[type="password"]').setValue('password123')
+    
+    await wrapper.find('form').trigger('submit')
+    await wrapper.vm.$nextTick()
+    
+    // Vérifie que l'événement loginSuccess a été émis avec le token
+    expect(wrapper.emitted()).toHaveProperty('loginSuccess')
+    const emitted = wrapper.emitted('loginSuccess')
+    if (emitted && emitted[0]) {
+      expect(emitted[0][0]).toBe(mockToken)
+    }
+  })
 })
