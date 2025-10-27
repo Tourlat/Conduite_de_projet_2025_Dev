@@ -1,0 +1,14 @@
+name: CI – Main
+
+on:
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions: write-all
+
+jobs:
+  frontend-tests:
+    uses: ./.github/workflows/frontend-tests.yml
+  backend-tests:
+    uses: ./.github/workflows/backend-tests.yml

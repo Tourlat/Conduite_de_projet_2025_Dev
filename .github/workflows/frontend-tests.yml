@@ -1,0 +1,22 @@
+name: E2E (UI) Tests
+
+on:
+  workflow_call:
+
+jobs:
+  run-frontend-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+
+      - uses: actions/setup-node@v4
+        name: Setup Node
+        with:
+          node-version: lts/*
+
+      - uses: docker/setup-compose-action@v1
+        name: Setup Docker
+
+# TODO: perform frontend tests
