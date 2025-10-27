@@ -113,6 +113,19 @@ const isSubmitting = ref(false)
 
 // Récupérer tous les utilisateurs au montage du composant
 const fetchAllUsers = async () => {
+
+  // TEST JSON MAIN //////////////////////////////////////////////////////
+
+  let user_test = {
+    "id": 1,
+    "nom": "Dupont",
+    "email": "dupont@example.com"
+  }
+
+  allUsers.value.push(user_test)
+
+  ////////////////////////////////////////////////////////////////////////
+
   try {
     const res = await fetch('/api/users')
     if (!res.ok) return
@@ -127,15 +140,15 @@ const fetchAllUsers = async () => {
 fetchAllUsers()
 
 const onCollaborateurInput = () => {
-  const q = collaborateursInput.value.trim()
-  if (!q) {
+  const cleanedCollaboratorsInput = collaborateursInput.value.trim()
+  if (!cleanedCollaboratorsInput) {
     suggestions.value = []
     return
   }
   // Filtrer côté client les emails qui commencent par la saisie
-  const lower = q.toLowerCase()
+  const lower = cleanedCollaboratorsInput.toLowerCase()
   suggestions.value = allUsers.value
-    .filter((u: any) => typeof u.email === 'string' && u.email.toLowerCase().startsWith(lower))
+    .filter((user: any) => typeof user.email === 'string' && user.email.toLowerCase().startsWith(lower))
     .slice(0, 8)
 }
 
@@ -155,14 +168,14 @@ const removeCollaborator = (email: string) => {
 }
 
 const maybeAddInputAsCollaborator = () => {
-  const v = collaborateursInput.value.trim()
-  if (!v) return
+  const cleanedCollaborateursInput = collaborateursInput.value.trim()
+  if (!cleanedCollaborateursInput) return
   // allow comma separated
-  if (v.includes(',')) {
-    const parts = v.split(',').map(p => p.trim()).filter(Boolean)
-    for (const p of parts) addCollaborator(p)
+  if (cleanedCollaborateursInput.includes(',')) {
+    const parts = cleanedCollaborateursInput.split(',').map(p => p.trim()).filter(Boolean)
+    for (const part of parts) addCollaborator(part)
   } else {
-    addCollaborator(v)
+    addCollaborator(cleanedCollaborateursInput)
   }
 }
 
@@ -229,13 +242,10 @@ const handleSubmit = async () => {
       const result = await response.json()
       message.value = { text: 'Projet créé avec succès !', type: 'success' }
       
-      // Émettre l'événement de création réussie
       emit('projectCreated', result.id)
       
-      // Redirection après 1.5 secondes
       setTimeout(() => {
-        // TODO: Implémenter la navigation avec Vue Router
-        window.location.href = `/projects/${result.id}`
+        // TODO: Redirection
       }, 1500)
     } else {
       const error = await response.json()
@@ -387,19 +397,31 @@ button:disabled:hover {
 .chip {
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--terminal-border);
-  padding: 0.25rem 0.5rem;
+  padding: 0.4rem 0.7rem;
   border-radius: 999px;
   font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .chip-remove {
   background: transparent;
   border: none;
   color: var(--terminal-fg);
-  margin-left: 0.4rem;
   cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.chip-remove:hover {
+  color: var(--terminal-magenta);
+  background: transparent;
 }
 
 .autocomplete { position: relative; }
