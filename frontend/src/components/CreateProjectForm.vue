@@ -216,7 +216,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    const response = await fetch('/api/projets', {
+    const response = await fetch('/api/projects', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -235,7 +235,7 @@ const handleSubmit = async () => {
       // Redirection après 1.5 secondes
       setTimeout(() => {
         // TODO: Implémenter la navigation avec Vue Router
-        window.location.href = `/projets/${result.id}`
+        window.location.href = `/projects/${result.id}`
       }, 1500)
     } else {
       const error = await response.json()

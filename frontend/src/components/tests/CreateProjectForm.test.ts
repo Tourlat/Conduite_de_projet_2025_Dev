@@ -15,7 +15,7 @@ describe('CreateProjectForm', () => {
           ])
         } as Response)
       }
-      // Autres URLs (comme /api/projets) seront mockées dans chaque test spécifique
+      // Autres URLs (comme /api/projects) seront mockées dans chaque test spécifique
       return Promise.reject(new Error('Unmocked fetch: ' + url))
     })
   })
@@ -86,7 +86,7 @@ describe('CreateProjectForm', () => {
   })
 
   it('devrait inclure les données du projet (name et description) dans l\'appel API', async () => {
-    // Mock fetch pour /api/users et /api/projets
+    // Mock fetch pour /api/users et /api/projects
     globalThis.fetch = vi.fn((url) => {
       if (url === '/api/users') {
         return Promise.resolve({
@@ -94,7 +94,7 @@ describe('CreateProjectForm', () => {
           json: () => Promise.resolve([])
         } as Response)
       }
-      if (url === '/api/projets') {
+      if (url === '/api/projects') {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
@@ -111,11 +111,11 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que les données sont bien envoyées à /api/projets
+    // Vérifie que les données sont bien envoyées à /api/projects
     const calls = (globalThis.fetch as any).mock.calls
-    const projetsCall = calls.find((c: any) => c[0] === '/api/projets')
-    expect(projetsCall).toBeDefined()
-    const body = JSON.parse(projetsCall[1].body)
+    const projectsCall = calls.find((c: any) => c[0] === '/api/projects')
+    expect(projectsCall).toBeDefined()
+    const body = JSON.parse(projectsCall[1].body)
     expect(body).toMatchObject({
       name: 'Mon Projet',
       description: 'Ma description'
@@ -123,7 +123,7 @@ describe('CreateProjectForm', () => {
   })
 
   it('devrait permettre de créer un projet avec une description vide', async () => {
-    // Mock fetch pour /api/users et /api/projets
+    // Mock fetch pour /api/users et /api/projects
     globalThis.fetch = vi.fn((url) => {
       if (url === '/api/users') {
         return Promise.resolve({
@@ -131,7 +131,7 @@ describe('CreateProjectForm', () => {
           json: () => Promise.resolve([])
         } as Response)
       }
-      if (url === '/api/projets') {
+      if (url === '/api/projects') {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve({ id: 1, name: 'Projet Sans Description' })
@@ -147,11 +147,11 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé pour /api/projets
+    // Vérifie que fetch a été appelé pour /api/projects
     const calls = (globalThis.fetch as any).mock.calls
-    const projetsCall = calls.find((c: any) => c[0] === '/api/projets')
-    expect(projetsCall).toBeDefined()
-    const body = JSON.parse(projetsCall[1].body)
+    const projectsCall = calls.find((c: any) => c[0] === '/api/projects')
+    expect(projectsCall).toBeDefined()
+    const body = JSON.parse(projectsCall[1].body)
     expect(body.name).toBe('Projet Sans Description')
     expect(body.description).toBe('')
   })
@@ -192,7 +192,7 @@ describe('CreateProjectForm', () => {
     
     // Vérifie que fetch a été appelé avec les collaborateurs
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/projets',
+      '/api/projects',
       expect.objectContaining({
         method: 'POST',
         body: expect.stringContaining('user1@example.com')
@@ -200,7 +200,7 @@ describe('CreateProjectForm', () => {
     )
   })
 
-  it('devrait appeler l\'API POST /api/projets lors de la soumission', async () => {
+  it('devrait appeler l\'API POST /api/projects lors de la soumission', async () => {
     // Mock fetch pour simuler une réponse réussie
     globalThis.fetch = vi.fn(() =>
       Promise.resolve({
@@ -219,7 +219,7 @@ describe('CreateProjectForm', () => {
     
     // Vérifie que fetch a été appelé avec les bonnes données
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/projets',
+      '/api/projects',
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
