@@ -1,8 +1,25 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CreateProjectForm from '../CreateProjectForm.vue'
 
-describe('CreateProjectForm - US4: Création de Projet (T4.3)', () => {
+describe('CreateProjectForm', () => {
+  beforeEach(() => {
+    // Mock par défaut pour /api/users (appelé au montage du composant)
+    globalThis.fetch = vi.fn((url) => {
+      if (url === '/api/users') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([
+            { email: 'user1@example.com', nom: 'User One' },
+            { email: 'user2@example.com', nom: 'User Two' }
+          ])
+        } as Response)
+      }
+      // Autres URLs (comme /api/projets) seront mockées dans chaque test spécifique
+      return Promise.reject(new Error('Unmocked fetch: ' + url))
+    })
+  })
+
   it('devrait afficher le formulaire de création de projet', () => {
     const wrapper = mount(CreateProjectForm)
     expect(wrapper.find('form').exists()).toBe(true)
@@ -69,13 +86,22 @@ describe('CreateProjectForm - US4: Création de Projet (T4.3)', () => {
   })
 
   it('devrait inclure les données du projet (name et description) dans l\'appel API', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
-      } as Response)
-    )
+    // Mock fetch pour /api/users et /api/projets
+    globalThis.fetch = vi.fn((url) => {
+      if (url === '/api/users') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([])
+        } as Response)
+      }
+      if (url === '/api/projets') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
+        } as Response)
+      }
+      return Promise.reject(new Error('Unmocked URL'))
+    })
 
     const wrapper = mount(CreateProjectForm)
     
@@ -85,9 +111,11 @@ describe('CreateProjectForm - US4: Création de Projet (T4.3)', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que les données sont bien envoyées
-    const callArgs = (globalThis.fetch as any).mock.calls[0]
-    const body = JSON.parse(callArgs[1].body)
+    // Vérifie que les données sont bien envoyées à /api/projets
+    const calls = (globalThis.fetch as any).mock.calls
+    const projetsCall = calls.find((c: any) => c[0] === '/api/projets')
+    expect(projetsCall).toBeDefined()
+    const body = JSON.parse(projetsCall[1].body)
     expect(body).toMatchObject({
       name: 'Mon Projet',
       description: 'Ma description'
@@ -95,13 +123,22 @@ describe('CreateProjectForm - US4: Création de Projet (T4.3)', () => {
   })
 
   it('devrait permettre de créer un projet avec une description vide', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, name: 'Projet Sans Description' })
-      } as Response)
-    )
+    // Mock fetch pour /api/users et /api/projets
+    globalThis.fetch = vi.fn((url) => {
+      if (url === '/api/users') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([])
+        } as Response)
+      }
+      if (url === '/api/projets') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ id: 1, name: 'Projet Sans Description' })
+        } as Response)
+      }
+      return Promise.reject(new Error('Unmocked URL'))
+    })
 
     const wrapper = mount(CreateProjectForm)
     
@@ -110,10 +147,11 @@ describe('CreateProjectForm - US4: Création de Projet (T4.3)', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé même sans description
-    expect(globalThis.fetch).toHaveBeenCalled()
-    const callArgs = (globalThis.fetch as any).mock.calls[0]
-    const body = JSON.parse(callArgs[1].body)
+    // Vérifie que fetch a été appelé pour /api/projets
+    const calls = (globalThis.fetch as any).mock.calls
+    const projetsCall = calls.find((c: any) => c[0] === '/api/projets')
+    expect(projetsCall).toBeDefined()
+    const body = JSON.parse(projetsCall[1].body)
     expect(body.name).toBe('Projet Sans Description')
     expect(body.description).toBe('')
   })

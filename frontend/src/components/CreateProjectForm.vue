@@ -31,16 +31,39 @@
 
     <div class="form-group">
       <label for="collaborateurs">Collaborateurs</label>
-      <input 
-        id="collaborateurs"
-        v-model="collaborateursInput"
-        type="text" 
-        name="collaborateurs"
-        placeholder="Entrez les emails des collaborateurs (séparés par des virgules)"
-        :class="{ error: errors.collaborateurs }"
-      />
+
+      <!-- Selected collaborators as chips -->
+      <div class="chips" v-if="formData.collaborateurs && formData.collaborateurs.length">
+        <span class="chip" v-for="email in formData.collaborateurs" :key="email">
+          {{ email }} <button type="button" class="chip-remove" @click="removeCollaborator(email)">×</button>
+        </span>
+      </div>
+
+      <!-- Input with autocomplete suggestions -->
+      <div class="autocomplete">
+        <input
+          id="collaborateurs"
+          v-model="collaborateursInput"
+          @input="onCollaborateurInput"
+          @focus="showSuggestions = true"
+          @keydown.enter.prevent="maybeAddInputAsCollaborator"
+          type="text"
+          name="collaborateurs"
+          placeholder="Rechercher un utilisateur par email"
+          :class="{ error: errors.collaborateurs }"
+          autocomplete="off"
+        />
+
+        <ul v-if="showSuggestions && suggestions.length" class="suggestions">
+          <li v-for="s in suggestions" :key="s.email" @click="addCollaborator(s.email)">
+            <strong>{{ s.email }}</strong>
+            <div class="small">{{ s.nom || '' }}</div>
+          </li>
+        </ul>
+      </div>
+
       <span v-if="errors.collaborateurs" class="error-message">{{ errors.collaborateurs }}</span>
-      <span class="help-text">Ex: user1@example.com, user2@example.com</span>
+      <span class="help-text">Commencez à taper un email pour voir des suggestions</span>
     </div>
 
     <button type="submit" :disabled="isSubmitting">
@@ -83,7 +106,65 @@ const formData = reactive<ProjectData>({
 const errors = reactive<Errors>({})
 const message = ref<Message | null>(null)
 const collaborateursInput = ref('')
+const allUsers = ref<Array<{ email: string; nom?: string }>>([])
+const suggestions = ref<Array<{ email: string; nom?: string }>>([])
+const showSuggestions = ref(false)
 const isSubmitting = ref(false)
+
+// Récupérer tous les utilisateurs au montage du composant
+const fetchAllUsers = async () => {
+  try {
+    const res = await fetch('/api/users')
+    if (!res.ok) return
+    const data = await res.json()
+    allUsers.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    console.error('Erreur de récupération des utilisateurs', e)
+  }
+}
+
+// Appeler au montage du composant
+fetchAllUsers()
+
+const onCollaborateurInput = () => {
+  const q = collaborateursInput.value.trim()
+  if (!q) {
+    suggestions.value = []
+    return
+  }
+  // Filtrer côté client les emails qui commencent par la saisie
+  const lower = q.toLowerCase()
+  suggestions.value = allUsers.value
+    .filter((u: any) => typeof u.email === 'string' && u.email.toLowerCase().startsWith(lower))
+    .slice(0, 8)
+}
+
+const addCollaborator = (email: string) => {
+  if (!email) return
+  if (!formData.collaborateurs) formData.collaborateurs = []
+  if (!formData.collaborateurs.includes(email)) {
+    formData.collaborateurs.push(email)
+  }
+  collaborateursInput.value = ''
+  suggestions.value = []
+  showSuggestions.value = false
+}
+
+const removeCollaborator = (email: string) => {
+  formData.collaborateurs = (formData.collaborateurs || []).filter(e => e !== email)
+}
+
+const maybeAddInputAsCollaborator = () => {
+  const v = collaborateursInput.value.trim()
+  if (!v) return
+  // allow comma separated
+  if (v.includes(',')) {
+    const parts = v.split(',').map(p => p.trim()).filter(Boolean)
+    for (const p of parts) addCollaborator(p)
+  } else {
+    addCollaborator(v)
+  }
+}
 
 const validateForm = (): boolean => {
   errors.name = undefined
@@ -100,21 +181,27 @@ const validateForm = (): boolean => {
     return false
   }
 
-  // Validation des collaborateurs (si fournis)
+  // If user left text in the input, try to add it (comma separated) before validating
   if (collaborateursInput.value.trim()) {
     const emails = collaborateursInput.value.split(',').map(e => e.trim()).filter(e => e)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    
     for (const email of emails) {
+      if (!formData.collaborateurs) formData.collaborateurs = []
+      if (!formData.collaborateurs.includes(email)) {
+        formData.collaborateurs.push(email)
+      }
+    }
+    collaborateursInput.value = ''
+  }
+
+  // Validation des collaborateurs (si fournis)
+  if (formData.collaborateurs && formData.collaborateurs.length) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    for (const email of formData.collaborateurs) {
       if (!emailRegex.test(email)) {
         errors.collaborateurs = `Email invalide: ${email}`
         return false
       }
     }
-    
-    formData.collaborateurs = emails
-  } else {
-    formData.collaborateurs = []
   }
 
   return true
@@ -289,5 +376,50 @@ button:disabled:hover {
 .required {
   color: var(--terminal-error);
 }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.chip {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--terminal-border);
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chip-remove {
+  background: transparent;
+  border: none;
+  color: var(--terminal-fg);
+  margin-left: 0.4rem;
+  cursor: pointer;
+}
+
+.autocomplete { position: relative; }
+.suggestions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  border-radius: 6px;
+  max-height: 220px;
+  overflow: auto;
+  z-index: 50;
+}
+.suggestions li {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.suggestions li:hover { background: rgba(255,255,255,0.02); }
+.suggestions .small { font-size: 0.8rem; opacity: 0.7 }
 
 </style>

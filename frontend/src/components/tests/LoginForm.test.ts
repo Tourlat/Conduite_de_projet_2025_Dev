@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import LoginForm from '../auth/LoginForm.vue'
 
-describe('LoginForm - US2: Connexion au Compte (T2.3)', () => {
+describe('LoginForm', () => {
   it('devrait afficher le formulaire de connexion', () => {
     const wrapper = mount(LoginForm)
     expect(wrapper.find('form').exists()).toBe(true)

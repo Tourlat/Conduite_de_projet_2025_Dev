@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import RegisterForm from '../auth/RegisterForm.vue'
 
-describe('RegisterForm - US1: Création de Compte (T1.4)', () => {
+describe('RegisterForm', () => {
   it('devrait afficher le formulaire d\'inscription', () => {
     const wrapper = mount(RegisterForm)
     expect(wrapper.find('form').exists()).toBe(true)
