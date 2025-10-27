@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import AuthInterface from './components/AuthInterface.vue'
 </script>
 
 <template>
-  <HelloWorld msg="Vite + Vue" />
+  <AuthInterface />
 </template>
+
 
 
