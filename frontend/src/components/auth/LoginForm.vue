@@ -93,34 +93,11 @@ const handleSubmit = async () => {
   message.value = null
 
   try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
-    
-    if (response.ok) {
-      const result = await response.json()
-      
-      authStore.login(result.token, result.user)
-      emit('loginSuccess', result.token)
-      
-      message.value = { text: 'Connexion réussie ! Redirection...', type: 'success' }
-      
-      // Redirection vers le dashboard après connexion réussie
-    } else {
-      // Gestion des erreurs spécifiques
-      if (response.status === 401) {
-        errors.email = 'Email ou mot de passe incorrect'
-        errors.password = ' '
-      } else {
-        const error = await response.json()
-        message.value = { text: error.message || 'Erreur serveur. Veuillez réessayer plus tard.', type: 'error' }
-      }
-    }
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
-    message.value = { text: 'Erreur de connexion. Vérifiez votre connexion internet.', type: 'error' }
+    const response = await authStore.login(formData.email, formData.password)
+    message.value = { text: 'Connexion réussie !', type: 'success' }
+    emit('loginSuccess', response.token)
+  } catch (error: any) {
+    message.value = { text: error.message || 'Erreur lors de la connexion', type: 'error' }
   }
 }
 </script>
