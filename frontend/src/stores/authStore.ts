@@ -20,6 +20,7 @@ const state = reactive<AuthState>({
 })
 
 export const authStore = {
+
   state: readonly(state),
 
   init() {
@@ -46,7 +47,7 @@ export const authStore = {
     } catch (error: any) {
       state.error = error.response?.data?.message || 'Erreur de connexion'
       throw error
-    } 
+    }
   },
 
   async register(email: string, password: string, name: string) {
@@ -90,5 +91,6 @@ export const authStore = {
     return state.token
   }
 }
+
 
 export default authStore

@@ -59,6 +59,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import authStore from '../../stores/authStore'
+import router from '../../router/routes'
 
 interface FormData {
   nom: string
@@ -158,7 +159,7 @@ const handleSubmit = async () => {
       type: 'success' 
     }
     
-    // router.push('/dashboard')
+    router.push('/dashboard')
   } catch (error: any) {
     message.value = { 
       text: authStore.state.error || 'Erreur lors de l\'inscription', 
