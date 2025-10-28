@@ -45,7 +45,7 @@ export const authStore = {
       authService.setToken(response.token)
       return response
     } catch (error: any) {
-      state.error = error.response?.data?.message || 'Erreur de connexion'
+      state.error = error.message || 'Erreur de connexion'
       throw error
     }
   },
@@ -63,7 +63,7 @@ export const authStore = {
       authService.setToken(response.token)
       return response
     } catch (error: any) {
-      state.error = error.response?.data?.message || "Erreur d'inscription"
+      state.error = error.message || "Erreur d'inscription"
       throw error
     }
   },

@@ -33,8 +33,8 @@
       <label for="collaborateurs">Collaborateurs</label>
 
       <!-- Selected collaborators as chips -->
-      <div class="chips" v-if="formData.collaborateurs && formData.collaborateurs.length">
-        <span class="chip" v-for="email in formData.collaborateurs" :key="email">
+      <div v-if="formData.collaborateurs && formData.collaborateurs.length" class="chips">
+        <span v-for="email in formData.collaborateurs" :key="email" class="chip">
           {{ email }} <button type="button" class="chip-remove" @click="removeCollaborator(email)">×</button>
         </span>
       </div>
@@ -44,14 +44,14 @@
         <input
           id="collaborateurs"
           v-model="collaborateursInput"
-          @input="onCollaborateurInput"
-          @focus="showSuggestions = true"
-          @keydown.enter.prevent="maybeAddInputAsCollaborator"
           type="text"
           name="collaborateurs"
           placeholder="Rechercher un utilisateur par email"
           :class="{ error: errors.collaborateurs }"
           autocomplete="off"
+          @input="onCollaborateurInput"
+          @focus="showSuggestions = true"
+          @keydown.enter.prevent="maybeAddInputAsCollaborator"
         />
 
         <ul v-if="showSuggestions && suggestions.length" class="suggestions">
@@ -116,7 +116,7 @@ const fetchAllUsers = async () => {
 
   // TEST JSON MAIN //////////////////////////////////////////////////////
 
-  let user_test = {
+  const user_test = {
     "id": 1,
     "nom": "Dupont",
     "email": "dupont@example.com"
