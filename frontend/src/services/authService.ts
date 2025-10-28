@@ -82,16 +82,14 @@ const authService = {
     },
 
     getToken(): string | null {
-        return localStorage.getItem('token')
+        return null
     },
 
     setToken(token: string): void {
-        localStorage.setItem('token', token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     },
 
     removeToken(): void {
-        localStorage.removeItem('token')
         delete axios.defaults.headers.common['Authorization']
     }
 }

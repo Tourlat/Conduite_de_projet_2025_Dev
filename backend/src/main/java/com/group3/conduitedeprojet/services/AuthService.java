@@ -3,13 +3,15 @@ package com.group3.conduitedeprojet.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.group3.conduitedeprojet.dto.AuthResponse;
 import com.group3.conduitedeprojet.dto.LoginRequest;
 import com.group3.conduitedeprojet.dto.RegisterRequest;
+import com.group3.conduitedeprojet.exceptions.EmailAlreadyExistsException;
+import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
+import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import com.group3.conduitedeprojet.models.User;
 import com.group3.conduitedeprojet.repositories.UserRepository;
 
@@ -30,7 +32,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email déjà utilisé");
+            throw new EmailAlreadyExistsException("Cet email est déjà utilisé");
         }
 
         User user = User.builder()
@@ -52,15 +54,19 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            throw new InvalidCredentialsException("Email ou mot de passe incorrect");
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
 
         String token = jwtService.generateToken(user);
 

@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import authStore from '../../stores/authStore'
-import router from '../../router/routes'
+import { useRouter } from 'vue-router'
 
 interface FormData {
   nom: string
@@ -83,6 +83,8 @@ interface Message {
 const emit = defineEmits<{
   switchToLogin: []
 }>()
+
+const router = useRouter()
 
 const formData = reactive<FormData>({
   nom: '',

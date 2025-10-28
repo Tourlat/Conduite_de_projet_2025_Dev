@@ -24,12 +24,9 @@ export const authStore = {
   state: readonly(state),
 
   init() {
-    const token = localStorage.getItem('token')
-    if (token) {
-      state.token = token
-      state.isAuthenticated = true
-      authService.setToken(token)
-    }
+    state.token = null
+    state.isAuthenticated = false
+    authService.removeToken()
   },
 
   async login(email: string, password: string) {
