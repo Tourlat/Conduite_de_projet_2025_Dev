@@ -36,8 +36,7 @@ public class AuthService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .name(request.getName())
                 .enabled(true)
                 .build();
 
@@ -48,8 +47,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .name(user.getName())
                 .build();
     }
 
@@ -69,8 +67,7 @@ public class AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .name(user.getName())
                 .build();
     }
 }

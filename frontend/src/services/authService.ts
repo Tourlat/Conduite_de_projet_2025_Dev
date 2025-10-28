@@ -10,15 +10,13 @@ interface LoginRequest {
 interface RegisterRequest {
   email: string
   password: string
-  firstName: string
-  lastName: string
+name: string
 }
 
 interface AuthResponse {
   token: string
   email: string
-  firstName: string
-  lastName: string
+name: string
 }
 
 const authService = {

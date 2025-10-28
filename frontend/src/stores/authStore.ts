@@ -2,8 +2,7 @@ import { reactive, readonly } from 'vue'
 import authService from '../services/authService'
 interface User {
   email: string
-  firstName: string
-  lastName: string
+  name: string
 }
 
 interface AuthState {
@@ -39,8 +38,7 @@ export const authStore = {
       state.token = response.token
       state.user = {
         email: response.email,
-        firstName: response.firstName,
-        lastName: response.lastName
+        name: response.name
       }
       state.isAuthenticated = true
       authService.setToken(response.token)
@@ -51,15 +49,14 @@ export const authStore = {
     } 
   },
 
-  async register(email: string, password: string, firstName: string, lastName: string) {
+  async register(email: string, password: string, name: string) {
     state.error = null
     try {
-      const response = await authService.register({ email, password, firstName, lastName })
+      const response = await authService.register({ email, password, name })
       state.token = response.token
       state.user = {
         email: response.email,
-        firstName: response.firstName,
-        lastName: response.lastName
+        name: response.name
       }
       state.isAuthenticated = true
       authService.setToken(response.token)
@@ -93,3 +90,5 @@ export const authStore = {
     return state.token
   }
 }
+
+export default authStore

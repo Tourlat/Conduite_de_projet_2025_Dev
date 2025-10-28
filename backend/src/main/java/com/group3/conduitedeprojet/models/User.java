@@ -38,10 +38,8 @@ public class User implements UserDetails {
   private String password;
 
   @Column(nullable = false)
-  private String firstName;
+  private String name;
 
-  @Column(nullable = false)
-  private String lastName;
 
   @Column(columnDefinition = "boolean default true")
   private Boolean enabled;

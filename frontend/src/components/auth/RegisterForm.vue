@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import authStore from '../../stores/authStore'
 
 interface FormData {
   nom: string
@@ -144,40 +145,25 @@ const handleSubmit = async () => {
 
   message.value = null
 
+
   try {
-    const { confirmPassword, ...dataToSend } = formData
+    await authStore.register(
+        formData.email,
+        formData.password,
+        formData.nom
+      )
 
-    
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dataToSend)
-    })
-    
-    if (response.ok) {
-      const result = await response.json()
-      message.value = { text: `Inscription réussie pour: ${result.email}`, type: 'success' }
-      setTimeout(() => emit('switchToLogin'), 1500)
-    } 
-    
-    else {
-
-      if (response.status === 409) {
-        message.value = { text: 'Cet email existe déjà', type: 'error' }
-      } 
-      
-      else if (response.status === 400) {
-        message.value = { text: 'Données d\'inscription invalides', type: 'error' }
-      } 
-      
-      else {
-        message.value = { text: 'Erreur serveur. Veuillez réessayer plus tard.', type: 'error' }
-      }
-
+    message.value = {
+      text: `Inscription réussie pour: ${formData.email}`,
+      type: 'success' 
     }
-  } catch (error) {
-    console.error('Erreur réseau:', error)
-    message.value = { text: 'Erreur de connexion. Vérifiez votre connexion internet.', type: 'error' }
+    
+    // router.push('/dashboard')
+  } catch (error: any) {
+    message.value = { 
+      text: authStore.state.error || 'Erreur lors de l\'inscription', 
+      type: 'error' 
+    }
   }
 }
 </script>
