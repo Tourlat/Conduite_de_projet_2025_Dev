@@ -19,6 +19,24 @@ interface AuthResponse {
     name: string
 }
 
+interface CreateProjectRequest {
+    name: string
+    description?: string
+    collaborateurs?: string[]
+}
+
+interface ProjectResponse {
+    id: number
+    name: string
+    description?: string
+    collaborateurs?: string[]
+}
+
+interface User {
+    email: string
+    nom?: string
+}
+
 interface ErrorResponse {
     status: number
     message: string
@@ -91,6 +109,32 @@ const authService = {
 
     removeToken(): void {
         delete axios.defaults.headers.common['Authorization']
+    },
+
+    async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {
+        try {
+            const response = await axios.post<ProjectResponse>(`${API_URL}/projects`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la création du projet'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getUsers(): Promise<User[]> {
+        try {
+            const response = await axios.get<User[]>(`${API_URL}/users`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des utilisateurs')
+        }
     }
 }
 

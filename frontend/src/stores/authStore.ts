@@ -1,8 +1,15 @@
 import { reactive, readonly } from 'vue'
 import authService from '../services/authService'
+
 interface User {
   email: string
   name: string
+}
+
+interface ProjectData {
+  name: string
+  description: string
+  collaborateurs?: string[]
 }
 
 interface AuthState {
@@ -86,6 +93,28 @@ export const authStore = {
 
   getToken(): string | null {
     return state.token
+  },
+
+  async createProject(projectData: ProjectData) {
+    state.error = null
+    try {
+      const response = await authService.createProject(projectData)
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la création du projet'
+      throw error
+    }
+  },
+
+  async getUsers() {
+    state.error = null
+    try {
+      const response = await authService.getUsers()
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la récupération des utilisateurs'
+      throw error
+    }
   }
 }
 
