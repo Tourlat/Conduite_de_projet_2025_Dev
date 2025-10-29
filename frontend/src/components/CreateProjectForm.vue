@@ -74,6 +74,8 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { authStore } from '../stores/authStore'
 
 interface ProjectData {
   name: string
@@ -96,6 +98,8 @@ const emit = defineEmits<{
   createProject: [data: ProjectData]
   projectCreated: [projectId: number]
 }>()
+
+const router = useRouter()
 
 const formData = reactive<ProjectData>({
   name: '',
@@ -229,11 +233,13 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
+    const token = authStore.getToken()
+    
     const response = await fetch('/api/projects', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(formData)
     })
@@ -245,7 +251,7 @@ const handleSubmit = async () => {
       emit('projectCreated', result.id)
       
       setTimeout(() => {
-        // TODO: Redirection
+        router.push('/dashboard')
       }, 1500)
     } else {
       const error = await response.json()

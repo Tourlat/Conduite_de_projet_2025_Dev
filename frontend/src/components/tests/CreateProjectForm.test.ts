@@ -1,9 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CreateProjectForm from '../CreateProjectForm.vue'
+import { authStore } from '../../stores/authStore'
+
+// Mock du router
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}))
 
 describe('CreateProjectForm', () => {
   beforeEach(() => {
+    // Reset authStore
+    authStore.init()
+    
+    // Mock un token valide pour les tests
+    vi.spyOn(authStore, 'getToken').mockReturnValue('fake-token-123')
+    
     // Mock par défaut pour /api/users (appelé au montage du composant)
     globalThis.fetch = vi.fn((url) => {
       if (url === '/api/users') {
