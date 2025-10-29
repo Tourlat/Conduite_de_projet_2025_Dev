@@ -15,6 +15,7 @@ const handleLogout = () => {
     <div class="nav-brand">Conduite de Projet</div>
     <div class="nav-links">
       <router-link to="/dashboard">Dashboard</router-link>
+      <router-link to="/projects">Création de Projet</router-link>
       <button class="logout-btn" @click="handleLogout">Déconnexion</button>
     </div>
   </nav>

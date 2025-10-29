@@ -27,6 +27,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/projects',
+    name: 'Projects',
+    component: () => import('@/components/CreateProjectForm.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/',
     redirect: () => {
       return authStore.isLoggedIn() ? '/dashboard' : '/auth'

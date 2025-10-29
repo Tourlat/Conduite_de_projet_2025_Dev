@@ -17,13 +17,6 @@
           Inscription
         </button>
 
-        <button 
-          :class="{ active: currentView === 'project' }" 
-          @click="currentView = 'project'"
-        >
-          Nouveau Projet (Temporaire)
-        </button>
-
       </nav>
 
       <div class="form-container">
@@ -37,9 +30,6 @@
           @switch-to-login="currentView = 'login'"
         />
 
-        <CreateProjectForm 
-          v-if="currentView === 'project'" 
-        />
       </div>
     </div>
   </div>
@@ -49,7 +39,6 @@
 import { ref } from 'vue'
 import LoginForm from './auth/LoginForm.vue'
 import RegisterForm from './auth/RegisterForm.vue'
-import CreateProjectForm from './CreateProjectForm.vue'
 
 type View = 'login' | 'register' | 'project'
 
