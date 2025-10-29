@@ -33,8 +33,8 @@
       <label for="collaborateurs">Collaborateurs</label>
 
       <!-- Selected collaborators as chips -->
-      <div class="chips" v-if="formData.collaborateurs && formData.collaborateurs.length">
-        <span class="chip" v-for="email in formData.collaborateurs" :key="email">
+      <div v-if="formData.collaborateurs && formData.collaborateurs.length" class="chips">
+        <span v-for="email in formData.collaborateurs" :key="email" class="chip">
           {{ email }} <button type="button" class="chip-remove" @click="removeCollaborator(email)">×</button>
         </span>
       </div>
@@ -44,14 +44,14 @@
         <input
           id="collaborateurs"
           v-model="collaborateursInput"
-          @input="onCollaborateurInput"
-          @focus="showSuggestions = true"
-          @keydown.enter.prevent="maybeAddInputAsCollaborator"
           type="text"
           name="collaborateurs"
           placeholder="Rechercher un utilisateur par email"
           :class="{ error: errors.collaborateurs }"
           autocomplete="off"
+          @input="onCollaborateurInput"
+          @focus="showSuggestions = true"
+          @keydown.enter.prevent="maybeAddInputAsCollaborator"
         />
 
         <ul v-if="showSuggestions && suggestions.length" class="suggestions">
@@ -74,6 +74,8 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { authStore } from '../stores/authStore'
 
 interface ProjectData {
   name: string
@@ -97,6 +99,8 @@ const emit = defineEmits<{
   projectCreated: [projectId: number]
 }>()
 
+const router = useRouter()
+
 const formData = reactive<ProjectData>({
   name: '',
   description: '',
@@ -116,7 +120,7 @@ const fetchAllUsers = async () => {
 
   // TEST JSON MAIN //////////////////////////////////////////////////////
 
-  let user_test = {
+  const user_test = {
     "id": 1,
     "nom": "Dupont",
     "email": "dupont@example.com"
@@ -127,9 +131,7 @@ const fetchAllUsers = async () => {
   ////////////////////////////////////////////////////////////////////////
 
   try {
-    const res = await fetch('/api/users')
-    if (!res.ok) return
-    const data = await res.json()
+    const data = await authStore.getUsers()
     allUsers.value = Array.isArray(data) ? data : []
   } catch (e) {
     console.error('Erreur de récupération des utilisateurs', e)
@@ -229,40 +231,16 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    const response = await fetch('/api/projects', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify(formData)
-    })
+    const result = await authStore.createProject(formData)
+    message.value = { text: 'Projet créé avec succès !', type: 'success' }
     
-    if (response.ok) {
-      const result = await response.json()
-      message.value = { text: 'Projet créé avec succès !', type: 'success' }
-      
-      emit('projectCreated', result.id)
-      
-      setTimeout(() => {
-        // TODO: Redirection
-      }, 1500)
-    } else {
-      const error = await response.json()
-      
-      if (response.status === 400) {
-        message.value = { text: error.message || 'Données du projet invalides', type: 'error' }
-      } else if (response.status === 401) {
-        message.value = { text: 'Vous devez être connecté pour créer un projet', type: 'error' }
-      } else if (response.status === 403) {
-        message.value = { text: 'Vous n\'avez pas les permissions pour créer un projet', type: 'error' }
-      } else {
-        message.value = { text: 'Erreur serveur. Veuillez réessayer plus tard.', type: 'error' }
-      }
-    }
-  } catch (error) {
-    console.error('Erreur de création de projet:', error)
-    message.value = { text: 'Erreur de connexion. Vérifiez votre connexion internet.', type: 'error' }
+    emit('projectCreated', result.id)
+    
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 1500)
+  } catch (error: any) {
+    message.value = { text: error.message || 'Erreur lors de la création du projet', type: 'error' }
   } finally {
     isSubmitting.value = false
   }

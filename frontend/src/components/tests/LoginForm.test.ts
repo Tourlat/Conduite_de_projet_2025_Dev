@@ -1,8 +1,21 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import LoginForm from '../auth/LoginForm.vue'
+import authStore from '../../stores/authStore'
+
+// Mock du router
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}))
 
 describe('LoginForm', () => {
+  beforeEach(() => {
+    // Reset authStore avant chaque test
+    authStore.init()
+    vi.clearAllMocks()
+  })
   it('devrait afficher le formulaire de connexion', () => {
     const wrapper = mount(LoginForm)
     expect(wrapper.find('form').exists()).toBe(true)
@@ -43,14 +56,13 @@ describe('LoginForm', () => {
     expect(wrapper.text()).toMatch(/mot de passe/i)
   })
 
-  it('devrait appeler l\'API et gérer la connexion lors de la soumission', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ token: 'fake-jwt-token', user: { id: 1, email: 'test@example.com' } })
-      } as Response)
-    )
+  it('devrait appeler authStore.login et gérer la connexion lors de la soumission', async () => {
+    // Mock authStore.login pour simuler une réponse réussie
+    const mockLogin = vi.spyOn(authStore, 'login').mockResolvedValue({
+      token: 'fake-jwt-token',
+      email: 'test@example.com',
+      name: 'Test User'
+    })
 
     const wrapper = mount(LoginForm)
     
@@ -60,15 +72,8 @@ describe('LoginForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé avec les bonnes données
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/login',
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test@example.com', password: 'password123' })
-      })
-    )
+    // Vérifie que authStore.login a été appelé avec les bonnes données
+    expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123')
   })
 
   it('devrait afficher un lien vers l\'inscription', () => {
@@ -77,14 +82,10 @@ describe('LoginForm', () => {
   })
 
   it('devrait afficher un message d\'erreur clair en cas d\'échec 401', async () => {
-    // Mock fetch pour simuler une erreur 401
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 401,
-        json: () => Promise.resolve({ message: 'Unauthorized' })
-      } as Response)
-    )
+    // Mock authStore.login pour simuler une erreur 401
+    vi.spyOn(authStore, 'login').mockRejectedValue({
+      message: 'Email ou mot de passe incorrect'
+    })
 
     const wrapper = mount(LoginForm)
     
@@ -98,30 +99,15 @@ describe('LoginForm', () => {
     expect(wrapper.text()).toMatch(/email ou mot de passe incorrect/i)
   })
 
-  it('devrait stocker le token JWT dans localStorage en cas de succès', async () => {
+  it('devrait appeler authStore.login avec les bonnes données en cas de succès', async () => {
     const mockToken = 'fake-jwt-token-12345'
     
-    // Mock localStorage
-    const localStorageMock = {
-      setItem: vi.fn(),
-      getItem: vi.fn(),
-      removeItem: vi.fn(),
-      clear: vi.fn(),
-      length: 0,
-      key: vi.fn()
-    }
-    Object.defineProperty(window, 'localStorage', {
-      value: localStorageMock,
-      writable: true
+    // Mock authStore.login pour simuler une réponse réussie
+    const mockLogin = vi.spyOn(authStore, 'login').mockResolvedValue({
+      token: mockToken,
+      email: 'test@example.com',
+      name: 'Test User'
     })
-
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ token: mockToken, user: { id: 1, email: 'test@example.com' } })
-      } as Response)
-    )
 
     const wrapper = mount(LoginForm)
     
@@ -131,20 +117,20 @@ describe('LoginForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que le token a été stocké dans localStorage
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockToken)
+    // Vérifie que authStore.login a été appelé avec les bonnes données
+    expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123')
+    expect(mockLogin).toHaveBeenCalledTimes(1)
   })
 
   it('devrait émettre loginSuccess avec le token en cas de succès', async () => {
     const mockToken = 'fake-jwt-token-12345'
     
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ token: mockToken, user: { id: 1, email: 'test@example.com' } })
-      } as Response)
-    )
+    // Mock authStore.login pour simuler une réponse réussie
+    vi.spyOn(authStore, 'login').mockResolvedValue({
+      token: mockToken,
+      email: 'test@example.com',
+      name: 'Test User'
+    })
 
     const wrapper = mount(LoginForm)
     

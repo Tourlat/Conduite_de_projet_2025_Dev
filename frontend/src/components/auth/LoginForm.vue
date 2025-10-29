@@ -38,7 +38,8 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { authStore } from '../../stores/authStore'
+import authStore from '../../stores/authStore'
+import { useRouter } from 'vue-router'
 
 interface FormData {
   email: string
@@ -59,6 +60,8 @@ const emit = defineEmits<{
   switchToRegister: []
   loginSuccess: [token: string]
 }>()
+
+const router = useRouter()
 
 const formData = reactive<FormData>({
   email: '',
@@ -93,34 +96,12 @@ const handleSubmit = async () => {
   message.value = null
 
   try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
-    
-    if (response.ok) {
-      const result = await response.json()
-      
-      authStore.login(result.token, result.user)
-      emit('loginSuccess', result.token)
-      
-      message.value = { text: 'Connexion réussie ! Redirection...', type: 'success' }
-      
-      // Redirection vers le dashboard après connexion réussie
-    } else {
-      // Gestion des erreurs spécifiques
-      if (response.status === 401) {
-        errors.email = 'Email ou mot de passe incorrect'
-        errors.password = ' '
-      } else {
-        const error = await response.json()
-        message.value = { text: error.message || 'Erreur serveur. Veuillez réessayer plus tard.', type: 'error' }
-      }
-    }
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
-    message.value = { text: 'Erreur de connexion. Vérifiez votre connexion internet.', type: 'error' }
+    const response = await authStore.login(formData.email, formData.password)
+    message.value = { text: 'Connexion réussie !', type: 'success' }
+    emit('loginSuccess', response.token)
+    router.push('/dashboard')
+  } catch (error: any) {
+    message.value = { text: error.message || 'Erreur lors de la connexion', type: 'error' }
   }
 }
 </script>

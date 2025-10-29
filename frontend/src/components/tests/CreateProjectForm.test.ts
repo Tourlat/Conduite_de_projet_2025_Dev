@@ -1,23 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import CreateProjectForm from '../CreateProjectForm.vue'
+import { authStore } from '../../stores/authStore'
+
+// Mock du router
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}))
 
 describe('CreateProjectForm', () => {
   beforeEach(() => {
-    // Mock par défaut pour /api/users (appelé au montage du composant)
-    globalThis.fetch = vi.fn((url) => {
-      if (url === '/api/users') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([
-            { email: 'user1@example.com', nom: 'User One' },
-            { email: 'user2@example.com', nom: 'User Two' }
-          ])
-        } as Response)
-      }
-      // Autres URLs (comme /api/projects) seront mockées dans chaque test spécifique
-      return Promise.reject(new Error('Unmocked fetch: ' + url))
-    })
+    // Reset authStore
+    authStore.init()
+    
+    // Mock authStore.getToken pour retourner un token valide
+    vi.spyOn(authStore, 'getToken').mockReturnValue('fake-token-123')
+    
+    // Mock authStore.getUsers pour retourner la liste des utilisateurs
+    vi.spyOn(authStore, 'getUsers').mockResolvedValue([
+      { email: 'user1@example.com', nom: 'User One' },
+      { email: 'user2@example.com', nom: 'User Two' }
+    ])
+    
+    vi.clearAllMocks()
   })
 
   it('devrait afficher le formulaire de création de projet', () => {
@@ -65,13 +72,11 @@ describe('CreateProjectForm', () => {
   })
 
   it('devrait émettre un événement lors de la soumission valide avec nom et description', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, name: 'Mon Projet Test' })
-      } as Response)
-    )
+    // Mock authStore.createProject pour simuler une réponse réussie
+    const mockCreateProject = vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: 1,
+      name: 'Mon Projet Test'
+    })
 
     const wrapper = mount(CreateProjectForm)
     
@@ -81,26 +86,15 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé
-    expect(globalThis.fetch).toHaveBeenCalled()
+    // Vérifie que authStore.createProject a été appelé
+    expect(mockCreateProject).toHaveBeenCalled()
   })
 
   it('devrait inclure les données du projet (name et description) dans l\'appel API', async () => {
-    // Mock fetch pour /api/users et /api/projects
-    globalThis.fetch = vi.fn((url) => {
-      if (url === '/api/users') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([])
-        } as Response)
-      }
-      if (url === '/api/projects') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
-        } as Response)
-      }
-      return Promise.reject(new Error('Unmocked URL'))
+    // Mock authStore.createProject
+    const mockCreateProject = vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: 1,
+      name: 'Mon Projet'
     })
 
     const wrapper = mount(CreateProjectForm)
@@ -111,33 +105,19 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que les données sont bien envoyées à /api/projects
-    const calls = (globalThis.fetch as any).mock.calls
-    const projectsCall = calls.find((c: any) => c[0] === '/api/projects')
-    expect(projectsCall).toBeDefined()
-    const body = JSON.parse(projectsCall[1].body)
-    expect(body).toMatchObject({
+    // Vérifie que authStore.createProject a été appelé avec les bonnes données
+    expect(mockCreateProject).toHaveBeenCalledWith({
       name: 'Mon Projet',
-      description: 'Ma description'
+      description: 'Ma description',
+      collaborateurs: []
     })
   })
 
   it('devrait permettre de créer un projet avec une description vide', async () => {
-    // Mock fetch pour /api/users et /api/projects
-    globalThis.fetch = vi.fn((url) => {
-      if (url === '/api/users') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([])
-        } as Response)
-      }
-      if (url === '/api/projects') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ id: 1, name: 'Projet Sans Description' })
-        } as Response)
-      }
-      return Promise.reject(new Error('Unmocked URL'))
+    // Mock authStore.createProject
+    const mockCreateProject = vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: 1,
+      name: 'Projet Sans Description'
     })
 
     const wrapper = mount(CreateProjectForm)
@@ -147,13 +127,12 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé pour /api/projects
-    const calls = (globalThis.fetch as any).mock.calls
-    const projectsCall = calls.find((c: any) => c[0] === '/api/projects')
-    expect(projectsCall).toBeDefined()
-    const body = JSON.parse(projectsCall[1].body)
-    expect(body.name).toBe('Projet Sans Description')
-    expect(body.description).toBe('')
+    // Vérifie que authStore.createProject a été appelé
+    expect(mockCreateProject).toHaveBeenCalledWith({
+      name: 'Projet Sans Description',
+      description: '',
+      collaborateurs: []
+    })
   })
 
   it('devrait avoir un champ pour les collaborateurs', () => {
@@ -174,13 +153,13 @@ describe('CreateProjectForm', () => {
   })
 
   it('devrait accepter plusieurs emails séparés par des virgules', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
-      } as Response)
-    )
+    // Mock authStore.createProject pour simuler une réponse réussie
+    const mockCreateProject = vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: 1,
+      name: 'Mon Projet',
+      description: '',
+      collaborateurs: ['user1@example.com', 'user2@example.com']
+    })
 
     const wrapper = mount(CreateProjectForm)
     
@@ -190,24 +169,21 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé avec les collaborateurs
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/projects',
+    // Vérifie que authStore.createProject a été appelé avec les collaborateurs
+    expect(mockCreateProject).toHaveBeenCalledWith(
       expect.objectContaining({
-        method: 'POST',
-        body: expect.stringContaining('user1@example.com')
+        name: 'Mon Projet',
+        collaborateurs: expect.arrayContaining(['user1@example.com', 'user2@example.com'])
       })
     )
   })
 
-  it('devrait appeler l\'API POST /api/projects lors de la soumission', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
-      } as Response)
-    )
+  it('devrait appeler authStore.createProject lors de la soumission', async () => {
+    // Mock authStore.createProject pour simuler une réponse réussie
+    const mockCreateProject = vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: 1,
+      name: 'Mon Projet'
+    })
 
     const wrapper = mount(CreateProjectForm)
     
@@ -217,26 +193,21 @@ describe('CreateProjectForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé avec les bonnes données
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/projects',
+    // Vérifie que authStore.createProject a été appelé avec les bonnes données
+    expect(mockCreateProject).toHaveBeenCalledWith(
       expect.objectContaining({
-        method: 'POST',
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json'
-        })
+        name: 'Mon Projet',
+        description: 'Ma description'
       })
     )
   })
 
   it('devrait afficher un message de succès après création', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, name: 'Mon Projet' })
-      } as Response)
-    )
+    // Mock authStore.createProject pour simuler une réponse réussie
+    vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: 1,
+      name: 'Mon Projet'
+    })
 
     const wrapper = mount(CreateProjectForm)
     
@@ -249,13 +220,9 @@ describe('CreateProjectForm', () => {
   })
 
   it('devrait afficher un message d\'erreur en cas d\'échec 400', async () => {
-    // Mock fetch pour simuler une erreur 400
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 400,
-        json: () => Promise.resolve({ message: 'Données invalides' })
-      } as Response)
+    // Mock authStore.createProject pour simuler une erreur
+    vi.spyOn(authStore, 'createProject').mockRejectedValue(
+      new Error('Données du projet invalides')
     )
 
     const wrapper = mount(CreateProjectForm)
@@ -271,13 +238,11 @@ describe('CreateProjectForm', () => {
   it('devrait émettre projectCreated avec l\'ID du projet en cas de succès', async () => {
     const projectId = 42
     
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: projectId, name: 'Mon Projet' })
-      } as Response)
-    )
+    // Mock authStore.createProject pour simuler une réponse réussie
+    vi.spyOn(authStore, 'createProject').mockResolvedValue({
+      id: projectId,
+      name: 'Mon Projet'
+    })
 
     const wrapper = mount(CreateProjectForm)
     
