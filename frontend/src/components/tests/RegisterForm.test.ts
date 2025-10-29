@@ -1,8 +1,21 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import RegisterForm from '../auth/RegisterForm.vue'
+import authStore from '../../stores/authStore'
+
+// Mock du router
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}))
 
 describe('RegisterForm', () => {
+  beforeEach(() => {
+    // Reset authStore avant chaque test
+    authStore.init()
+    vi.clearAllMocks()
+  })
   it('devrait afficher le formulaire d\'inscription', () => {
     const wrapper = mount(RegisterForm)
     expect(wrapper.find('form').exists()).toBe(true)
@@ -85,14 +98,13 @@ describe('RegisterForm', () => {
     expect(wrapper.text()).toMatch(/ne correspondent pas/i)
   })
 
-  it('devrait appeler l\'API lors de la soumission valide sans confirmPassword', async () => {
-    // Mock fetch pour simuler une réponse réussie
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ id: 1, nom: 'John Doe', email: 'test@example.com' })
-      } as Response)
-    )
+  it('devrait appeler authStore.register lors de la soumission valide', async () => {
+    // Mock authStore.register pour simuler une réponse réussie
+    const mockRegister = vi.spyOn(authStore, 'register').mockResolvedValue({
+      token: 'fake-jwt-token',
+      email: 'test@example.com',
+      name: 'John Doe'
+    })
 
     const wrapper = mount(RegisterForm)
     
@@ -104,19 +116,8 @@ describe('RegisterForm', () => {
     await wrapper.find('form').trigger('submit')
     await wrapper.vm.$nextTick()
     
-    // Vérifie que fetch a été appelé avec les bonnes données (sans confirmPassword)
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      '/api/register',
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom: 'John Doe', email: 'test@example.com', password: 'Password123!' })
-      })
-    )
-    
-    // Vérifie que confirmPassword n'est PAS dans le body
-    const callArgs = (globalThis.fetch as any).mock.calls[0]
-    const body = JSON.parse(callArgs[1].body)
-    expect(body).not.toHaveProperty('confirmPassword')
+    // Vérifie que authStore.register a été appelé avec les bonnes données (sans confirmPassword)
+    expect(mockRegister).toHaveBeenCalledWith('test@example.com', 'Password123!', 'John Doe')
+    expect(mockRegister).toHaveBeenCalledTimes(1)
   })
 })
