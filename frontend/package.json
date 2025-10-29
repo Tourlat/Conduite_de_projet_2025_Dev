@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
+    "rollup": "^4.52.5",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"
   },
