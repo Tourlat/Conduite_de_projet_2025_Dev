@@ -14,7 +14,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import com.group3.conduitedeprojet.dto.UserDto;
 import java.util.Collection;
 import java.util.List;
 
@@ -72,5 +72,9 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return enabled;
+  }
+
+  public UserDto toUserDto() {
+    return UserDto.builder().email(this.email).id(this.id).name(this.name).build();
   }
 }
