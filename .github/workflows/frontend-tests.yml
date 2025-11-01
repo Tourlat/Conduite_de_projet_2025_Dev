@@ -15,8 +15,30 @@ jobs:
         name: Setup Node
         with:
           node-version: lts/*
+          cache: 'npm' 
+          cache-dependency-path: frontend/package-lock.json
+        
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: Run linting (ESLint)
+        working-directory: ./frontend
+        run: npm run lint || true  
+      
+      - name: Run unit tests (Vitest)
+        working-directory: ./frontend
+        run: npm run test:run 
 
-      - uses: docker/setup-compose-action@v1
-        name: Setup Docker
+      - name: Build frontend (Vite)
+        working-directory: ./frontend
+        run: npm run build
 
-# TODO: perform frontend tests
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build       
+          path: ./frontend/dist
+          retention-days: 7      
+          overwrite: true        
