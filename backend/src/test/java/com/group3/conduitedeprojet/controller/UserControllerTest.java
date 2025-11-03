@@ -44,7 +44,7 @@ public class UserControllerTest extends IntegrationTestWithDatabase {
                         put("/api/users/password")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(changeReq)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(
                         put("/api/users/password")
