@@ -20,6 +20,21 @@ This repository contains the source code for the Conduite de Projet 2025 develop
 
 In frontend you need to create a .env file based on the .env.example file. - Copy the `.env.example` file to `.env`. - Update the `VITE_BACKEND_URL` and `VITE_PORT` variables as needed.
 
+### IDE Setup
+
+#### VSCode
+
+1. Download [Red Hat Java Language Support](https://marketplace.visualstudio.com/items?itemName=redhat.java).
+2. Set the following URL `https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml` in [settings](vscode://settings/java.format.settings.url).
+3. Enter `GoogleStyle` as the profile in [settings](vscode://settings/java.format.settings.profile).
+
+#### IntelliJ IDEA
+
+1. Download the following [XML formatting file](https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml).
+2. In Settings, go to `Editor > Code Style > Java`. Click on `Import Scheme` and then `Eclipse XML Profile`. Select downloaded XML code style file.
+
+[How to import Code format XML](docs/pictures/intellij-import-java-format-xml.png)
+
 ### Commit Hooks
 
 Execute `git config core.hooksPath hooks` in this repository to adjust the path of the git hooks directory.
@@ -53,7 +68,7 @@ The backend will start on the port specified in `application.properties` (defaul
    ```bash
    npm run dev
    ```
-The frontend will start on the port specified in the `.env` file (default is 5173).
+   The frontend will start on the port specified in the `.env` file (default is 5173).
 
 ## Testing
 
@@ -77,7 +92,8 @@ npm run test:ui
 # Generate coverage report
 npm run test:coverage
 ```
-   The frontend will start on the port specified in the `.env` file (default is 5173).
+
+The frontend will start on the port specified in the `.env` file (default is 5173).
 
 ### Database
 

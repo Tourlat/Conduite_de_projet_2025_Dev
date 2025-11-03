@@ -47,7 +47,7 @@ public class UserService {
     if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
       throw new InvalidCredentialsException("Current password is incorrect");
     }
-    
+
     user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
   }
