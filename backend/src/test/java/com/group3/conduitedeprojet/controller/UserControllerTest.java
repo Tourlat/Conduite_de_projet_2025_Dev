@@ -23,39 +23,7 @@ import com.group3.conduitedeprojet.dto.RegisterRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@Testcontainers
-public class UserControllerTest {
-
-  @Container
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
-      .withDatabaseName("conduitedeprojet_db").withUsername("admin").withPassword("admin");
-
-  @DynamicPropertySource
-  static void registerPgProperties(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", postgres::getJdbcUrl);
-    registry.add("spring.datasource.username", postgres::getUsername);
-    registry.add("spring.datasource.password", postgres::getPassword);
-    registry.add("security.jwt.secret-key", () -> "5St66hi6E8M7oRbgHLpZT/VZgErpyKQXZMhUtAfHr6Y=");
-    registry.add("security.jwt.expiration-ms", () -> "3600000");
-  }
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @BeforeEach
-  void setUp() {}
-
-  @AfterAll
-  static void tearDown() {
-    if (postgres != null && postgres.isRunning()) {
-      postgres.stop();
-    }
-  }
+public class UserControllerTest extends IntegrationTestWithDatabase {
 
   private AuthResponse register(String email, String password, String name) throws Exception {
     var req = new RegisterRequest(email, password, name);
