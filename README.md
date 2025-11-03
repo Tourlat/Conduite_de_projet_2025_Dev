@@ -33,7 +33,7 @@ In frontend you need to create a .env file based on the .env.example file. - Cop
 1. Download the following [XML formatting file](https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml).
 2. In Settings, go to `Editor > Code Style > Java`. Click on `Import Scheme` and then `Eclipse XML Profile`. Select downloaded XML code style file.
 
-[How to import Code format XML](docs/pictures/intellij-import-java-format-xml.png)
+![How to import Code format XML](docs/pictures/intellij-import-java-format-xml.png)
 
 ### Commit Hooks
 
