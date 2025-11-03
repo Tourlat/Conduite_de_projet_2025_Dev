@@ -126,7 +126,7 @@ const authService = {
 
     async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {
         try {
-            const response = await axios.post<ProjectResponse>(`${API_URL}/projects`, data)
+            const response = await axios.post<ProjectResponse>(`http://localhost:8080/api/projects`, data)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -142,7 +142,7 @@ const authService = {
 
     async getUsers(): Promise<User[]> {
         try {
-            const response = await axios.get<User[]>(`${API_URL}/users`)
+            const response = await axios.get<User[]>(`http://localhost:8080/api/users`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data

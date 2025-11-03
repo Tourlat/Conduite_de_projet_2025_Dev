@@ -1,6 +1,7 @@
 package com.group3.conduitedeprojet.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,11 @@ public class UserController {
 
   @Autowired
   UserService userService;
+
+  @GetMapping
+  public ResponseEntity<List<UserDto>> getAllUsers() {
+    return ResponseEntity.ok(userService.findAllUsers());
+  }
 
   @GetMapping("/{id}")
   public ResponseEntity<UserDto> getUser(@PathVariable Long id) {

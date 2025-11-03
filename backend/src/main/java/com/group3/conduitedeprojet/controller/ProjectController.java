@@ -17,7 +17,7 @@ public class ProjectController {
 
     @Autowired private ProjectService projectService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Project> createProject(
             @RequestBody CreateProjectRequest createProjectRequest, Principal principal) {
         if (principal == null
