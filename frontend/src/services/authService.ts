@@ -126,7 +126,23 @@ const authService = {
 
     async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {
         try {
-            const response = await axios.post<ProjectResponse>(`http://localhost:8080/api/projects`, data)
+            const userId = localStorage.getItem('userId')
+            const userEmail = localStorage.getItem('userEmail')
+            
+            if (!userId || !userEmail) {
+                throw new Error('Utilisateur non connecté')
+            }
+
+            const requestData = {
+                name: data.name,
+                description: data.description || null,
+                user: {
+                    id: parseInt(userId),
+                    email: userEmail
+                }
+            }
+
+            const response = await axios.post<ProjectResponse>(`http://localhost:8080/api/projects`, requestData)
             return response.data
         } catch (error: any) {
             const status = error.response?.status

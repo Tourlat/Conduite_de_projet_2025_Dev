@@ -27,7 +27,7 @@ public class ProjectService {
         Project project =
                 Project.builder()
                         .name(createProjectRequest.getName())
-                        .description(createProjectRequest.getDescription().orElse(null))
+                        .description(createProjectRequest.getDescription())
                         .creator(creator.get())
                         .build();
         return projectRepository.save(project);
