@@ -136,6 +136,7 @@ const authService = {
             const requestData = {
                 name: data.name,
                 description: data.description || null,
+                collaborateurs: data.collaborateurs || [],
                 user: {
                     id: parseInt(userId),
                     email: userEmail
@@ -163,6 +164,16 @@ const authService = {
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
             throw new Error(errorData?.message || 'Erreur lors de la récupération des utilisateurs')
+        }
+    },
+
+    async getProjects(): Promise<ProjectResponse[]> {
+        try {
+            const response = await axios.get<ProjectResponse[]>(`http://localhost:8080/api/projects`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des projets')
         }
     }
 }

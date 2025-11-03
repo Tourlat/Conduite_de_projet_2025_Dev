@@ -115,6 +115,17 @@ export const authStore = {
       state.error = error.message || 'Erreur lors de la récupération des utilisateurs'
       throw error
     }
+  },
+
+  async getProjects() {
+    state.error = null
+    try {
+      const response = await authService.getProjects()
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la récupération des projets'
+      throw error
+    }
   }
 }
 

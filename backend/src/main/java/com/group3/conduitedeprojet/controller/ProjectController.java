@@ -1,9 +1,10 @@
 package com.group3.conduitedeprojet.controller;
 
 import java.security.Principal;
-import java.util.Optional;
+import java.util.List;
 
 import com.group3.conduitedeprojet.dto.CreateProjectRequest;
+import com.group3.conduitedeprojet.dto.ProjectResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,13 @@ public class ProjectController {
         }
 
         return ResponseEntity.ok(projectService.createProject(createProjectRequest));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProjectResponse>> getAllProjects(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(projectService.findProjectsByUser(principal.getName()));
     }
 }
