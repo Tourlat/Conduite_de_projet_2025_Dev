@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
     
-    // Trouver tous les projets où l'utilisateur est créateur ou collaborateur
     @Query("SELECT DISTINCT p FROM Project p LEFT JOIN p.collaborators c WHERE p.creator = :user OR c = :user")
     List<Project> findAllByUserParticipation(@Param("user") User user);
 }
