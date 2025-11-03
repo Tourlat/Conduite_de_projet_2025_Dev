@@ -59,6 +59,7 @@ describe('LoginForm', () => {
   it('devrait appeler authStore.login et gérer la connexion lors de la soumission', async () => {
     // Mock authStore.login pour simuler une réponse réussie
     const mockLogin = vi.spyOn(authStore, 'login').mockResolvedValue({
+      id: 1,
       token: 'fake-jwt-token',
       email: 'test@example.com',
       name: 'Test User'
@@ -104,6 +105,7 @@ describe('LoginForm', () => {
     
     // Mock authStore.login pour simuler une réponse réussie
     const mockLogin = vi.spyOn(authStore, 'login').mockResolvedValue({
+      id: 1,
       token: mockToken,
       email: 'test@example.com',
       name: 'Test User'
@@ -127,6 +129,7 @@ describe('LoginForm', () => {
     
     // Mock authStore.login pour simuler une réponse réussie
     vi.spyOn(authStore, 'login').mockResolvedValue({
+      id: 1,
       token: mockToken,
       email: 'test@example.com',
       name: 'Test User'
