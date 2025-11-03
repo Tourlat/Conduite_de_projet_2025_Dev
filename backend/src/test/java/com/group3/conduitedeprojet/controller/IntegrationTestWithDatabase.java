@@ -1,10 +1,16 @@
 package com.group3.conduitedeprojet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group3.conduitedeprojet.dto.AuthResponse;
+import com.group3.conduitedeprojet.dto.RegisterRequest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,5 +47,17 @@ public abstract class IntegrationTestWithDatabase {
     if (postgres != null && postgres.isRunning()) {
       postgres.stop();
     }
+  }
+
+  AuthResponse register(String email, String password, String name) throws Exception {
+    var req = new RegisterRequest(email, password, name);
+    var mvcRes = mockMvc
+        .perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(req)))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.email").value(email))
+        .andExpect(jsonPath("$.name").value(name)).andExpect(jsonPath("$.token").isNotEmpty())
+        .andReturn();
+    String content = mvcRes.getResponse().getContentAsString();
+    return objectMapper.readValue(content, AuthResponse.class);
   }
 }

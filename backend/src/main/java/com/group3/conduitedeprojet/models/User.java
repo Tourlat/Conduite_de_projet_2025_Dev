@@ -40,7 +40,6 @@ public class User implements UserDetails {
   @Column(nullable = false)
   private String name;
 
-
   @Column(columnDefinition = "boolean default true")
   private Boolean enabled;
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.group3.conduitedeprojet.dto.ChangePasswordRequest;
 import com.group3.conduitedeprojet.dto.ChangeUserRequest;
@@ -23,12 +24,13 @@ public class UserController {
   UserService userService;
 
   @GetMapping("/")
-  public ResponseEntity<UserDto> getUser(Long id) {
+  public ResponseEntity<UserDto> getUser(@RequestParam Long id) {
     return ResponseEntity.ok(userService.findUser(id));
   }
 
   @PutMapping("/")
-  public ResponseEntity<UserDto> updateUser(@RequestBody ChangeUserRequest user, Principal principal) {
+  public ResponseEntity<UserDto> updateUser(@RequestBody ChangeUserRequest user,
+      Principal principal) {
     if (principal == null || !principal.getName().equals(user.getEmail())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
@@ -38,7 +40,8 @@ public class UserController {
   }
 
   @PutMapping("/password")
-  public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest req, Principal principal) {
+  public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest req,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
