@@ -120,11 +120,20 @@ const updatingInfo = ref(false)
 const changingPassword = ref(false)
 
 
+/**
+ * Retrieves the user ID from localStorage
+ * @returns {number} The parsed user ID, or 0 if not found
+ */
 const getUserId = (): number => {
   const id = localStorage.getItem('userId')
   return id ? parseInt(id) : 0
 }
 
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * Fetches the user data from the API and populates the form.
+ * Sets appropriate error messages if user is not authenticated or if the request fails.
+ */
 onMounted(async () => {
   try {
     const userId = getUserId()
@@ -146,6 +155,13 @@ onMounted(async () => {
   }
 })
 
+/**
+ * Updates user information (name).
+ * Validates the form, calls the userService to update the user on the backend,
+ * and updates localStorage with the new name.
+ * Displays a success message that disappears after 3 seconds.
+ * @throws {Error} If the update request fails
+ */
 const updateUserInfo = async () => {
   try {
     updatingInfo.value = true
@@ -170,6 +186,13 @@ const updateUserInfo = async () => {
   }
 }
 
+/**
+ * Changes the user's password.
+ * Validates that both new password fields match and meet minimum length requirement (8 characters).
+ * Calls the userService to change the password on the backend.
+ * Clears password input fields on success and displays a success message for 3 seconds.
+ * @throws {Error} If validation fails or the password change request fails
+ */
 const changePassword = async () => {
   try {
     
@@ -210,6 +233,11 @@ const changePassword = async () => {
   }
 }
 
+/**
+ * Handles form submission events.
+ * Prevents the default form submission behavior.
+ * @param {Event} e - The form submission event
+ */
 const handleSubmit = (e: Event) => {
   e.preventDefault()
 }
