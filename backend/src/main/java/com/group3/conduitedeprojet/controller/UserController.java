@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,8 @@ public class UserController {
   @Autowired
   UserService userService;
 
-  @GetMapping("/")
-  public ResponseEntity<UserDto> getUser(@RequestParam Long id) {
+  @GetMapping("/{id}")
+  public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
     return ResponseEntity.ok(userService.findUser(id));
   }
 
