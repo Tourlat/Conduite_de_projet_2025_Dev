@@ -101,6 +101,7 @@ describe('RegisterForm', () => {
   it('devrait appeler authStore.register lors de la soumission valide', async () => {
     // Mock authStore.register pour simuler une réponse réussie
     const mockRegister = vi.spyOn(authStore, 'register').mockResolvedValue({
+      id: 1,
       token: 'fake-jwt-token',
       email: 'test@example.com',
       name: 'John Doe'

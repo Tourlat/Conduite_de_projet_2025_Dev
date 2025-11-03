@@ -20,10 +20,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { authStore } from '../../stores/authStore'
 
-const user = computed(() => authStore.getUser())
+
+const userEmail = localStorage.getItem('userEmail') || ''
+const userName = localStorage.getItem('userName') || ''
+
+const user = computed(() => ({
+  email: userEmail,
+  name: userName
+}))
 </script>
+
+
 
 <style scoped>
 .dashboard {

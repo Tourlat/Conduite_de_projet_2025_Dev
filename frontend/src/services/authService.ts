@@ -14,6 +14,7 @@ interface RegisterRequest {
 }
 
 interface AuthResponse {
+    id: number
     token: string
     email: string
     name: string
@@ -65,10 +66,18 @@ const getErrorMessage = (status: number, errorCode: string, defaultMessage: stri
     return errorMap[status]?.[errorCode] || defaultMessage
 }
 
+function addDatasInLocalStorage(token: string, email: string, name: string, id: number): void {
+    localStorage.setItem('authToken', token)
+    localStorage.setItem('userEmail', email)
+    localStorage.setItem('userName', name)
+    localStorage.setItem('userId', id.toString())
+}
+
 const authService = {
     async login(credentials: LoginRequest): Promise<AuthResponse> {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/login`, credentials)
+            addDatasInLocalStorage(response.data.token, response.data.email, response.data.name, response.data.id)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -85,6 +94,7 @@ const authService = {
     async register(data: RegisterRequest): Promise<AuthResponse> {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/register`, data)
+            addDatasInLocalStorage(response.data.token, response.data.email, response.data.name, response.data.id)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -109,6 +119,9 @@ const authService = {
 
     removeToken(): void {
         delete axios.defaults.headers.common['Authorization']
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('userEmail')
+        localStorage.removeItem('userName')
     },
 
     async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {

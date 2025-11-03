@@ -35,7 +35,7 @@ public class AuthService {
             throw new EmailAlreadyExistsException("Cet email est déjà utilisé");
         }
 
-        User user = User.builder()
+        User user = User.builder()  
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
@@ -47,6 +47,7 @@ public class AuthService {
         String token = jwtService.generateToken(user);
 
         return AuthResponse.builder()
+                .id(user.getId())
                 .token(token)
                 .email(user.getEmail())
                 .name(user.getName())
@@ -71,6 +72,7 @@ public class AuthService {
         String token = jwtService.generateToken(user);
 
         return AuthResponse.builder()
+                .id(user.getId())
                 .token(token)
                 .email(user.getEmail())
                 .name(user.getName())
