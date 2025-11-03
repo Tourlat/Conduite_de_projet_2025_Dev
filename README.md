@@ -35,6 +35,8 @@ In frontend you need to create a .env file based on the .env.example file. - Cop
 
 ![How to import Code format XML](docs/pictures/intellij-import-java-format-xml.png)
 
+3. Set `Tab Size` to 2
+
 ### Commit Hooks
 
 Execute `git config core.hooksPath hooks` in this repository to adjust the path of the git hooks directory.

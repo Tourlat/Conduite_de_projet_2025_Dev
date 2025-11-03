@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.group3.conduitedeprojet.dto.ChangePasswordRequest;
 import com.group3.conduitedeprojet.dto.ChangeUserRequest;
@@ -29,7 +30,8 @@ public class UserController {
   }
 
   @PutMapping("/")
-  public ResponseEntity<UserDto> updateUser(@RequestBody ChangeUserRequest user, Principal principal) {
+  public ResponseEntity<UserDto> updateUser(@RequestBody ChangeUserRequest user,
+      Principal principal) {
     if (principal == null || !principal.getName().equals(user.getEmail())) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
@@ -39,7 +41,8 @@ public class UserController {
   }
 
   @PutMapping("/password")
-  public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest req, Principal principal) {
+  public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest req,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
