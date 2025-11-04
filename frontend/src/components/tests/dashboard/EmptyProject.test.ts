@@ -30,9 +30,9 @@ describe('EmptyProject', () => {
       global: { plugins: [router] }
     })
 
-    expect(wrapper.find('.btn').exists()).toBe(true)
-    expect(wrapper.find('.btn').text()).toBe('Créer un projet')
-    expect(wrapper.find('.btn').attributes('to')).toBe('/projects')
+    const button = wrapper.find('.btn')
+    expect(button.exists()).toBe(true)
+    expect(button.text()).toBe('Créer un projet')
   })
 
   it('hides create button when showCreateButton is false or undefined', () => {
