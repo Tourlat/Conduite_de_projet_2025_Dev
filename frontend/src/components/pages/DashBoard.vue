@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { authStore } from '../../stores/authStore'
+import { projectStore } from '../../stores/projectStore'
 
 interface Creator {
   id: number
@@ -118,7 +118,7 @@ const fetchProjects = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await authStore.getProjects()
+    const data = await projectStore.getProjects()
     projects.value = data
   } catch (err: any) {
     error.value = err.message || 'Erreur lors du chargement des projets'

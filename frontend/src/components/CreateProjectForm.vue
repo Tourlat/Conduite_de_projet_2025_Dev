@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { authStore } from '../stores/authStore'
+import { projectStore } from '../stores/projectStore'
 
 interface ProjectData {
   name: string
@@ -118,7 +118,7 @@ const isSubmitting = ref(false)
 // Récupérer tous les utilisateurs au montage du composant
 const fetchAllUsers = async () => {
   try {
-    const data = await authStore.getUsers()
+    const data = await projectStore.getUsers()
     allUsers.value = Array.isArray(data) ? data : []
   } catch (e) {
     console.error('Erreur de récupération des utilisateurs', e)
@@ -219,7 +219,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    const result = await authStore.createProject(formData)
+    const result = await projectStore.createProject(formData)
     message.value = { text: 'Projet créé avec succès !', type: 'success' }
     
     emit('projectCreated', result.id)

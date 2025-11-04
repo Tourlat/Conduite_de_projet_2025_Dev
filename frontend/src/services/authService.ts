@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { ErrorResponse } from '../utils'
 
 const API_URL = 'http://localhost:8080/auth'
 
@@ -20,31 +21,6 @@ interface AuthResponse {
     name: string
 }
 
-interface CreateProjectRequest {
-    name: string
-    description?: string
-    collaborateurs?: string[]
-}
-
-interface ProjectResponse {
-    id: number
-    name: string
-    description?: string
-    collaborateurs?: string[]
-}
-
-interface User {
-    email: string
-    nom?: string
-}
-
-interface ErrorResponse {
-    status: number
-    message: string
-    error: string
-    timestamp: string
-    path: string
-}
 
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
@@ -124,58 +100,6 @@ const authService = {
         localStorage.removeItem('userName')
     },
 
-    async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {
-        try {
-            const userId = localStorage.getItem('userId')
-            const userEmail = localStorage.getItem('userEmail')
-            
-            if (!userId || !userEmail) {
-                throw new Error('Utilisateur non connecté')
-            }
-
-            const requestData = {
-                name: data.name,
-                description: data.description || null,
-                collaborateurs: data.collaborateurs || [],
-                user: {
-                    id: parseInt(userId),
-                    email: userEmail
-                }
-            }
-
-            const response = await axios.post<ProjectResponse>(`http://localhost:8080/api/projects`, requestData)
-            return response.data
-        } catch (error: any) {
-            const status = error.response?.status
-            const errorData: ErrorResponse = error.response?.data
-            const message = getErrorMessage(
-                status,
-                errorData?.error,
-                errorData?.message || 'Erreur lors de la création du projet'
-            )
-            throw new Error(message)
-        }
-    },
-
-    async getUsers(): Promise<User[]> {
-        try {
-            const response = await axios.get<User[]>(`http://localhost:8080/api/users`)
-            return response.data
-        } catch (error: any) {
-            const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des utilisateurs')
-        }
-    },
-
-    async getProjects(): Promise<ProjectResponse[]> {
-        try {
-            const response = await axios.get<ProjectResponse[]>(`http://localhost:8080/api/projects`)
-            return response.data
-        } catch (error: any) {
-            const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des projets')
-        }
-    }
 }
 
 export default authService
