@@ -1,6 +1,9 @@
 package com.group3.conduitedeprojet.services;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,12 @@ public class UserService {
 
   @Autowired
   PasswordEncoder passwordEncoder;
+
+  public List<UserDto> findAllUsers() {
+    return userRepository.findAll().stream()
+        .map(User::toUserDto)
+        .collect(Collectors.toList());
+  }
 
   public UserDto findUser(@RequestParam Long id) {
     Optional<User> user = userRepository.findById(id);

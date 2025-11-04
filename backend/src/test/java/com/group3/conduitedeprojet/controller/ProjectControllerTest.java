@@ -21,7 +21,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
                         Map.of("id", 1L, "email", "unknown@example.com"));
 
         mockMvc.perform(
-                        post("/api/projects/")
+                        post("/api/projects")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isForbidden());
@@ -41,7 +41,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
                         Map.of("id", auth.getId(), "email", auth.getEmail()));
 
         mockMvc.perform(
-                        post("/api/projects/")
+                        post("/api/projects")
                                 .header("Authorization", "Bearer " + auth.getToken())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(body)))

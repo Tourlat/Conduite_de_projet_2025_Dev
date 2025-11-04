@@ -50,7 +50,7 @@
           :class="{ error: errors.collaborateurs }"
           autocomplete="off"
           @input="onCollaborateurInput"
-          @focus="showSuggestions = true"
+          @focus="showSuggestions = true; onCollaborateurInput()"
           @keydown.enter.prevent="maybeAddInputAsCollaborator"
         />
 
@@ -63,7 +63,7 @@
       </div>
 
       <span v-if="errors.collaborateurs" class="error-message">{{ errors.collaborateurs }}</span>
-      <span class="help-text">Commencez à taper un email pour voir des suggestions</span>
+      <span class="help-text">Cliquez dans le champ pour voir les suggestions ou tapez pour filtrer</span>
     </div>
 
     <button type="submit" :disabled="isSubmitting">
@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { authStore } from '../stores/authStore'
+import { projectStore } from '../stores/projectStore'
 
 interface ProjectData {
   name: string
@@ -117,21 +117,8 @@ const isSubmitting = ref(false)
 
 // Récupérer tous les utilisateurs au montage du composant
 const fetchAllUsers = async () => {
-
-  // TEST JSON MAIN //////////////////////////////////////////////////////
-
-  const user_test = {
-    "id": 1,
-    "nom": "Dupont",
-    "email": "dupont@example.com"
-  }
-
-  allUsers.value.push(user_test)
-
-  ////////////////////////////////////////////////////////////////////////
-
   try {
-    const data = await authStore.getUsers()
+    const data = await projectStore.getUsers()
     allUsers.value = Array.isArray(data) ? data : []
   } catch (e) {
     console.error('Erreur de récupération des utilisateurs', e)
@@ -144,7 +131,8 @@ fetchAllUsers()
 const onCollaborateurInput = () => {
   const cleanedCollaboratorsInput = collaborateursInput.value.trim()
   if (!cleanedCollaboratorsInput) {
-    suggestions.value = []
+    // Afficher les 5 premiers utilisateurs si aucune saisie
+    suggestions.value = allUsers.value.slice(0, 5)
     return
   }
   // Filtrer côté client les emails qui commencent par la saisie
@@ -231,7 +219,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    const result = await authStore.createProject(formData)
+    const result = await projectStore.createProject(formData)
     message.value = { text: 'Projet créé avec succès !', type: 'success' }
     
     emit('projectCreated', result.id)

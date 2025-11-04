@@ -10,7 +10,7 @@ COPY pom.xml .
 RUN mvn package -DskipTests
 
 # Package stage
-FROM openjdk:21-jdk-slim AS production
+FROM eclipse-temurin:21-jdk-alpine AS production
 
 WORKDIR /app
 

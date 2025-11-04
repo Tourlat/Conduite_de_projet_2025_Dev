@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { setUserData, clearUserData } from '../utils/localStorage'
+import type { ErrorResponse } from '../utils'
 
 const API_URL = 'http://localhost:8080/auth'
 
@@ -20,31 +22,6 @@ interface AuthResponse {
     name: string
 }
 
-interface CreateProjectRequest {
-    name: string
-    description?: string
-    collaborateurs?: string[]
-}
-
-interface ProjectResponse {
-    id: number
-    name: string
-    description?: string
-    collaborateurs?: string[]
-}
-
-interface User {
-    email: string
-    nom?: string
-}
-
-interface ErrorResponse {
-    status: number
-    message: string
-    error: string
-    timestamp: string
-    path: string
-}
 
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
@@ -66,18 +43,15 @@ const getErrorMessage = (status: number, errorCode: string, defaultMessage: stri
     return errorMap[status]?.[errorCode] || defaultMessage
 }
 
-function addDatasInLocalStorage(token: string, email: string, name: string, id: number): void {
-    localStorage.setItem('authToken', token)
-    localStorage.setItem('userEmail', email)
-    localStorage.setItem('userName', name)
-    localStorage.setItem('userId', id.toString())
+function addDatasInLocalStorage(data: AuthResponse): void {
+    setUserData(data)
 }
 
 const authService = {
     async login(credentials: LoginRequest): Promise<AuthResponse> {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/login`, credentials)
-            addDatasInLocalStorage(response.data.token, response.data.email, response.data.name, response.data.id)
+            addDatasInLocalStorage(response.data)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -94,7 +68,7 @@ const authService = {
     async register(data: RegisterRequest): Promise<AuthResponse> {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/register`, data)
-            addDatasInLocalStorage(response.data.token, response.data.email, response.data.name, response.data.id)
+            addDatasInLocalStorage(response.data)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -119,36 +93,9 @@ const authService = {
 
     removeToken(): void {
         delete axios.defaults.headers.common['Authorization']
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('userEmail')
-        localStorage.removeItem('userName')
+        clearUserData()
     },
 
-    async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {
-        try {
-            const response = await axios.post<ProjectResponse>(`${API_URL}/projects`, data)
-            return response.data
-        } catch (error: any) {
-            const status = error.response?.status
-            const errorData: ErrorResponse = error.response?.data
-            const message = getErrorMessage(
-                status,
-                errorData?.error,
-                errorData?.message || 'Erreur lors de la création du projet'
-            )
-            throw new Error(message)
-        }
-    },
-
-    async getUsers(): Promise<User[]> {
-        try {
-            const response = await axios.get<User[]>(`${API_URL}/users`)
-            return response.data
-        } catch (error: any) {
-            const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des utilisateurs')
-        }
-    }
 }
 
 export default authService

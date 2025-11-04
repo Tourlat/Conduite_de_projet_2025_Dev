@@ -6,12 +6,6 @@ interface User {
   name: string
 }
 
-interface ProjectData {
-  name: string
-  description: string
-  collaborateurs?: string[]
-}
-
 interface AuthState {
   isAuthenticated: boolean
   token: string | null
@@ -95,27 +89,6 @@ export const authStore = {
     return state.token
   },
 
-  async createProject(projectData: ProjectData) {
-    state.error = null
-    try {
-      const response = await authService.createProject(projectData)
-      return response
-    } catch (error: any) {
-      state.error = error.message || 'Erreur lors de la création du projet'
-      throw error
-    }
-  },
-
-  async getUsers() {
-    state.error = null
-    try {
-      const response = await authService.getUsers()
-      return response
-    } catch (error: any) {
-      state.error = error.message || 'Erreur lors de la récupération des utilisateurs'
-      throw error
-    }
-  }
 }
 
 

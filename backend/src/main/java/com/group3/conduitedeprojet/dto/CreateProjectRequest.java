@@ -1,12 +1,12 @@
 package com.group3.conduitedeprojet.dto;
 
 import lombok.Data;
-
-import java.util.Optional;
+import java.util.List;
 
 @Data
 public class CreateProjectRequest {
     private String name;
-    private Optional<String> description;
+    private String description;
     private UserDto user;
+    private List<String> collaborateurs;
 }

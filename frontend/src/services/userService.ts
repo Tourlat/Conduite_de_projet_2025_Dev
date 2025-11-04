@@ -1,4 +1,6 @@
 import axios from 'axios'
+import type { ErrorResponse } from '../utils'
+import { getHeaders } from '../utils'
 
 const API_URL = 'http://localhost:8080/api/users'
 
@@ -18,13 +20,9 @@ interface UserDto {
     name: string
 }
 
-// Helper pour ajouter le token aux headers
-const getHeaders = () => {
-    const token = localStorage.getItem('authToken')
-    return {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
+interface User {
+    email: string
+    name?: string
 }
 
 const userService = {
@@ -42,6 +40,16 @@ const userService = {
             return response.data
         } catch (error: any) {
             throw new Error(error.response?.data?.message || 'Erreur lors de la récupération des données')
+        }
+    },
+
+     async getUsers(): Promise<User[]> {
+        try {
+            const response = await axios.get<User[]>(`http://localhost:8080/api/users`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des utilisateurs')
         }
     },
 
@@ -74,6 +82,8 @@ const userService = {
             throw new Error(error.response?.data?.message || 'Erreur lors du changement de mot de passe')
         }
     }
+
+
 }
 
 export default userService
