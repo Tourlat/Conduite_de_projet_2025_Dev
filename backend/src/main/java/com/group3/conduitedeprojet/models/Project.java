@@ -3,7 +3,6 @@ package com.group3.conduitedeprojet.models;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
-import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -2,9 +2,11 @@ package com.group3.conduitedeprojet.controller;
 
 import java.security.Principal;
 import java.util.List;
-
+import java.util.UUID;
+import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
 import com.group3.conduitedeprojet.dto.CreateProjectRequest;
 import com.group3.conduitedeprojet.dto.ProjectResponse;
+import com.group3.conduitedeprojet.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,24 +18,47 @@ import com.group3.conduitedeprojet.services.ProjectService;
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-    @Autowired private ProjectService projectService;
+  @Autowired
+  private ProjectService projectService;
 
-    @PostMapping
-    public ResponseEntity<Project> createProject(
-            @RequestBody CreateProjectRequest createProjectRequest, Principal principal) {
-        if (principal == null
-                || !createProjectRequest.getUser().getEmail().equals(principal.getName())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        return ResponseEntity.ok(projectService.createProject(createProjectRequest));
+  @PostMapping
+  public ResponseEntity<Project> createProject(
+      @RequestBody CreateProjectRequest createProjectRequest, Principal principal) {
+    if (principal == null
+        || !createProjectRequest.getUser().getEmail().equals(principal.getName())) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProjectResponse>> getAllProjects(Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.ok(projectService.findProjectsByUser(principal.getName()));
+    return ResponseEntity.ok(projectService.createProject(createProjectRequest));
+  }
+
+  @GetMapping
+  public ResponseEntity<List<ProjectResponse>> getAllProjects(Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+    return ResponseEntity.ok(projectService.findProjectsByUser(principal.getName()));
+  }
+
+  @PostMapping("/{projectId}/collaborators")
+  public ResponseEntity<List<UserDto>> addCollaboratorToProject(@PathVariable UUID projectId,
+      @RequestBody AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(
+        projectService.addCollaboratorsToProject(projectId, addCollaboratorsRequest, principal));
+  }
+
+  @DeleteMapping("/{projectId}/collaborators/{collaboratorId}")
+  public ResponseEntity<List<UserDto>> removeCollaboratorFromProject(@PathVariable UUID projectId,
+      @PathVariable Long collaboratorId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(
+        projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
+  }
 }
