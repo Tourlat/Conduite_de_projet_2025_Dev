@@ -67,6 +67,26 @@ public class ProjectService {
     return projects.stream().map(this::convertToDto).collect(Collectors.toList());
   }
 
+  public List<UserDto> getProjectCollaborators(UUID projectId, Principal principal) {
+    Optional<Project> optionalProject = projectRepository.findById(projectId);
+    if (optionalProject.isEmpty()) {
+      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
+    }
+
+    Project project = optionalProject.get();
+
+    // Vérifier que l'utilisateur a accès au projet (créateur ou collaborateur)
+    String userEmail = principal.getName();
+    boolean hasAccess = project.getCreator().getEmail().equals(userEmail) ||
+        project.getCollaborators().stream().anyMatch(u -> u.getEmail().equals(userEmail));
+
+    if (!hasAccess) {
+      throw new NotAuthorizedException("You don't have access to this project");
+    }
+
+    return project.getCollaborators().stream().map(User::convertToUserDto).toList();
+  }
+
   public List<UserDto> addCollaboratorsToProject(UUID projectId,
       AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
     Optional<Project> optionalProject = projectRepository.findById(projectId);

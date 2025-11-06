@@ -64,7 +64,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import projectService from '../../services/projectService'
 import { projectStore } from '../../stores/projectStore'
 
 interface User {
@@ -118,21 +117,21 @@ const filterUsers = () => {
 const selectUser = async (user: User) => {
   searchInput.value = ''
   showSuggestions.value = false
-  await addMember(user.id)
+  await addCollaborator(user.email)
 }
 
-const addMember = async (userId: number) => {
+const addCollaborator = async (userEmail: string) => {
   try {
     loading.value = true
     message.value = null
 
-    await projectService.addProjectMember(props.projectId, userId)
+    await projectStore.addProjectCollaborators(props.projectId, [userEmail])
 
-    // Recharger la liste des membres
+    // Recharger la liste des collaborateurs
     await fetchMembers()
     
     message.value = {
-      text: 'Membre ajouté avec succès',
+      text: 'Collaborateur ajouté avec succès',
       type: 'success'
     }
 
@@ -143,7 +142,7 @@ const addMember = async (userId: number) => {
     }, 3000)
   } catch (error) {
     message.value = {
-      text: error instanceof Error ? error.message : 'Erreur lors de l\'ajout du membre',
+      text: error instanceof Error ? error.message : 'Erreur lors de l\'ajout du collaborateur',
       type: 'error'
     }
   } finally {
@@ -152,7 +151,7 @@ const addMember = async (userId: number) => {
 }
 
 const removeMember = async (userId: number) => {
-  if (!confirm('Êtes-vous sûr de vouloir retirer ce membre ?')) {
+  if (!confirm('Êtes-vous sûr de vouloir retirer ce collaborateur ?')) {
     return
   }
 
@@ -160,12 +159,13 @@ const removeMember = async (userId: number) => {
     loading.value = true
     message.value = null
 
-    await projectService.removeProjectMember(props.projectId, userId)
+    await projectStore.removeProjectCollaborator(props.projectId, userId)
 
     await fetchMembers()
     
+    
     message.value = {
-      text: 'Membre retiré avec succès',
+      text: 'Collaborateur retiré avec succès',
       type: 'success'
     }
 
@@ -176,7 +176,7 @@ const removeMember = async (userId: number) => {
     }, 3000)
   } catch (error) {
     message.value = {
-      text: error instanceof Error ? error.message : 'Erreur lors de la suppression du membre',
+      text: error instanceof Error ? error.message : 'Erreur lors de la suppression du collaborateur',
       type: 'error'
     }
   } finally {
@@ -187,11 +187,11 @@ const removeMember = async (userId: number) => {
 const fetchMembers = async () => {
   try {
     loading.value = true
-    const data = await projectService.getProjectMembers(props.projectId)
+    const data = await projectStore.getProjectCollaborators(props.projectId)
     members.value = data
   } catch (error) {
     message.value = {
-      text: error instanceof Error ? error.message : 'Erreur lors du chargement des membres',
+      text: error instanceof Error ? error.message : 'Erreur lors du chargement des collaborateurs',
       type: 'error'
     }
   } finally {

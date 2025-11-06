@@ -101,41 +101,45 @@ const projectService = {
         }
     },
 
-    async getProjectMembers(projectId: string): Promise<any[]> {
+    async getProjectCollaborators(projectId: string): Promise<any[]> {
         try {
-            const response = await axios.get(`${API_URL}/${projectId}/members`)
+            const response = await axios.get(`${API_URL}/${projectId}/collaborators`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des membres')
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des collaborateurs')
         }
     },
 
-    async addProjectMember(projectId: string, userId: number): Promise<void> {
+    async addProjectCollaborators(projectId: string, collaboratorEmails: string[]): Promise<any[]> {
         try {
-            await axios.post(`${API_URL}/${projectId}/members/${userId}`)
+            const response = await axios.post(`${API_URL}/${projectId}/collaborators`, {
+                collaborators: collaboratorEmails
+            })
+            return response.data
         } catch (error: any) {
             const status = error.response?.status
             const errorData: ErrorResponse = error.response?.data
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de l\'ajout du membre'
+                errorData?.message || 'Erreur lors de l\'ajout des collaborateurs'
             )
             throw new Error(message)
         }
     },
 
-    async removeProjectMember(projectId: string, userId: number): Promise<void> {
+    async removeProjectCollaborator(projectId: string, collaboratorId: number): Promise<any[]> {
         try {
-            await axios.delete(`${API_URL}/${projectId}/members/${userId}`)
+            const response = await axios.delete(`${API_URL}/${projectId}/collaborators/${collaboratorId}`)
+            return response.data
         } catch (error: any) {
             const status = error.response?.status
             const errorData: ErrorResponse = error.response?.data
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la suppression du membre'
+                errorData?.message || 'Erreur lors de la suppression du collaborateur'
             )
             throw new Error(message)
         }

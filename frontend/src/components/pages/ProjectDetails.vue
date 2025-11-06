@@ -194,10 +194,10 @@ const fetchMembersCount = async () => {
   if (!project.value) return
   
   try {
-    const members = await projectStore.getProjectMembers(project.value.id)
+    const members = await projectStore.getProjectCollaborators(project.value.id)
     membersCount.value = members.length
   } catch (err) {
-    console.error('Erreur lors du chargement des membres:', err)
+    console.error('Erreur lors du chargement des collaborateurs:', err)
   }
 }
 

@@ -40,6 +40,15 @@ public class ProjectController {
     return ResponseEntity.ok(projectService.findProjectsByUser(principal.getName()));
   }
 
+  @GetMapping("/{projectId}/collaborators")
+  public ResponseEntity<List<UserDto>> getProjectCollaborators(@PathVariable UUID projectId,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    return ResponseEntity.ok(projectService.getProjectCollaborators(projectId, principal));
+  }
+
   @PostMapping("/{projectId}/collaborators")
   public ResponseEntity<List<UserDto>> addCollaboratorToProject(@PathVariable UUID projectId,
       @RequestBody AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {

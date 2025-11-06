@@ -71,33 +71,35 @@ export const projectStore = {
     return state.projects.find(p => p.id === id)
   },
 
-  async getProjectMembers(projectId: string) {
+  async getProjectCollaborators(projectId: string) {
     state.error = null
     try {
-      const response = await projectService.getProjectMembers(projectId)
+      const response = await projectService.getProjectCollaborators(projectId)
       return response
     } catch (error: any) {
-      state.error = error.message || 'Erreur lors de la récupération des membres'
+      state.error = error.message || 'Erreur lors de la récupération des collaborateurs'
       throw error
     }
   },
 
-  async addProjectMember(projectId: string, userId: number) {
+  async addProjectCollaborators(projectId: string, collaboratorEmails: string[]) {
     state.error = null
     try {
-      await projectService.addProjectMember(projectId, userId)
+      const response = await projectService.addProjectCollaborators(projectId, collaboratorEmails)
+      return response
     } catch (error: any) {
-      state.error = error.message || 'Erreur lors de l\'ajout du membre'
+      state.error = error.message || 'Erreur lors de l\'ajout des collaborateurs'
       throw error
     }
   },
 
-  async removeProjectMember(projectId: string, userId: number) {
+  async removeProjectCollaborator(projectId: string, collaboratorId: number) {
     state.error = null
     try {
-      await projectService.removeProjectMember(projectId, userId)
+      const response = await projectService.removeProjectCollaborator(projectId, collaboratorId)
+      return response
     } catch (error: any) {
-      state.error = error.message || 'Erreur lors de la suppression du membre'
+      state.error = error.message || 'Erreur lors de la suppression du collaborateur'
       throw error
     }
   },
