@@ -94,7 +94,8 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
   @Test
   void removeCollaborator_success() throws Exception {
     var owner = register("owner3@example.com", "password123", "Owner3");
-    var collab = register("collab2@example.com", "password123", "Collab2");
+    var collab1 = register("collab2@example.com", "password123", "Collab2");
+    var collab2 = register("collab3@example.com", "password123", "Collab3");
 
     var createBody = Map.of("name", "Project To Remove From", "description", "desc", "user",
         Map.of("id", owner.getId(), "email", owner.getEmail()));
@@ -110,17 +111,18 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
     String projectId = (String) createdMap.get("id");
 
-    var addBody = Map.of("collaborators", List.of(collab.getEmail()));
+    var addBody = Map.of("collaborators", List.of(collab1.getEmail(), collab2.getEmail()));
 
     mockMvc.perform(post("/api/projects/" + projectId + "/collaborators")
         .header("Authorization", "Bearer " + owner.getToken())
         .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(addBody)))
-        .andExpect(status().isOk()).andExpect(jsonPath("$[0].email").value(collab.getEmail()));
+        .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2));
 
     mockMvc
-        .perform(delete("/api/projects/" + projectId + "/collaborators/" + collab.getId())
+        .perform(delete("/api/projects/" + projectId + "/collaborators/" + collab1.getId())
             .header("Authorization", "Bearer " + owner.getToken()))
-        .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1));
+        .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].email").value(collab2.getEmail()));
   }
 
   @Test
