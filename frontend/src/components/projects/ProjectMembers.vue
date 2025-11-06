@@ -125,10 +125,10 @@ const addCollaborator = async (userEmail: string) => {
     loading.value = true
     message.value = null
 
-    await projectStore.addProjectCollaborators(props.projectId, [userEmail])
-
-    // Recharger la liste des collaborateurs
-    await fetchMembers()
+    const updatedMembers = await projectStore.addProjectCollaborators(props.projectId, [userEmail])
+    
+    // Mettre à jour directement avec la liste retournée par le backend
+    members.value = updatedMembers
     
     message.value = {
       text: 'Collaborateur ajouté avec succès',
@@ -159,10 +159,10 @@ const removeMember = async (userId: number) => {
     loading.value = true
     message.value = null
 
-    await projectStore.removeProjectCollaborator(props.projectId, userId)
-
-    await fetchMembers()
+    const updatedMembers = await projectStore.removeProjectCollaborator(props.projectId, userId)
     
+    // Mettre à jour directement avec la liste retournée par le backend
+    members.value = updatedMembers
     
     message.value = {
       text: 'Collaborateur retiré avec succès',

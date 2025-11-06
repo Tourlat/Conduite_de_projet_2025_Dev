@@ -127,15 +127,15 @@ public class ProjectService {
     Project project = optionalProject.get();
 
     if (!project.getCreator().getUsername().equals(principal.getName())) {
-      throw new NotAuthorizedException("Only the project creator can add members");
+      throw new NotAuthorizedException("Only the project creator can remove members");
     }
 
     Optional<User> optionalUser = userRepository.findById(collaboratorId);
     if (optionalUser.isEmpty()) {
-      throw new UserNotFoundException("User with email " + collaboratorId + " was not found");
+      throw new UserNotFoundException("User with id " + collaboratorId + " was not found");
     }
     User user = optionalUser.get();
-    project.getCollaborators().add(user);
+    project.getCollaborators().remove(user);
     projectRepository.save(project);
 
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
