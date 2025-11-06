@@ -236,8 +236,15 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+
 form {
-  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 h2 {
