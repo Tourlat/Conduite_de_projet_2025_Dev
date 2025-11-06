@@ -9,7 +9,7 @@ interface CreateProjectRequest {
 }
 
 interface ProjectResponse {
-  id: number
+  id: string
   name: string
   description?: string
   collaborateurs?: string[]
@@ -67,11 +67,11 @@ export const projectStore = {
     }
   },
 
-  getProjectById(id: number): ProjectResponse | undefined {
+  getProjectById(id: string): ProjectResponse | undefined {
     return state.projects.find(p => p.id === id)
   },
 
-  async getProjectMembers(projectId: number) {
+  async getProjectMembers(projectId: string) {
     state.error = null
     try {
       const response = await projectService.getProjectMembers(projectId)
@@ -82,7 +82,7 @@ export const projectStore = {
     }
   },
 
-  async addProjectMember(projectId: number, userId: number) {
+  async addProjectMember(projectId: string, userId: number) {
     state.error = null
     try {
       await projectService.addProjectMember(projectId, userId)
@@ -92,7 +92,7 @@ export const projectStore = {
     }
   },
 
-  async removeProjectMember(projectId: number, userId: number) {
+  async removeProjectMember(projectId: string, userId: number) {
     state.error = null
     try {
       await projectService.removeProjectMember(projectId, userId)

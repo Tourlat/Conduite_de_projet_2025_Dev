@@ -18,21 +18,21 @@ describe('ProjectGrid', () => {
 
   const mockProjects = [
     {
-      id: 1,
+      id: "1",
       name: 'Project 1',
       description: 'Description 1',
       createdAt: '2025-11-01T00:00:00.000Z',
       creator: mockCreator1
     },
     {
-      id: 2,
+      id: "2",
       name: 'Project 2',
       description: 'Description 2',
       createdAt: '2025-11-02T00:00:00.000Z',
       creator: mockCreator2
     },
     {
-      id: 3,
+      id: "3",
       name: 'Project 3',
       description: 'Description 3',
       createdAt: '2025-11-03T00:00:00.000Z',

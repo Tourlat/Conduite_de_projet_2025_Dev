@@ -83,9 +83,13 @@ interface Message {
 }
 
 const props = defineProps<{
-  projectId: number
+  projectId: string
   creatorId: number
   isOwner: boolean
+}>()
+
+const emit = defineEmits<{
+  membersUpdated: []
 }>()
 
 const members = ref<Member[]>([])
@@ -131,6 +135,8 @@ const addMember = async (userId: number) => {
       text: 'Membre ajouté avec succès',
       type: 'success'
     }
+
+    emit('membersUpdated')
     
     setTimeout(() => {
       message.value = null
@@ -162,6 +168,8 @@ const removeMember = async (userId: number) => {
       text: 'Membre retiré avec succès',
       type: 'success'
     }
+
+    emit('membersUpdated')
     
     setTimeout(() => {
       message.value = null

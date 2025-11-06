@@ -96,7 +96,7 @@ interface Message {
 
 const emit = defineEmits<{
   createProject: [data: ProjectData]
-  projectCreated: [projectId: number]
+  projectCreated: [projectId: string]
 }>()
 
 const router = useRouter()
@@ -226,7 +226,7 @@ const handleSubmit = async () => {
     
     setTimeout(() => {
       router.push('/dashboard')
-    }, 1500)
+    }, 800)
   } catch (error: any) {
     message.value = { text: error.message || 'Erreur lors de la création du projet', type: 'error' }
   } finally {

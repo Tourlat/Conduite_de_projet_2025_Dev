@@ -13,7 +13,7 @@ interface CreateProjectRequest {
 }
 
 interface ProjectResponse {
-    id: number
+    id: string
     name: string
     description?: string
     collaborateurs?: string[]
@@ -85,7 +85,23 @@ const projectService = {
         }
     },
 
-    async getProjectMembers(projectId: number): Promise<any[]> {
+    async updateProject(projectId: string, data: { name: string; description?: string }): Promise<ProjectResponse> {
+        try {
+            const response = await axios.put<ProjectResponse>(`${API_URL}/${projectId}`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la mise à jour du projet'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getProjectMembers(projectId: string): Promise<any[]> {
         try {
             const response = await axios.get(`${API_URL}/${projectId}/members`)
             return response.data
@@ -95,7 +111,7 @@ const projectService = {
         }
     },
 
-    async addProjectMember(projectId: number, userId: number): Promise<void> {
+    async addProjectMember(projectId: string, userId: number): Promise<void> {
         try {
             await axios.post(`${API_URL}/${projectId}/members/${userId}`)
         } catch (error: any) {
@@ -110,7 +126,7 @@ const projectService = {
         }
     },
 
-    async removeProjectMember(projectId: number, userId: number): Promise<void> {
+    async removeProjectMember(projectId: string, userId: number): Promise<void> {
         try {
             await axios.delete(`${API_URL}/${projectId}/members/${userId}`)
         } catch (error: any) {
