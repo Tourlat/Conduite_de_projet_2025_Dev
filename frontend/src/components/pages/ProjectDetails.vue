@@ -147,7 +147,6 @@ const goBack = () => {
 
 const handleProjectUpdated = (updatedProject: Project) => {
   project.value = { ...project.value, ...updatedProject }
-  // Mettre à jour le store
   fetchProjects()
 }
 

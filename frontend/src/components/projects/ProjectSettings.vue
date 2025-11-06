@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue'
-import projectService from '../../services/projectService'
+import { projectStore } from '../../stores/projectStore'
 
 interface Project {
   id: string
@@ -129,7 +129,7 @@ const saveSettings = async () => {
     loading.value = true
     message.value = null
 
-    const updatedProject = await projectService.updateProject(props.project.id, {
+    const updatedProject = await projectStore.updateProject(props.project.id, {
       name: formData.name.trim(),
       description: formData.description?.trim() || undefined
     })

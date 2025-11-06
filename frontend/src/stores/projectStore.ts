@@ -71,6 +71,21 @@ export const projectStore = {
     return state.projects.find(p => p.id === id)
   },
 
+  async updateProject(projectId: string, data: { name: string; description?: string }) {
+    state.error = null
+    try {
+      const response = await projectService.updateProject(projectId, data)
+      const index = state.projects.findIndex(p => p.id === projectId)
+      if (index !== -1) {
+        state.projects[index] = response
+      }
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la mise à jour du projet'
+      throw error
+    }
+  },
+
   async getProjectCollaborators(projectId: string) {
     state.error = null
     try {

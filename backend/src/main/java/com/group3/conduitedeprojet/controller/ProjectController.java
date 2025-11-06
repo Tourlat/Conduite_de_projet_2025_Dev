@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
 import com.group3.conduitedeprojet.dto.CreateProjectRequest;
 import com.group3.conduitedeprojet.dto.ProjectResponse;
+import com.group3.conduitedeprojet.dto.UpdateProjectRequest;
 import com.group3.conduitedeprojet.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,15 @@ public class ProjectController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     return ResponseEntity.ok(projectService.findProjectsByUser(principal.getName()));
+  }
+
+  @PutMapping("/{projectId}")
+  public ResponseEntity<ProjectResponse> updateProject(@PathVariable UUID projectId,
+      @RequestBody UpdateProjectRequest updateProjectRequest, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    return ResponseEntity.ok(projectService.updateProject(projectId, updateProjectRequest, principal));
   }
 
   @GetMapping("/{projectId}/collaborators")

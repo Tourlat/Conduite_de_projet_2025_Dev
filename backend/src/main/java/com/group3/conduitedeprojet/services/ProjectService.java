@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
 import com.group3.conduitedeprojet.dto.CreateProjectRequest;
 import com.group3.conduitedeprojet.dto.ProjectResponse;
+import com.group3.conduitedeprojet.dto.UpdateProjectRequest;
 import com.group3.conduitedeprojet.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -139,6 +140,32 @@ public class ProjectService {
     projectRepository.save(project);
 
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
+  }
+
+  public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest updateProjectRequest,
+      Principal principal) {
+    Optional<Project> optionalProject = projectRepository.findById(projectId);
+    if (optionalProject.isEmpty()) {
+      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
+    }
+
+    Project project = optionalProject.get();
+
+    if (!project.getCreator().getUsername().equals(principal.getName())) {
+      throw new NotAuthorizedException("Only the project creator can update the project");
+    }
+
+    if (updateProjectRequest.getName() != null && !updateProjectRequest.getName().trim().isEmpty()) {
+      project.setName(updateProjectRequest.getName().trim());
+    }
+
+    if (updateProjectRequest.getDescription() != null) {
+      project.setDescription(updateProjectRequest.getDescription().trim());
+    }
+
+    projectRepository.save(project);
+
+    return convertToDto(project);
   }
 
   private ProjectResponse convertToDto(Project project) {
