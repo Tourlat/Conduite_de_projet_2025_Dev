@@ -5,7 +5,7 @@
     <div v-else-if="error" class="error-message">{{ error }}</div>
     
     <div v-else-if="project" class="details-container">
-      <!-- En-tête du projet -->
+
       <div class="project-header">
         <button class="btn-back" @click="goBack">
           ← Retour au tableau de bord
@@ -16,7 +16,6 @@
         </span>
       </div>
 
-      <!-- Navigation par onglets -->
       <div class="tabs">
         <button 
           class="tab" 
@@ -42,9 +41,7 @@
         </button>
       </div>
 
-      <!-- Contenu des onglets -->
       <div class="tab-content">
-        <!-- Onglet Aperçu -->
         <div v-if="activeTab === 'overview'" class="overview">
           <div class="info-card">
             <h2>Description</h2>
@@ -71,7 +68,6 @@
           </div>
         </div>
 
-        <!-- Onglet Membres -->
         <div v-if="activeTab === 'members'" class="members-tab">
           <ProjectMembers 
             :project-id="project.id"
@@ -81,7 +77,6 @@
           />
         </div>
 
-        <!-- Onglet Paramètres -->
         <div v-if="activeTab === 'settings' && isOwner" class="settings-tab">
           <ProjectSettings 
             :project="project"
@@ -166,13 +161,11 @@ const fetchProject = async () => {
   error.value = null
 
   try {
-    // Récupérer tous les projets si pas déjà en cache
     let projects = projectStore.state.projects
     if (!projects || projects.length === 0) {
       projects = await projectStore.getProjects()
     }
 
-    // Trouver le projet
     const foundProject = projects.find((p: any) => p.id === projectId)
     
     if (!foundProject) {

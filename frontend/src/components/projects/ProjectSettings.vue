@@ -5,7 +5,7 @@
     <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
 
     <form @submit.prevent="saveSettings" class="settings-form">
-      <!-- Nom du projet -->
+        
       <div class="form-group">
         <label for="projectName">Nom du projet *</label>
         <input
@@ -19,7 +19,6 @@
         <span v-if="errors.name" class="error-text">{{ errors.name }}</span>
       </div>
 
-      <!-- Description -->
       <div class="form-group">
         <label for="projectDescription">Description</label>
         <textarea
@@ -31,7 +30,6 @@
         ></textarea>
       </div>
 
-      <!-- Boutons d'action -->
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" :disabled="loading">
           {{ loading ? 'Enregistrement...' : 'Enregistrer' }}

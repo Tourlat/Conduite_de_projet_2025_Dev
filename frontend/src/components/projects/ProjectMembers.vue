@@ -127,7 +127,6 @@ const addCollaborator = async (userEmail: string) => {
 
     const updatedMembers = await projectStore.addProjectCollaborators(props.projectId, [userEmail])
     
-    // Mettre à jour directement avec la liste retournée par le backend
     members.value = updatedMembers
     
     message.value = {
@@ -161,7 +160,6 @@ const removeMember = async (userId: number) => {
 
     const updatedMembers = await projectStore.removeProjectCollaborator(props.projectId, userId)
     
-    // Mettre à jour directement avec la liste retournée par le backend
     members.value = updatedMembers
     
     message.value = {
