@@ -76,4 +76,8 @@ public class User implements UserDetails {
   public UserDto toUserDto() {
     return UserDto.builder().email(this.email).id(this.id).name(this.name).build();
   }
+
+  public static UserDto convertToUserDto(User user) {
+    return user.toUserDto();
+  }
 }
