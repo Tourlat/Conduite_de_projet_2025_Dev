@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { projectStore } from '../stores/projectStore'
+import { projectStore } from '../../stores/projectStore'
 
 interface ProjectData {
   name: string

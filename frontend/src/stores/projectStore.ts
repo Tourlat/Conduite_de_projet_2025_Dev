@@ -71,6 +71,37 @@ export const projectStore = {
     return state.projects.find(p => p.id === id)
   },
 
+  async getProjectMembers(projectId: number) {
+    state.error = null
+    try {
+      const response = await projectService.getProjectMembers(projectId)
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la récupération des membres'
+      throw error
+    }
+  },
+
+  async addProjectMember(projectId: number, userId: number) {
+    state.error = null
+    try {
+      await projectService.addProjectMember(projectId, userId)
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de l\'ajout du membre'
+      throw error
+    }
+  },
+
+  async removeProjectMember(projectId: number, userId: number) {
+    state.error = null
+    try {
+      await projectService.removeProjectMember(projectId, userId)
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la suppression du membre'
+      throw error
+    }
+  },
+
   clear() {
     state.projects = []
     state.users = []

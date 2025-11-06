@@ -83,6 +83,46 @@ const projectService = {
             const errorData: ErrorResponse = error.response?.data
             throw new Error(errorData?.message || 'Erreur lors de la récupération des projets')
         }
+    },
+
+    async getProjectMembers(projectId: number): Promise<any[]> {
+        try {
+            const response = await axios.get(`${API_URL}/${projectId}/members`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des membres')
+        }
+    },
+
+    async addProjectMember(projectId: number, userId: number): Promise<void> {
+        try {
+            await axios.post(`${API_URL}/${projectId}/members/${userId}`)
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de l\'ajout du membre'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async removeProjectMember(projectId: number, userId: number): Promise<void> {
+        try {
+            await axios.delete(`${API_URL}/${projectId}/members/${userId}`)
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la suppression du membre'
+            )
+            throw new Error(message)
+        }
     }
 }
 
