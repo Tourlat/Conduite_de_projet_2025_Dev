@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
 import com.group3.conduitedeprojet.dto.CreateProjectRequest;
 import com.group3.conduitedeprojet.dto.ProjectResponse;
+import com.group3.conduitedeprojet.dto.UpdateProjectRequest;
 import com.group3.conduitedeprojet.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,21 +65,13 @@ public class ProjectService {
 
     List<Project> projects = projectRepository.findAllByUserParticipation(user.get());
 
-    return projects.stream().map(this::convertToDto).collect(Collectors.toList());
+    return projects.stream().map(this::convertToDto).toList();
   }
 
   public List<UserDto> addCollaboratorsToProject(UUID projectId,
       AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
-    Optional<Project> optionalProject = projectRepository.findById(projectId);
-    if (optionalProject.isEmpty()) {
-      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
-    }
-
-    Project project = optionalProject.get();
-
-    if (!project.getCreator().getUsername().equals(principal.getName())) {
-      throw new NotAuthorizedException("Only the project creator can add members");
-    }
+    Project project = getProject(projectId);
+    checkPrincipalIsCreator(project, principal);
 
     Set<User> newCollaborators =
         addCollaboratorsRequest.getCollaborators().stream().map(collaboratorEmail -> {
@@ -99,16 +92,8 @@ public class ProjectService {
 
   public List<UserDto> removeCollaboratorFromProject(UUID projectId, Long collaboratorId,
       Principal principal) {
-    Optional<Project> optionalProject = projectRepository.findById(projectId);
-    if (optionalProject.isEmpty()) {
-      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
-    }
-
-    Project project = optionalProject.get();
-
-    if (!project.getCreator().getUsername().equals(principal.getName())) {
-      throw new NotAuthorizedException("Only the project creator can add members");
-    }
+    Project project = getProject(projectId);
+    checkPrincipalIsCreator(project, principal);
 
     Optional<User> optionalUser = userRepository.findById(collaboratorId);
     if (optionalUser.isEmpty()) {
@@ -121,6 +106,23 @@ public class ProjectService {
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
   }
 
+  public ProjectResponse updateProjectSettings(UUID projectId, UpdateProjectRequest updateProjectRequest,
+      Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreator(project, principal);
+
+    if (updateProjectRequest.getName() != null) {
+      project.setName(updateProjectRequest.getName());
+    }
+
+    if (updateProjectRequest.getDescription() != null) {
+      project.setDescription(updateProjectRequest.getDescription());
+    }
+
+    projectRepository.save(project);
+    return convertToDto(project);
+  }
+
   private ProjectResponse convertToDto(Project project) {
     User creator = project.getCreator();
 
@@ -130,5 +132,19 @@ public class ProjectService {
     return ProjectResponse.builder().id(project.getId()).name(project.getName())
         .description(project.getDescription()).createdAt(project.getCreatedAt()).creator(creatorDto)
         .build();
+  }
+
+  private Project getProject(UUID projectId) {
+    Optional<Project> optionalProject = projectRepository.findById(projectId);
+    if (optionalProject.isEmpty()) {
+      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
+    }
+    return optionalProject.get();
+  }
+
+  private void checkPrincipalIsCreator(Project project, Principal principal) {
+    if (!project.getCreator().getUsername().equals(principal.getName())) {
+      throw new NotAuthorizedException("Only the project creator can make changes");
+    }
   }
 }

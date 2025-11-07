@@ -2,6 +2,7 @@ package com.group3.conduitedeprojet.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.List;
@@ -154,5 +155,74 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
         .perform(delete("/api/projects/" + projectId + "/collaborators/" + collab.getId())
             .header("Authorization", "Bearer " + attacker.getToken()))
         .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void updateProject_success_updates_project_settings() throws Exception {
+    var owner = register("updater@example.com", "password123", "Updater");
+
+    var createBody = Map.of("name", "Initial Name", "description", "Initial Desc", "user",
+        Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var createRes = mockMvc
+        .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(createBody)))
+        .andExpect(status().isOk()).andReturn();
+
+    String createdJson = createRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+    String projectId = (String) createdMap.get("id");
+
+    var updateBody = Map.of("name", "Updated Name", "description", "Updated Description");
+
+    mockMvc
+        .perform(put("/api/projects/" + projectId + "/settings")
+            .header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateBody)))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Updated Name"))
+        .andExpect(jsonPath("$.description").value("Updated Description"));
+  }
+
+  @Test
+  void updateProject_non_creator_forbidden() throws Exception {
+    var owner = register("owner-update@example.com", "password123", "OwnerUpd");
+    var attacker = register("attacker-update@example.com", "password123", "AttackerUpd");
+
+    var createBody = Map.of("name", "Name Before", "description", "Desc Before", "user",
+        Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var createRes = mockMvc
+        .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(createBody)))
+        .andExpect(status().isOk()).andReturn();
+
+    String createdJson = createRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+    String projectId = (String) createdMap.get("id");
+
+    var updateBody = Map.of("name", "Malicious Update");
+
+    mockMvc
+        .perform(put("/api/projects/" + projectId + "/settings")
+            .header("Authorization", "Bearer " + attacker.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateBody)))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void updateProject_requires_auth_returns_unauthorized() throws Exception {
+    var updateBody = Map.of("name", "Should Not Work");
+
+    mockMvc
+        .perform(put("/api/projects/" + "00000000-0000-0000-0000-000000000000" + "/settings")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateBody)))
+        .andExpect(status().isUnauthorized());
   }
 }
