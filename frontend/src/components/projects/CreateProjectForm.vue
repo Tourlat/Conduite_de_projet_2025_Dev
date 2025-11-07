@@ -284,11 +284,11 @@ input:focus, textarea:focus {
 }
 
 input.error, textarea.error {
-  border-color: var(--terminal-error);
+  border-color: var(--terminal-magenta);
 }
 
 .error-message {
-  color: var(--terminal-error);
+  color: var(--terminal-magenta);
   font-size: 0.85rem;
   margin-top: 0.4rem;
   display: block;
@@ -343,8 +343,8 @@ button:disabled:hover {
 
 .message.error {
   background: rgba(247, 118, 142, 0.1);
-  border: 1px solid var(--terminal-error);
-  color: var(--terminal-error);
+  border: 1px solid var(--terminal-magenta);
+  color: var(--terminal-magenta);
 }
 
 .help-text {
@@ -357,7 +357,7 @@ button:disabled:hover {
 }
 
 .required {
-  color: var(--terminal-error);
+  color: var(--terminal-magenta);
 }
 
 .chips {

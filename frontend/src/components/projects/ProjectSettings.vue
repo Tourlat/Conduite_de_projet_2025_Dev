@@ -183,15 +183,15 @@ h3 {
 }
 
 .message.success {
-  background-color: rgba(0, 255, 0, 0.1);
-  color: #0f0;
-  border: 1px solid #0f0;
+  background-color: rgba(187, 154, 247, 0.1);
+  color: var(--terminal-accent);
+  border: 1px solid var(--terminal-accent);
 }
 
 .message.error {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff0000;
-  border: 1px solid #ff0000;
+  background-color: rgba(247, 118, 142, 0.1);
+  color: var(--terminal-magenta);
+  border: 1px solid var(--terminal-magenta);
 }
 
 .settings-form {
@@ -214,7 +214,7 @@ h3 {
 .form-group input,
 .form-group textarea {
   padding: 0.75rem;
-  background-color: rgba(0, 255, 0, 0.05);
+  background-color: rgba(187, 154, 247, 0.03);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
   color: var(--terminal-text);
@@ -227,7 +227,7 @@ h3 {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--terminal-accent);
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(187, 154, 247, 0.08);
 }
 
 .form-group input:disabled,
@@ -242,7 +242,7 @@ h3 {
 }
 
 .error-text {
-  color: #ff0000;
+  color: var(--terminal-magenta);
   font-size: 0.875rem;
 }
 
@@ -273,7 +273,7 @@ h3 {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0f0;
+  background-color: var(--terminal-accent-dark);
   box-shadow: 0 0 10px var(--terminal-accent);
 }
 
@@ -285,6 +285,6 @@ h3 {
 
 .btn-secondary:hover:not(:disabled) {
   border-color: var(--terminal-accent);
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(187, 154, 247, 0.1);
 }
 </style>

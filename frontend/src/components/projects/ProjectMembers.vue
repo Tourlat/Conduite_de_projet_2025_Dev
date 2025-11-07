@@ -253,15 +253,15 @@ h4 {
 }
 
 .message.success {
-  background-color: rgba(0, 255, 0, 0.1);
-  color: #0f0;
-  border: 1px solid #0f0;
+  background-color: rgba(187, 154, 247, 0.1);
+  color: var(--terminal-accent);
+  border: 1px solid var(--terminal-accent);
 }
 
 .message.error {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff0000;
-  border: 1px solid #ff0000;
+  background-color: rgba(247, 118, 142, 0.1);
+  color: var(--terminal-magenta);
+  border: 1px solid var(--terminal-magenta);
 }
 
 .add-member-section {
@@ -283,7 +283,7 @@ h4 {
 .autocomplete input {
   width: 100%;
   padding: 0.75rem;
-  background-color: rgba(0, 255, 0, 0.05);
+  background-color: rgba(187, 154, 247, 0.03);
   border: 2px solid var(--terminal-border);
   color: var(--terminal-text);
   font-family: 'Courier New', monospace;
@@ -294,7 +294,7 @@ h4 {
 .autocomplete input:focus {
   outline: none;
   border-color: var(--terminal-accent);
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(187, 154, 247, 0.08);
 }
 
 .suggestions {
@@ -326,7 +326,7 @@ h4 {
 
 .suggestions li:hover,
 .suggestions li:focus {
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(187, 154, 247, 0.1);
 }
 
 .user-name {
@@ -370,13 +370,13 @@ h4 {
   align-items: center;
   padding: 1rem;
   margin-bottom: 0.5rem;
-  background-color: rgba(0, 255, 0, 0.05);
+  background-color: rgba(187, 154, 247, 0.03);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
 }
 
 .member-item:hover {
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(187, 154, 247, 0.08);
 }
 
 .member-info {
@@ -404,7 +404,7 @@ h4 {
 }
 
 .creator-badge {
-  background-color: rgba(0, 255, 0, 0.2);
+  background-color: rgba(187, 154, 247, 0.15);
   color: var(--terminal-accent);
   border: 1px solid var(--terminal-accent);
 }
@@ -412,8 +412,8 @@ h4 {
 .btn-remove {
   padding: 0.5rem 1rem;
   background-color: transparent;
-  color: #ff0000;
-  border: 2px solid #ff0000;
+  color: var(--terminal-magenta);
+  border: 2px solid var(--terminal-magenta);
   border-radius: 4px;
   cursor: pointer;
   font-family: 'Courier New', monospace;
@@ -422,7 +422,7 @@ h4 {
 }
 
 .btn-remove:hover {
-  background-color: rgba(255, 0, 0, 0.1);
+  background-color: rgba(247, 118, 142, 0.1);
   transform: translateY(-2px);
 }
 

@@ -222,9 +222,9 @@ onMounted(() => {
 
 .error-message {
   padding: 1rem;
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff0000;
-  border: 1px solid #ff0000;
+  background-color: rgba(247, 118, 142, 0.1);
+  color: var(--terminal-magenta);
+  border: 1px solid var(--terminal-magenta);
   border-radius: 4px;
   margin-bottom: 1rem;
 }
@@ -255,7 +255,7 @@ onMounted(() => {
 
 .btn-back:hover {
   border-color: var(--terminal-accent);
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(187, 154, 247, 0.1);
 }
 
 .project-header h1 {
@@ -273,15 +273,15 @@ onMounted(() => {
 }
 
 .creator-badge {
-  background-color: rgba(0, 255, 0, 0.2);
-  color: #0f0;
-  border: 1px solid #0f0;
+  background-color: rgba(187, 154, 247, 0.15);
+  color: var(--terminal-accent);
+  border: 1px solid var(--terminal-accent);
 }
 
 .collaborator-badge {
   background-color: rgba(0, 150, 255, 0.2);
-  color: #0096ff;
-  border: 1px solid #0096ff;
+  color: var(--terminal-accent);
+  border: 1px solid var(--terminal-accent);
 }
 
 .tabs {
@@ -306,7 +306,7 @@ onMounted(() => {
 
 .tab:hover {
   color: var(--terminal-accent);
-  background-color: rgba(0, 255, 0, 0.05);
+  background-color: rgba(187, 154, 247, 0.05);
 }
 
 .tab.active {
