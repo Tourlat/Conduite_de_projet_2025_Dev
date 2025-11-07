@@ -178,5 +178,4 @@ public class ProjectService {
         .description(project.getDescription()).createdAt(project.getCreatedAt()).creator(creatorDto)
         .build();
   }
-
 }
