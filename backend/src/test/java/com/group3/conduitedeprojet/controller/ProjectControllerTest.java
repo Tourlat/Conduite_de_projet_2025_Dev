@@ -225,4 +225,36 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
             .content(objectMapper.writeValueAsString(updateBody)))
         .andExpect(status().isUnauthorized());
   }
+
+  @Test
+  void createIssue_success_creates_issue() throws Exception {
+    var owner = register("issueowner@example.com", "password123", "IssueOwner");
+
+    var createBody = Map.of("name", "Project For Issue", "description", "desc", "user",
+        Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var createRes = mockMvc
+        .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(createBody)))
+        .andExpect(status().isOk()).andReturn();
+
+    String createdJson = createRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+    String projectId = (String) createdMap.get("id");
+
+    var issueBody = Map.of("title", "Issue Title", "description", "Issue description",
+        "storyPoints", 5, "priority", "MEDIUM");
+
+    mockMvc
+        .perform(post("/api/projects/" + projectId + "/issues")
+            .header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(issueBody)))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.title").value("Issue Title"))
+        .andExpect(jsonPath("$.storyPoints").value(5))
+        .andExpect(jsonPath("$.priority").value("MEDIUM"));
+  }
 }
