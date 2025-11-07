@@ -115,7 +115,7 @@ public class ProjectService {
       throw new UserNotFoundException("User with email " + collaboratorId + " was not found");
     }
     User user = optionalUser.get();
-    project.getCollaborators().add(user);
+    project.getCollaborators().remove(user);
     projectRepository.save(project);
 
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
@@ -131,5 +131,4 @@ public class ProjectService {
         .description(project.getDescription()).createdAt(project.getCreatedAt()).creator(creatorDto)
         .build();
   }
-
 }

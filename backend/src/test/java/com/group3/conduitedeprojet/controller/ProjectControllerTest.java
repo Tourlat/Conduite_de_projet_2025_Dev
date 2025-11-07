@@ -120,7 +120,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     mockMvc
         .perform(delete("/api/projects/" + projectId + "/collaborators/" + collab.getId())
             .header("Authorization", "Bearer " + owner.getToken()))
-        .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1));
+        .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(0));
   }
 
   @Test

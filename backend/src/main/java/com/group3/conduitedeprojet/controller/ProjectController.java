@@ -58,7 +58,7 @@ public class ProjectController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(
-        projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
+    return ResponseEntity
+        .ok(projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
   }
 }
