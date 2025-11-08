@@ -141,7 +141,8 @@ public class ProjectService {
     IssueBuilder issueBuilder = Issue.builder().title(createIssueRequest.getTitle())
         .description(createIssueRequest.getDescription())
         .storyPoints(createIssueRequest.getStoryPoints()).project(project)
-        .priority(createIssueRequest.getPriority());
+        .priority(createIssueRequest.getPriority())
+        .status(createIssueRequest.getStatus());
 
     Optional<User> creator = userRepository.findByEmail(principal.getName());
     if (creator.isEmpty()) {

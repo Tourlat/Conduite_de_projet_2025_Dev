@@ -10,5 +10,6 @@ public class CreateIssueRequest {
     private String description;
     private Issue.Priority priority;
     private Integer storyPoints;
+    private Issue.Status status = Issue.Status.TODO; 
     private Long assigneeId;
 }

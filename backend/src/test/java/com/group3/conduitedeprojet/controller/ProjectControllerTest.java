@@ -247,7 +247,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     String projectId = (String) createdMap.get("id");
 
     var issueBody = Map.of("title", "Issue Title", "description", "Issue description",
-        "storyPoints", 5, "priority", "MEDIUM");
+        "storyPoints", 5, "priority", "MEDIUM", "status", "TODO");
 
     mockMvc
         .perform(post("/api/projects/" + projectId + "/issues")
@@ -257,6 +257,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
         .andExpect(status().isOk()).andExpect(jsonPath("$.id").isNotEmpty())
         .andExpect(jsonPath("$.title").value("Issue Title"))
         .andExpect(jsonPath("$.storyPoints").value(5))
-        .andExpect(jsonPath("$.priority").value("MEDIUM"));
+        .andExpect(jsonPath("$.priority").value("MEDIUM"))
+        .andExpect(jsonPath("$.status").value("TODO"));
   }
 }
