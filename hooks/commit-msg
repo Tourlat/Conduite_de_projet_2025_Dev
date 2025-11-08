@@ -4,7 +4,7 @@
 commit_msg_file=$1
 first_line=$(head -n1 "$commit_msg_file")
 
-allowed_verbs="Add|Fix|Update|Change|Remove|Improve|Refactor|Create|Implement|Document|Revert"
+allowed_verbs="Add|Fix|Update|Change|Remove|Improve|Refactor|Create|Implement|Document|Revert|Merge"
 if [[ ! $first_line =~ ^($allowed_verbs)\  ]]; then
   echo "❌ Error: Commit message should start with a common verb (e.g., Add, Fix, Update)."
   echo "Your message: '$first_line'"

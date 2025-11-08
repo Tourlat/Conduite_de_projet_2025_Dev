@@ -180,7 +180,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     var updateBody = Map.of("name", "Updated Name", "description", "Updated Description");
 
     mockMvc
-        .perform(put("/api/projects/" + projectId + "/settings")
+        .perform(put("/api/projects/" + projectId)
             .header("Authorization", "Bearer " + owner.getToken())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updateBody)))
@@ -210,7 +210,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     var updateBody = Map.of("name", "Malicious Update");
 
     mockMvc
-        .perform(put("/api/projects/" + projectId + "/settings")
+        .perform(put("/api/projects/" + projectId)
             .header("Authorization", "Bearer " + attacker.getToken())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updateBody)))
@@ -222,7 +222,7 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     var updateBody = Map.of("name", "Should Not Work");
 
     mockMvc
-        .perform(put("/api/projects/" + "00000000-0000-0000-0000-000000000000" + "/settings")
+        .perform(put("/api/projects/" + "00000000-0000-0000-0000-000000000000")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updateBody)))
         .andExpect(status().isUnauthorized());
