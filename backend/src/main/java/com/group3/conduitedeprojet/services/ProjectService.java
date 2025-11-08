@@ -197,6 +197,47 @@ public class ProjectService {
     issueRepository.delete(optionalIssue.get());
   }
 
+  public IssueDto updateIssue(UUID projectId, Long issueId, UpdateIssueRequest updateIssueRequest,
+      Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+
+    Optional<Issue> optionalIssue = issueRepository.findByIdAndProjectId(issueId, projectId);
+    if (optionalIssue.isEmpty()) {
+      throw new IssueNotFoundException(
+          "Issue with id " + issueId + " was not found in project " + projectId);
+    }
+
+    Issue issue = optionalIssue.get();
+
+    if (updateIssueRequest.getTitle() != null) {
+      issue.setTitle(updateIssueRequest.getTitle());
+    }
+    if (updateIssueRequest.getDescription() != null) {
+      issue.setDescription(updateIssueRequest.getDescription());
+    }
+    if (updateIssueRequest.getPriority() != null) {
+      issue.setPriority(updateIssueRequest.getPriority());
+    }
+    if (updateIssueRequest.getStoryPoints() != null) {
+      issue.setStoryPoints(updateIssueRequest.getStoryPoints());
+    }
+    if (updateIssueRequest.getStatus() != null) {
+      issue.setStatus(updateIssueRequest.getStatus());
+    }
+    if (updateIssueRequest.getAssigneeId() != null) {
+      Long assigneeId = updateIssueRequest.getAssigneeId();
+      Optional<User> user = userRepository.findById(assigneeId);
+      if (user.isEmpty()) {
+        throw new UserNotFoundException("Assignee with id " + assigneeId + " not found");
+      }
+      issue.setAssignee(user.get());
+    }
+
+    issueRepository.save(issue);
+    return issue.toIssueDto();
+  }
+
   public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest updateProjectRequest,
       Principal principal) {
     Project project = getProject(projectId);

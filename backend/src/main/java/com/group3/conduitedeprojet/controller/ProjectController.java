@@ -113,4 +113,14 @@ public class ProjectController {
     projectService.deleteIssue(projectId, issueId, principal);
     return ResponseEntity.noContent().build();
   }
+
+  @PutMapping("/{projectId}/issues/{issueId}")
+  public ResponseEntity<IssueDto> updateIssue(@PathVariable UUID projectId,
+      @PathVariable Long issueId, @RequestBody UpdateIssueRequest updateIssueRequest, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));  
+  }
 }
