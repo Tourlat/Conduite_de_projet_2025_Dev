@@ -330,7 +330,7 @@ input,
 textarea,
 select {
   padding: 0.75rem;
-  background: rgba(192, 202, 245, 0.05);
+  background: var(--terminal-bg);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
   color: var(--terminal-fg);
@@ -344,7 +344,7 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--terminal-accent);
-  background: rgba(187, 154, 247, 0.05);
+  background: var(--terminal-bg);
 }
 
 input.error,

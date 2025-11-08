@@ -22,18 +22,16 @@
         </div>
 
         <div class="form-group">
-          <label for="assignee">Assigner à <span class="required">*</span></label>
+          <label for="assignee">Assigner à</label>
           <select 
             id="assignee"
             v-model.number="selectedAssigneeId"
-            :class="{ error: errors.assignee }"
           >
             <option :value="null">Non assigné</option>
             <option v-for="assignee in assignees" :key="assignee.id" :value="assignee.id">
               {{ assignee.name }} ({{ assignee.email }})
             </option>
           </select>
-          <span v-if="errors.assignee" class="error-message">{{ errors.assignee }}</span>
         </div>
 
         <div class="current-assignee">
@@ -66,10 +64,6 @@ interface AssignIssueFormProps {
   assignees: Array<{ id: number; name: string; email: string }>
 }
 
-interface Errors {
-  assignee?: string
-}
-
 interface Message {
   text: string
   type: 'success' | 'error'
@@ -83,7 +77,6 @@ const emit = defineEmits<{
 
 const selectedAssigneeId = ref<number | null>(props.issue.assigneeId || null)
 const currentAssigneeName = ref<string>('Non assigné')
-const errors = ref<Errors>({})
 const message = ref<Message | null>(null)
 const isSubmitting = ref(false)
 
@@ -98,7 +91,6 @@ const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise
 }
 
 const handleSubmit = async () => {
-  errors.value = {}
   message.value = null
   isSubmitting.value = true
 
@@ -296,13 +288,9 @@ label {
   font-size: 0.9rem;
 }
 
-.required {
-  color: var(--terminal-accent);
-}
-
 select {
   padding: 0.75rem;
-  background: rgba(192, 202, 245, 0.05);
+  background: var(--terminal-bg);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
   color: var(--terminal-fg);
@@ -314,16 +302,7 @@ select {
 select:focus {
   outline: none;
   border-color: var(--terminal-accent);
-  background: rgba(187, 154, 247, 0.05);
-}
-
-select.error {
-  border-color: var(--terminal-magenta);
-}
-
-.error-message {
-  color: var(--terminal-magenta);
-  font-size: 0.85rem;
+  background: var(--terminal-bg);
 }
 
 .current-assignee {
