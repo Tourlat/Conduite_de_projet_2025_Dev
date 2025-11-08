@@ -2,9 +2,11 @@
   <div class="issue-card" :class="`priority-${issue.priority.toLowerCase()}`">
     <div class="card-header">
       <div class="title-section">
-        <span class="status-badge" :class="`status-${issue.status.toLowerCase()}`">
-          {{ getStatusLabel(issue.status) }}
-        </span>
+        <StatusDropdown
+          v-model="currentStatus"
+          :disabled="!canModify"
+          @change="handleStatusChange"
+        />
         <h4>{{ issue.title }}</h4>
       </div>
       <span class="priority-badge" :class="`priority-${issue.priority.toLowerCase()}`">
@@ -21,7 +23,19 @@
       </span>
       <span class="meta-item">
         <span class="label">Assigné:</span>
-        <span class="value">{{ assigneeName }}</span>
+        <span class="value assignee" @click="canModify && $emit('assign-click')">
+          {{ assigneeName }}
+          <svg 
+            v-if="canModify"
+            class="edit-icon"
+            width="14" 
+            height="14" 
+            viewBox="0 0 16 16" 
+            fill="none"
+          >
+            <path d="M11.5 2L14 4.5L5 13.5H2.5V11L11.5 2Z" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </span>
       </span>
     </div>
 
@@ -45,9 +59,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import type { IssueResponse } from '../../services/projectService'
 import userService from '../../services/userService'
+import StatusDropdown from './StatusDropdown.vue'
 
 interface IssueCardProps {
   issue: IssueResponse
@@ -56,21 +71,15 @@ interface IssueCardProps {
 
 const props = defineProps<IssueCardProps>()
 
-defineEmits<{
+const emit = defineEmits<{
   edit: []
   delete: []
+  'status-change': [issue: IssueResponse, newStatus: 'TODO' | 'IN_PROGRESS' | 'CLOSED']
+  'assign-click': []
 }>()
 
 const assigneeName = ref<string>('Non assigné')
-
-const getStatusLabel = (status: string): string => {
-  const labels: { [key: string]: string } = {
-    'TODO': 'À faire',
-    'IN_PROGRESS': 'En cours',
-    'CLOSED': 'Fermé'
-  }
-  return labels[status] || status
-}
+const currentStatus = ref<'TODO' | 'IN_PROGRESS' | 'CLOSED'>(props.issue.status)
 
 const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise<string> => {
   if (!assigneeId) return 'Non assigné'
@@ -81,6 +90,18 @@ const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise
     return 'Non assigné'
   }
 }
+
+const handleStatusChange = (newStatus: 'TODO' | 'IN_PROGRESS' | 'CLOSED') => {
+  emit('status-change', props.issue, newStatus)
+}
+
+watch(() => props.issue.assigneeId, async (newAssigneeId) => {
+  assigneeName.value = await fetchAssigneeName(newAssigneeId)
+})
+
+watch(() => props.issue.status, (newStatus) => {
+  currentStatus.value = newStatus
+})
 
 onMounted(async () => {
   assigneeName.value = await fetchAssigneeName(props.issue.assigneeId)
@@ -106,15 +127,15 @@ onMounted(async () => {
 }
 
 .issue-card.priority-high {
-  border-left-color: #a78bfa;
+  border-left-color: var(--terminal-magenta);
 }
 
 .issue-card.priority-medium {
-  border-left-color: #c4b5fd;
+  border-left-color: var(--terminal-accent);
 }
 
 .issue-card.priority-low {
-  border-left-color: #ddd6fe;
+  border-left-color: var(--terminal-accent-dark);
 }
 
 .card-header {
@@ -129,32 +150,6 @@ onMounted(async () => {
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  width: fit-content;
-  background: var(--terminal-border);
-  color: var(--terminal-fg);
-}
-
-.status-badge.status-todo {
-  background: rgba(187, 154, 247, 0.15);
-  color: #c4b5fd;
-}
-
-.status-badge.status-in_progress {
-  background: rgba(187, 154, 247, 0.2);
-  color: #a78bfa;
-}
-
-.status-badge.status-closed {
-  background: rgba(187, 154, 247, 0.1);
-  color: #ddd6fe;
 }
 
 h4 {
@@ -174,18 +169,18 @@ h4 {
 }
 
 .priority-badge.priority-high {
-  background: rgba(167, 139, 250, 0.2);
-  color: #a78bfa;
+  background: rgba(247, 118, 142, 0.2);
+  color: var(--terminal-magenta);
 }
 
 .priority-badge.priority-medium {
-  background: rgba(196, 181, 253, 0.2);
-  color: #c4b5fd;
+  background: rgba(187, 154, 247, 0.2);
+  color: var(--terminal-accent);
 }
 
 .priority-badge.priority-low {
-  background: rgba(221, 214, 254, 0.2);
-  color: #ddd6fe;
+  background: rgba(157, 124, 216, 0.2);
+  color: var(--terminal-accent-dark);
 }
 
 .description {
@@ -227,6 +222,27 @@ h4 {
   font-weight: 600;
 }
 
+.value.assignee {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.value.assignee:hover {
+  color: var(--terminal-accent);
+}
+
+.edit-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.value.assignee:hover .edit-icon {
+  opacity: 1;
+}
+
 .actions {
   display: flex;
   gap: 0.5rem;
@@ -245,7 +261,7 @@ h4 {
 
 .btn-edit {
   background: var(--terminal-accent);
-  color: white;
+  color: var(--terminal-bg);
 }
 
 .btn-edit:hover:not(:disabled) {
@@ -254,12 +270,12 @@ h4 {
 }
 
 .btn-delete {
-  background: rgba(196, 181, 253, 0.3);
-  color: #c4b5fd;
+  background: rgba(247, 118, 142, 0.2);
+  color: var(--terminal-magenta);
 }
 
 .btn-delete:hover:not(:disabled) {
-  background: rgba(196, 181, 253, 0.4);
+  background: rgba(247, 118, 142, 0.3);
   transform: translateY(-1px);
 }
 

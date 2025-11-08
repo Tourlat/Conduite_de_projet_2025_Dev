@@ -19,10 +19,12 @@
     />
 
     <IssueList 
+      :project-id="projectId"
       :issues="issues"
       :is-owner="isOwner"
       :user-id="userId"
       :loading="loadingIssues"
+      :assignees="allAssignees"
       @issue-updated="loadIssues"
       @issue-deleted="loadIssues"
     />
@@ -30,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import CreateIssueForm from './CreateIssueForm.vue'
 import IssueList from './IssueList.vue'
 import projectService from '../../services/projectService'
@@ -54,6 +56,14 @@ const props = defineProps<IssueDetailsProps>()
 const issues = ref<IssueResponse[]>([])
 const loadingIssues = ref(false)
 const showCreateForm = ref(false)
+
+const allAssignees = computed(() => {
+  const assignees = [...props.collaborators]
+  if (props.creator && !assignees.some(c => c.id === props.creator?.id)) {
+    assignees.unshift(props.creator)
+  }
+  return assignees
+})
 
 const loadIssues = async () => {
   loadingIssues.value = true
