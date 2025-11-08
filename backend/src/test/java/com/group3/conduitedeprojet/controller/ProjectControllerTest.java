@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public class ProjectControllerTest extends IntegrationTestWithDatabase {
 
@@ -259,5 +260,103 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
         .andExpect(jsonPath("$.storyPoints").value(5))
         .andExpect(jsonPath("$.priority").value("MEDIUM"))
         .andExpect(jsonPath("$.status").value("TODO"));
+  }
+
+  @Test
+  void getIssuesByProject_success_returns_all_issues() throws Exception {
+      var owner = register("issueretriever@example.com", "password123", "IssueRetriever");
+
+      var createBody = Map.of("name", "Project With Issues", "description", "desc", "user",
+              Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+      var createRes = mockMvc
+              .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(objectMapper.writeValueAsString(createBody)))
+              .andExpect(status().isOk()).andReturn();
+
+      String createdJson = createRes.getResponse().getContentAsString();
+      @SuppressWarnings("unchecked")
+      Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+      String projectId = (String) createdMap.get("id");
+      
+      for (int i = 1; i <= 3; i++) {
+          var issueBody = Map.of("title", "Issue " + i, "description", "Description " + i,
+                  "storyPoints", i * 2, "priority", "MEDIUM", "status", "TODO");
+
+          mockMvc
+                  .perform(post("/api/projects/" + projectId + "/issues")
+                          .header("Authorization", "Bearer " + owner.getToken())
+                          .contentType(MediaType.APPLICATION_JSON)
+                          .content(objectMapper.writeValueAsString(issueBody)))
+                  .andExpect(status().isOk());
+      }
+
+      mockMvc
+              .perform(MockMvcRequestBuilders.get("/api/projects/" + projectId + "/issues")
+                      .header("Authorization", "Bearer " + owner.getToken()))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.length()").value(3))
+              .andExpect(jsonPath("$[0].title").value("Issue 1"))
+              .andExpect(jsonPath("$[1].title").value("Issue 2"))
+              .andExpect(jsonPath("$[2].title").value("Issue 3"));
+  }
+
+  @Test
+  void getIssuesByProject_unauthorized_user_forbidden() throws Exception {
+      var owner = register("issueowner2@example.com", "password123", "IssueOwner2");
+      var attacker = register("issueattacker@example.com", "password123", "IssueAttacker");
+
+      var createBody = Map.of("name", "Private Project", "description", "desc", "user",
+              Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+      var createRes = mockMvc
+              .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(objectMapper.writeValueAsString(createBody)))
+              .andExpect(status().isOk()).andReturn();
+
+      String createdJson = createRes.getResponse().getContentAsString();
+      @SuppressWarnings("unchecked")
+      Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+      String projectId = (String) createdMap.get("id");
+
+      mockMvc
+              .perform(MockMvcRequestBuilders.get("/api/projects/" + projectId + "/issues")
+                      .header("Authorization", "Bearer " + attacker.getToken()))
+              .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void getIssuesByProject_empty_returns_empty_list() throws Exception {
+      var owner = register("issueowner3@example.com", "password123", "IssueOwner3");
+
+      var createBody = Map.of("name", "Empty Project", "description", "desc", "user",
+              Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+      var createRes = mockMvc
+              .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(objectMapper.writeValueAsString(createBody)))
+              .andExpect(status().isOk()).andReturn();
+
+      String createdJson = createRes.getResponse().getContentAsString();
+      @SuppressWarnings("unchecked")
+      Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+      String projectId = (String) createdMap.get("id");
+
+      mockMvc
+              .perform(MockMvcRequestBuilders.get("/api/projects/" + projectId + "/issues")
+                      .header("Authorization", "Bearer " + owner.getToken()))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.length()").value(0));
+  }
+
+  @Test
+  void getIssuesByProject_requires_auth() throws Exception {
+      mockMvc
+              .perform(
+                      MockMvcRequestBuilders.get("/api/projects/" + "00000000-0000-0000-0000-000000000000" + "/issues"))
+              .andExpect(status().isUnauthorized());
   }
 }

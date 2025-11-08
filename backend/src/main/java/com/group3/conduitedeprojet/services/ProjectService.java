@@ -8,11 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import com.group3.conduitedeprojet.dto.*;
-import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
-import com.group3.conduitedeprojet.dto.CreateProjectRequest;
-import com.group3.conduitedeprojet.dto.ProjectResponse;
-import com.group3.conduitedeprojet.dto.UpdateProjectRequest;
-import com.group3.conduitedeprojet.dto.UserDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
@@ -163,6 +159,27 @@ public class ProjectService {
     Issue issue = issueBuilder.build();
     issueRepository.save(issue);
     return issue.toIssueDto();
+  }
+
+  public List<IssueDto> getIssuesByProject(UUID projectId, Principal principal) {
+    Optional<Project> optionalProject = projectRepository.findById(projectId);
+    if (optionalProject.isEmpty()) {
+        throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
+    }
+
+    Project project = optionalProject.get();
+
+    String userEmail = principal.getName();
+    boolean hasAccess = project.getCreator().getEmail().equals(userEmail)
+        || project.getCollaborators().stream().anyMatch(u -> u.getEmail().equals(userEmail));
+
+    if (!hasAccess) {
+        throw new NotAuthorizedException("You don't have access to this project");
+    }
+
+    return issueRepository.findByProjectId(projectId).stream()
+        .map(Issue::toIssueDto)
+        .toList();
   }
 
   public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest updateProjectRequest,

@@ -92,4 +92,14 @@ public class ProjectController {
 
     return ResponseEntity.ok(projectService.createIssue(projectId, createIssueRequest, principal));
   }
+
+  @GetMapping("/{projectId}/issues")
+  public ResponseEntity<List<IssueDto>> getProjectIssues(@PathVariable UUID projectId,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.getIssuesByProject(projectId, principal));
+  }
 }
