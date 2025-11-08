@@ -3,6 +3,7 @@ package com.group3.conduitedeprojet.controller;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+import com.group3.conduitedeprojet.dto.*;
 import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
 import com.group3.conduitedeprojet.dto.CreateProjectRequest;
 import com.group3.conduitedeprojet.dto.ProjectResponse;
@@ -47,7 +48,8 @@ public class ProjectController {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    return ResponseEntity.ok(projectService.updateProject(projectId, updateProjectRequest, principal));
+    return ResponseEntity
+        .ok(projectService.updateProject(projectId, updateProjectRequest, principal));
   }
 
   @GetMapping("/{projectId}/collaborators")
@@ -79,5 +81,15 @@ public class ProjectController {
 
     return ResponseEntity
         .ok(projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
+  }
+
+  @PostMapping("/{projectId}/issues")
+  public ResponseEntity<IssueDto> createIssue(@PathVariable UUID projectId,
+      @RequestBody CreateIssueRequest createIssueRequest, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.createIssue(projectId, createIssueRequest, principal));
   }
 }
