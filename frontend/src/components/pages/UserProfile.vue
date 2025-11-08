@@ -356,15 +356,15 @@ button:disabled {
 }
 
 .message.success {
-  background: rgba(154, 247, 200, 0.1);
+  background: rgba(187, 154, 247, 0.1);
   border: 1px solid var(--terminal-accent);
   color: var(--terminal-accent);
 }
 
 .message.error {
   background: rgba(247, 118, 142, 0.1);
-  border: 1px solid var(--terminal-error);
-  color: var(--terminal-error);
+  border: 1px solid var(--terminal-magenta);
+  color: var(--terminal-magenta);
 }
 
 .loading {

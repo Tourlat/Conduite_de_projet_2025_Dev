@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { projectStore } from '../stores/projectStore'
+import { projectStore } from '../../stores/projectStore'
 
 interface ProjectData {
   name: string
@@ -96,7 +96,7 @@ interface Message {
 
 const emit = defineEmits<{
   createProject: [data: ProjectData]
-  projectCreated: [projectId: number]
+  projectCreated: [projectId: string]
 }>()
 
 const router = useRouter()
@@ -226,7 +226,7 @@ const handleSubmit = async () => {
     
     setTimeout(() => {
       router.push('/dashboard')
-    }, 1500)
+    }, 800)
   } catch (error: any) {
     message.value = { text: error.message || 'Erreur lors de la création du projet', type: 'error' }
   } finally {
@@ -236,8 +236,15 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+
 form {
-  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 h2 {
@@ -277,11 +284,11 @@ input:focus, textarea:focus {
 }
 
 input.error, textarea.error {
-  border-color: var(--terminal-error);
+  border-color: var(--terminal-magenta);
 }
 
 .error-message {
-  color: var(--terminal-error);
+  color: var(--terminal-magenta);
   font-size: 0.85rem;
   margin-top: 0.4rem;
   display: block;
@@ -336,8 +343,8 @@ button:disabled:hover {
 
 .message.error {
   background: rgba(247, 118, 142, 0.1);
-  border: 1px solid var(--terminal-error);
-  color: var(--terminal-error);
+  border: 1px solid var(--terminal-magenta);
+  color: var(--terminal-magenta);
 }
 
 .help-text {
@@ -350,7 +357,7 @@ button:disabled:hover {
 }
 
 .required {
-  color: var(--terminal-error);
+  color: var(--terminal-magenta);
 }
 
 .chips {
