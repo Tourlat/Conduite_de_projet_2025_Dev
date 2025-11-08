@@ -102,4 +102,15 @@ public class ProjectController {
 
     return ResponseEntity.ok(projectService.getIssuesByProject(projectId, principal));
   }
+
+  @DeleteMapping("/{projectId}/issues/{issueId}")
+  public ResponseEntity<Void> deleteIssue(@PathVariable UUID projectId,
+      @PathVariable Long issueId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    projectService.deleteIssue(projectId, issueId, principal);
+    return ResponseEntity.noContent().build();
+  }
 }

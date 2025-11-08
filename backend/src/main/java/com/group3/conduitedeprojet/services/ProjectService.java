@@ -11,6 +11,8 @@ import com.group3.conduitedeprojet.dto.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
 import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
@@ -180,6 +182,19 @@ public class ProjectService {
     return issueRepository.findByProjectId(projectId).stream()
         .map(Issue::toIssueDto)
         .toList();
+  }
+
+  public void deleteIssue(UUID projectId, Long issueId, Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+
+    Optional<Issue> optionalIssue = issueRepository.findByIdAndProjectId(issueId, projectId);
+    if (optionalIssue.isEmpty()) {
+      throw new IssueNotFoundException(
+          "Issue with id " + issueId + " was not found in project " + projectId);
+    }
+
+    issueRepository.delete(optionalIssue.get());
   }
 
   public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest updateProjectRequest,
