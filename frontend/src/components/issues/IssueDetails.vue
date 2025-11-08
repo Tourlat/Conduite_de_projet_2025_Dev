@@ -14,6 +14,7 @@
       v-if="showCreateForm"
       :project-id="projectId"
       :collaborators="collaborators"
+      :creator="creator"
       @issue-created="handleIssueCreated"
     />
 
@@ -35,13 +36,19 @@ import IssueList from './IssueList.vue'
 import projectService from '../../services/projectService'
 import type { IssueResponse } from '../../services/projectService'
 
+interface Creator {
+  id: number
+  name: string
+  email: string
+}
+
 interface IssueDetailsProps {
   projectId: string
   collaborators: Array<{ id: number; name: string; email: string }>
+  creator: Creator | null
   isOwner: boolean
   userId: number
 }
-
 const props = defineProps<IssueDetailsProps>()
 
 const issues = ref<IssueResponse[]>([])

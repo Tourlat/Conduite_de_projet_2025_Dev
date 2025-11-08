@@ -67,8 +67,8 @@
         name="assignee"
       >
         <option :value="null">Non assigné</option>
-        <option v-for="collaborator in collaborators" :key="collaborator.id" :value="collaborator.id">
-          {{ collaborator.name }} ({{ collaborator.email }})
+        <option v-for="assignee in allAssignees" :key="assignee.id" :value="assignee.id">
+          {{ assignee.name }} ({{ assignee.email }})
         </option>
       </select>
     </div>
@@ -93,13 +93,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import projectService from '../../services/projectService'
 import type { CreateIssueRequest, IssueResponse } from '../../services/projectService'
 
 interface CreateIssueFormProps {
   projectId: string
   collaborators: Array<{ id: number; name: string; email: string }>
+  creator: { id: number; name: string; email: string } | null
 }
 
 interface FormData {
@@ -126,6 +127,14 @@ const props = defineProps<CreateIssueFormProps>()
 const emit = defineEmits<{
   issueCreated: [issue: IssueResponse]
 }>()
+
+const allAssignees = computed(() => {
+  const assignees = [...props.collaborators]
+  if (props.creator && !assignees.some(c => c.id === props.creator?.id)) {
+    assignees.unshift(props.creator)
+  }
+  return assignees
+})
 
 const formData = reactive<FormData>({
   title: '',

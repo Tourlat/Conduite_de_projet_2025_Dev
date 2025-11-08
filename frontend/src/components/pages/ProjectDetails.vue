@@ -95,6 +95,7 @@
           <IssueDetails 
             :project-id="project.id"
             :collaborators="collaborators"
+            :creator="project.creator || null"
             :is-owner="isOwner"
             :user-id="userId"
           />
