@@ -29,7 +29,13 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/projects',
     name: 'Projects',
-    component: () => import('@/components/CreateProjectForm.vue'),
+    component: () => import('@/components/projects/CreateProjectForm.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/projects/:id',
+    name: 'ProjectDetails',
+    component: () => import('@/components/pages/ProjectDetails.vue'),
     meta: { requiresAuth: true }
   },
   {

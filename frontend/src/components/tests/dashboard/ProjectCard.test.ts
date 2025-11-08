@@ -10,7 +10,7 @@ describe('ProjectCard', () => {
   }
 
   const mockProject = {
-    id: 1,
+    id: "1",
     name: 'Test Project',
     description: 'Test Description',
     createdAt: '2025-11-01T00:00:00.000Z',

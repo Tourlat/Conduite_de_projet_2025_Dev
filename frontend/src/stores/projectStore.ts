@@ -9,7 +9,7 @@ interface CreateProjectRequest {
 }
 
 interface ProjectResponse {
-  id: number
+  id: string
   name: string
   description?: string
   collaborateurs?: string[]
@@ -67,8 +67,56 @@ export const projectStore = {
     }
   },
 
-  getProjectById(id: number): ProjectResponse | undefined {
+  getProjectById(id: string): ProjectResponse | undefined {
     return state.projects.find(p => p.id === id)
+  },
+
+  async updateProject(projectId: string, data: { name: string; description?: string }) {
+    state.error = null
+    try {
+      const response = await projectService.updateProject(projectId, data)
+      const index = state.projects.findIndex(p => p.id === projectId)
+      if (index !== -1) {
+        state.projects[index] = response
+      }
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la mise à jour du projet'
+      throw error
+    }
+  },
+
+  async getProjectCollaborators(projectId: string) {
+    state.error = null
+    try {
+      const response = await projectService.getProjectCollaborators(projectId)
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la récupération des collaborateurs'
+      throw error
+    }
+  },
+
+  async addProjectCollaborators(projectId: string, collaboratorEmails: string[]) {
+    state.error = null
+    try {
+      const response = await projectService.addProjectCollaborators(projectId, collaboratorEmails)
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de l\'ajout des collaborateurs'
+      throw error
+    }
+  },
+
+  async removeProjectCollaborator(projectId: string, collaboratorId: number) {
+    state.error = null
+    try {
+      const response = await projectService.removeProjectCollaborator(projectId, collaboratorId)
+      return response
+    } catch (error: any) {
+      state.error = error.message || 'Erreur lors de la suppression du collaborateur'
+      throw error
+    }
   },
 
   clear() {

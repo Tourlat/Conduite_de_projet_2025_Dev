@@ -13,7 +13,7 @@ interface CreateProjectRequest {
 }
 
 interface ProjectResponse {
-    id: number
+    id: string
     name: string
     description?: string
     collaborateurs?: string[]
@@ -82,6 +82,66 @@ const projectService = {
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
             throw new Error(errorData?.message || 'Erreur lors de la récupération des projets')
+        }
+    },
+
+    async updateProject(projectId: string, data: { name: string; description?: string }): Promise<ProjectResponse> {
+        try {
+            const response = await axios.put<ProjectResponse>(`${API_URL}/${projectId}`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la mise à jour du projet'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getProjectCollaborators(projectId: string): Promise<any[]> {
+        try {
+            const response = await axios.get(`${API_URL}/${projectId}/collaborators`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des collaborateurs')
+        }
+    },
+
+    async addProjectCollaborators(projectId: string, collaboratorEmails: string[]): Promise<any[]> {
+        try {
+            const response = await axios.post(`${API_URL}/${projectId}/collaborators`, {
+                collaborators: collaboratorEmails
+            })
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de l\'ajout des collaborateurs'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async removeProjectCollaborator(projectId: string, collaboratorId: number): Promise<any[]> {
+        try {
+            const response = await axios.delete(`${API_URL}/${projectId}/collaborators/${collaboratorId}`)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la suppression du collaborateur'
+            )
+            throw new Error(message)
         }
     }
 }

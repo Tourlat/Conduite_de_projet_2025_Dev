@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import CreateProjectForm from '../CreateProjectForm.vue'
+import CreateProjectForm from '../projects/CreateProjectForm.vue'
 import { projectStore } from '../../stores/projectStore'
 
 // Mock du router
@@ -71,7 +71,7 @@ describe('CreateProjectForm', () => {
   it('devrait émettre un événement lors de la soumission valide avec nom et description', async () => {
     // Mock projectStore.createProject pour simuler une réponse réussie
     const mockCreateProject = vi.spyOn(projectStore, 'createProject').mockResolvedValue({
-      id: 1,
+      id: "1",
       name: 'Mon Projet Test'
     })
 
@@ -90,7 +90,7 @@ describe('CreateProjectForm', () => {
   it('devrait inclure les données du projet (name et description) dans l\'appel API', async () => {
     // Mock projectStore.createProject
     const mockCreateProject = vi.spyOn(projectStore, 'createProject').mockResolvedValue({
-      id: 1,
+      id: "1",
       name: 'Mon Projet'
     })
 
@@ -113,7 +113,7 @@ describe('CreateProjectForm', () => {
   it('devrait permettre de créer un projet avec une description vide', async () => {
     // Mock projectStore.createProject
     const mockCreateProject = vi.spyOn(projectStore, 'createProject').mockResolvedValue({
-      id: 1,
+      id: "1",
       name: 'Projet Sans Description'
     })
 
@@ -152,7 +152,7 @@ describe('CreateProjectForm', () => {
   it('devrait accepter plusieurs emails séparés par des virgules', async () => {
     // Mock projectStore.createProject pour simuler une réponse réussie
     const mockCreateProject = vi.spyOn(projectStore, 'createProject').mockResolvedValue({
-      id: 1,
+      id: "1",
       name: 'Mon Projet',
       description: '',
       collaborateurs: ['user1@example.com', 'user2@example.com']
@@ -178,7 +178,7 @@ describe('CreateProjectForm', () => {
   it('devrait appeler projectStore.createProject lors de la soumission', async () => {
     // Mock projectStore.createProject pour simuler une réponse réussie
     const mockCreateProject = vi.spyOn(projectStore, 'createProject').mockResolvedValue({
-      id: 1,
+      id: "1",
       name: 'Mon Projet'
     })
 
@@ -202,7 +202,7 @@ describe('CreateProjectForm', () => {
   it('devrait afficher un message de succès après création', async () => {
     // Mock projectStore.createProject pour simuler une réponse réussie
     vi.spyOn(projectStore, 'createProject').mockResolvedValue({
-      id: 1,
+      id: "1",
       name: 'Mon Projet'
     })
 
@@ -233,7 +233,7 @@ describe('CreateProjectForm', () => {
   })
 
   it('devrait émettre projectCreated avec l\'ID du projet en cas de succès', async () => {
-    const projectId = 42
+    const projectId = "42"
     
     // Mock projectStore.createProject pour simuler une réponse réussie
     vi.spyOn(projectStore, 'createProject').mockResolvedValue({

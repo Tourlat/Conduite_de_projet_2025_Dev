@@ -52,6 +52,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { projectStore } from '../../stores/projectStore'
 import ProfileCard from '../dashboard/ProfileCard.vue'
 import ProjectGrid from '../dashboard/ProjectGrid.vue'
@@ -64,12 +65,14 @@ interface Creator {
 }
 
 interface Project {
-  id: number
+  id: string
   name: string
   description?: string
   createdAt?: string
   creator?: Creator
 }
+
+const router = useRouter()
 
 const userEmail = localStorage.getItem('userEmail') || ''
 const userName = localStorage.getItem('userName') || ''
@@ -97,8 +100,7 @@ const collaboratorProjects = computed(() => {
 })
 
 const handleProjectClick = (project: Project) => {
-  // TODO: Navigate to project detail page
-  console.log('Project clicked:', project)
+  router.push(`/projects/${project.id}`)
 }
 
 const fetchProjects = async () => {
