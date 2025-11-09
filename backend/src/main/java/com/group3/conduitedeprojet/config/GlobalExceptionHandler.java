@@ -10,6 +10,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.group3.conduitedeprojet.dto.ErrorResponse;
 import com.group3.conduitedeprojet.exceptions.EmailAlreadyExistsException;
 import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
+import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
 import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
@@ -70,6 +71,17 @@ public class GlobalExceptionHandler {
 
     ErrorResponse error = ErrorResponse.builder().status(HttpStatus.NOT_FOUND.value())
         .message("Project was not found").error("PROJECT_NOT_FOUND").timestamp(LocalDateTime.now())
+        .path(request.getDescription(false).replace("uri=", "")).build();
+
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(IssueNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleIssueNotFound(IssueNotFoundException ex,
+      WebRequest request) {
+
+    ErrorResponse error = ErrorResponse.builder().status(HttpStatus.NOT_FOUND.value())
+        .message("Issue was not found").error("ISSUE_NOT_FOUND").timestamp(LocalDateTime.now())
         .path(request.getDescription(false).replace("uri=", "")).build();
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
