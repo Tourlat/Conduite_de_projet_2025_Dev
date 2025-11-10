@@ -95,7 +95,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue'
 import projectService from '../../services/projectService'
-import type { CreateIssueRequest, IssueResponse } from '../../services/projectService'
+import type { CreateIssueRequest, IssueResponse, IssuePriority, IssueStatus } from '../../services/projectService'
 
 interface CreateIssueFormProps {
   projectId: string
@@ -106,10 +106,10 @@ interface CreateIssueFormProps {
 interface FormData {
   title: string
   description: string
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | ''
+  priority: IssuePriority | ''
   storyPoints: number
   assigneeId: number | null
-  status: 'TODO' | 'IN_PROGRESS' | 'CLOSED'
+  status: IssueStatus
 }
 
 interface Errors {

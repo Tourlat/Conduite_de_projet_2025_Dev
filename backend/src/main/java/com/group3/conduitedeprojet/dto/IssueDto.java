@@ -19,7 +19,7 @@ public class IssueDto {
 
   private String description;
 
-    private Issue.Status status;
+  private Issue.Status status;
 
   private UUID projectId;
 

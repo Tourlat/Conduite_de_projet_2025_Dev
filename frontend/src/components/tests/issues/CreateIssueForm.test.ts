@@ -37,7 +37,8 @@ describe('CreateIssueForm', () => {
       status: 'TODO',
       projectId: 'proj-1',
       creatorId: 1,
-      description: 'Test description'
+      description: 'Test description',
+      createdAt: '2025-11-10T10:00:00Z'
     })
   })
 

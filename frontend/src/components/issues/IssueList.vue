@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { IssueResponse } from '../../services/projectService'
+import type { IssueResponse, IssueStatus } from '../../services/projectService'
 import projectService from '../../services/projectService'
 import IssueCard from './IssueCard.vue'
 import EditIssueForm from './EditIssueForm.vue'
@@ -111,7 +111,7 @@ const openAssignModal = (issue: IssueResponse) => {
   assigningIssue.value = issue
 }
 
-const handleStatusChange = async (issue: IssueResponse, newStatus: 'TODO' | 'IN_PROGRESS' | 'CLOSED') => {
+const handleStatusChange = async (issue: IssueResponse, newStatus: IssueStatus) => {
   try {
     await projectService.updateIssue(props.projectId, issue.id, { status: newStatus })
     emit('issueUpdated')

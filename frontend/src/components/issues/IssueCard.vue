@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import type { IssueResponse } from '../../services/projectService'
+import type { IssueResponse, IssueStatus } from '../../services/projectService'
 import userService from '../../services/userService'
 import StatusDropdown from './StatusDropdown.vue'
 
@@ -74,7 +74,7 @@ const props = defineProps<IssueCardProps>()
 const emit = defineEmits<{
   edit: []
   delete: []
-  'status-change': [issue: IssueResponse, newStatus: 'TODO' | 'IN_PROGRESS' | 'CLOSED']
+  'status-change': [issue: IssueResponse, newStatus: IssueStatus]
   'assign-click': []
 }>()
 

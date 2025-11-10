@@ -28,7 +28,8 @@ describe('IssueList', () => {
       status: 'TODO',
       projectId: 'proj-1',
       creatorId: 1,
-      assigneeId: 2
+      assigneeId: 2,
+      createdAt: '2025-11-10T10:00:00Z'
     },
     {
       id: 2,
@@ -39,7 +40,8 @@ describe('IssueList', () => {
       status: 'IN_PROGRESS',
       projectId: 'proj-1',
       creatorId: 1,
-      assigneeId: 3
+      assigneeId: 3,
+      createdAt: '2025-11-09T10:00:00Z'
     },
     {
       id: 3,
@@ -49,7 +51,8 @@ describe('IssueList', () => {
       storyPoints: 2,
       status: 'CLOSED',
       projectId: 'proj-1',
-      creatorId: 1
+      creatorId: 1,
+      createdAt: '2025-11-08T10:00:00Z'
     }
   ]
 

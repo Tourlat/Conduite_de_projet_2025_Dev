@@ -20,7 +20,8 @@ describe('IssueCard', () => {
     status: 'TODO',
     projectId: 'proj-123',
     creatorId: 1,
-    assigneeId: 2
+    assigneeId: 2,
+    createdAt: '2025-11-10T10:00:00Z'
   }
 
   beforeEach(() => {

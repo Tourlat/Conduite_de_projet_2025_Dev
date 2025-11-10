@@ -19,12 +19,24 @@ interface ProjectResponse {
     collaborateurs?: string[]
 }
 
+export type IssuePriority = 'LOW' | 'MEDIUM' | 'HIGH'
+export type IssueStatus = 'TODO' | 'IN_PROGRESS' | 'CLOSED'
+
 export interface CreateIssueRequest {
     title: string
     description?: string
-    priority: 'LOW' | 'MEDIUM' | 'HIGH'
+    priority: IssuePriority
     storyPoints: number
-    status?: 'TODO' | 'IN_PROGRESS' | 'CLOSED'
+    status?: IssueStatus
+    assigneeId?: number
+}
+
+export interface UpdateIssueRequest {
+    title?: string
+    description?: string
+    priority?: IssuePriority
+    storyPoints?: number
+    status?: IssueStatus
     assigneeId?: number
 }
 
@@ -32,12 +44,13 @@ export interface IssueResponse {
     id: number
     title: string
     description?: string
-    priority: 'LOW' | 'MEDIUM' | 'HIGH'
+    priority: IssuePriority
     storyPoints: number
-    status: 'TODO' | 'IN_PROGRESS' | 'CLOSED'
+    status: IssueStatus
     projectId: string
     creatorId: number
     assigneeId?: number
+    createdAt: string
 }
 
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
@@ -192,7 +205,7 @@ const projectService = {
         }
     },
 
-    async updateIssue(projectId: string, issueId: number, data: Partial<CreateIssueRequest>): Promise<IssueResponse> {
+    async updateIssue(projectId: string, issueId: number, data: UpdateIssueRequest): Promise<IssueResponse> {
         try {
             const response = await axios.put<IssueResponse>(`${API_URL}/${projectId}/issues/${issueId}`, data)
             return response.data
