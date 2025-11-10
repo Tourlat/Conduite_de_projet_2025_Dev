@@ -1,31 +1,21 @@
 package com.group3.conduitedeprojet.dto;
 
-import com.group3.conduitedeprojet.models.Issue;
-import lombok.Builder;
-import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.group3.conduitedeprojet.models.Task;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
-public class IssueDto {
+public class TaskDto {
   private Long id;
-
   private String title;
-
-  private Issue.Priority priority;
-
-  private Integer storyPoints;
-
   private String description;
-
-    private Issue.Status status;
-
-  private UUID projectId;
-
+  private Task.Status status;
   private Long creatorId;
-
+  private UUID projectId;
+  private Long issueId;
   private Long assigneeId;
-
   private LocalDateTime createdAt;
 }

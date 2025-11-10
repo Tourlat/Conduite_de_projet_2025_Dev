@@ -4,16 +4,12 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import com.group3.conduitedeprojet.dto.*;
-import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
-import com.group3.conduitedeprojet.dto.CreateProjectRequest;
-import com.group3.conduitedeprojet.dto.ProjectResponse;
-import com.group3.conduitedeprojet.dto.UpdateProjectRequest;
-import com.group3.conduitedeprojet.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.group3.conduitedeprojet.models.Project;
+import com.group3.conduitedeprojet.models.Task;
 import com.group3.conduitedeprojet.services.ProjectService;
 
 @RestController
@@ -122,5 +118,17 @@ public class ProjectController {
     }
 
     return ResponseEntity.ok(projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));  
+  }
+
+  @PostMapping("/{projectId}/issues/{issueId}/tasks")
+  public ResponseEntity<TaskDto> createTask(@PathVariable UUID projectId,
+      @PathVariable Long issueId, @RequestBody CreateTaskRequest createTaskRequest,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity
+        .ok(projectService.createTask(projectId, issueId, createTaskRequest, principal));
   }
 }

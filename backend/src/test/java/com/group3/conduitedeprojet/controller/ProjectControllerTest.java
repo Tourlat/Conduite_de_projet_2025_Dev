@@ -181,10 +181,10 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
     var updateBody = Map.of("name", "Updated Name", "description", "Updated Description");
 
     mockMvc
-        .perform(put("/api/projects/" + projectId)
-            .header("Authorization", "Bearer " + owner.getToken())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updateBody)))
+        .perform(
+            put("/api/projects/" + projectId).header("Authorization", "Bearer " + owner.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateBody)))
         .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Updated Name"))
         .andExpect(jsonPath("$.description").value("Updated Description"));
   }
@@ -537,5 +537,54 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
               .perform(delete("/api/projects/" + projectId + "/issues/" + issueId)
                       .header("Authorization", "Bearer " + attacker.getToken()))
               .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void createTask_success_creates_task() throws Exception {
+    var owner = register("taskowner@example.com", "password123", "TaskOwner");
+    var assignee = register("assignee@example.com", "password123", "Assignee");
+
+    var createBody = Map.of("name", "Project For Task", "description", "desc", "user",
+        Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var createRes = mockMvc
+        .perform(post("/api/projects").header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(createBody)))
+        .andExpect(status().isOk()).andReturn();
+
+    String createdJson = createRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+    String projectId = (String) createdMap.get("id");
+
+    var issueBody = Map.of("title", "Issue For Task", "description", "Issue desc", "storyPoints", 3,
+        "priority", "LOW");
+
+    var issueRes = mockMvc
+        .perform(post("/api/projects/" + projectId + "/issues")
+            .header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(issueBody)))
+        .andExpect(status().isOk()).andReturn();
+
+    String issueJson = issueRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> issueMap = objectMapper.readValue(issueJson, Map.class);
+    Long issueId = ((Number) issueMap.get("id")).longValue();
+
+    var taskBody = Map.of("title", "Task Title", "description", "Task description", "assigneeId",
+        assignee.getId());
+
+    mockMvc
+        .perform(post("/api/projects/" + projectId + "/issues/" + issueId + "/tasks")
+            .header("Authorization", "Bearer " + owner.getToken())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(taskBody)))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.title").value("Task Title"))
+        .andExpect(jsonPath("$.description").value("Task description"))
+        .andExpect(jsonPath("$.assigneeId").value(assignee.getId().intValue()))
+        .andExpect(jsonPath("$.issueId").value(issueId.intValue()));
   }
 }

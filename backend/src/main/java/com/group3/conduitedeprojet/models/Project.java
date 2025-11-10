@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ForeignKey;
@@ -30,33 +29,31 @@ import lombok.Setter;
 @Table(name = "project")
 public class Project {
 
-    @Id @GeneratedValue private UUID id;
+  @Id
+  @GeneratedValue
+  private UUID id;
 
-    @Column(nullable = false)
-    private String name;
+  @Column(nullable = false)
+  private String name;
 
-    @Column(nullable = true)
-    private String description;
+  @Column(nullable = true)
+  private String description;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-    @PrePersist
-    private void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+  @PrePersist
+  private void onCreate() {
+    this.createdAt = LocalDateTime.now();
+  }
 
-    @ManyToOne
-    @JoinColumn(
-            name = "creator_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_project_creator"))
-    private User creator;
+  @ManyToOne
+  @JoinColumn(name = "creator_id", nullable = false,
+      foreignKey = @ForeignKey(name = "fk_project_creator"))
+  private User creator;
 
-    @ManyToMany
-    @JoinTable(
-            name = "project_user",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> collaborators;
+  @ManyToMany
+  @JoinTable(name = "project_user", joinColumns = @JoinColumn(name = "project_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id"))
+  private Set<User> collaborators;
 }

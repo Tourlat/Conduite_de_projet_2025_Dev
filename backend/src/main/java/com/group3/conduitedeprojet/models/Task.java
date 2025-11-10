@@ -1,7 +1,7 @@
 package com.group3.conduitedeprojet.models;
 
 import java.time.LocalDateTime;
-import com.group3.conduitedeprojet.dto.IssueDto;
+import com.group3.conduitedeprojet.dto.TaskDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -24,8 +24,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@Table(name = "issues")
-public class Issue {
+@Table(name = "tasks")
+public class Task {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,25 +34,26 @@ public class Issue {
   @Column(nullable = false)
   private String title;
 
-  @Column(nullable = false)
-  private Priority priority;
-
-  @Column(nullable = false)
-  private Integer storyPoints;
-
   @Column(columnDefinition = "text", nullable = true)
   private String description;
 
   @Column(nullable = false)
-  private Status status = Status.TODO;
-
-  @ManyToOne(optional = false)
-  private Project project;
+  private Status status;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "creator_id", nullable = false,
       foreignKey = @ForeignKey(name = "fk_project_creator"))
   private User creator;
+
+  @ManyToOne(optional = false)
+  private Project project;
+
+  @ManyToOne(optional = false)
+  private Issue issue;
+
+  @ManyToOne
+  @JoinColumn(name = "assignee_id", nullable = true, foreignKey = @ForeignKey(name = "fk_assignee"))
+  private User assignee;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
@@ -62,27 +63,13 @@ public class Issue {
     this.createdAt = LocalDateTime.now();
   }
 
-  @ManyToOne
-  @JoinColumn(name = "assignee_id", nullable = true, foreignKey = @ForeignKey(name = "fk_assignee"))
-  private User assignee;
-
-  public enum Priority {
-    LOW, MEDIUM, HIGH
-  }
-
   public enum Status {
-    TODO, IN_PROGRESS, CLOSED
+    TODO, IN_PROGRESS, DONE
   }
 
-  public IssueDto toIssueDto() {
-    IssueDto.IssueDtoBuilder builder = IssueDto.builder().id(id).title(title).priority(priority).status(status)
-        .description(description).createdAt(createdAt).storyPoints(storyPoints)
-        .projectId(project.getId()).creatorId(creator.getId());
-
-    if (assignee != null) {
-      builder.assigneeId(assignee.getId());
-    }
-
-    return builder.build();
+  public TaskDto toTaskDto() {
+    return TaskDto.builder().id(id).title(title).description(description).status(status)
+        .creatorId(creator.getId()).projectId(project.getId()).issueId(issue.getId())
+        .assigneeId(assignee.getId()).createdAt(createdAt).build();
   }
 }

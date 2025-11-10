@@ -1,6 +1,5 @@
 package com.group3.conduitedeprojet.dto;
 
-import java.util.Optional;
 import com.group3.conduitedeprojet.models.Issue;
 import lombok.Data;
 
