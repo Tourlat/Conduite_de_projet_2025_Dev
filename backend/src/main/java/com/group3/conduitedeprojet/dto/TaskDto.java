@@ -12,6 +12,7 @@ public class TaskDto {
   private Long id;
   private String title;
   private String description;
+  private String definitionOfDone;
   private Task.Status status;
   private Long creatorId;
   private UUID projectId;

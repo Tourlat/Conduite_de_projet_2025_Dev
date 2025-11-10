@@ -37,6 +37,9 @@ public class Task {
   @Column(columnDefinition = "text", nullable = true)
   private String description;
 
+  @Column(columnDefinition = "text", nullable = true)
+  private String definitionOfDone;
+
   @Column(nullable = false)
   private Status status;
 
@@ -70,6 +73,7 @@ public class Task {
   public TaskDto toTaskDto() {
     return TaskDto.builder().id(id).title(title).description(description).status(status)
         .creatorId(creator.getId()).projectId(project.getId()).issueId(issue.getId())
-        .assigneeId(assignee.getId()).createdAt(createdAt).build();
+        .definitionOfDone(definitionOfDone).assigneeId(assignee.getId()).createdAt(createdAt)
+        .build();
   }
 }
