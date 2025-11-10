@@ -19,6 +19,40 @@ interface ProjectResponse {
     collaborateurs?: string[]
 }
 
+export type IssuePriority = 'LOW' | 'MEDIUM' | 'HIGH'
+export type IssueStatus = 'TODO' | 'IN_PROGRESS' | 'CLOSED'
+
+export interface CreateIssueRequest {
+    title: string
+    description?: string
+    priority: IssuePriority
+    storyPoints: number
+    status?: IssueStatus
+    assigneeId?: number
+}
+
+export interface UpdateIssueRequest {
+    title?: string
+    description?: string
+    priority?: IssuePriority
+    storyPoints?: number
+    status?: IssueStatus
+    assigneeId?: number
+}
+
+export interface IssueResponse {
+    id: number
+    title: string
+    description?: string
+    priority: IssuePriority
+    storyPoints: number
+    status: IssueStatus
+    projectId: string
+    creatorId: number
+    assigneeId?: number
+    createdAt: string
+}
+
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
         409: {
@@ -140,6 +174,63 @@ const projectService = {
                 status,
                 errorData?.error,
                 errorData?.message || 'Erreur lors de la suppression du collaborateur'
+            )
+            throw new Error(message)
+        }
+    },
+    
+    async createIssue(projectId: string, data: CreateIssueRequest): Promise<IssueResponse> {
+        try {
+            const response = await axios.post<IssueResponse>(`${API_URL}/${projectId}/issues`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la création du ticket'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
+        try {
+            const response = await axios.get<IssueResponse[]>(`${API_URL}/${projectId}/issues`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des issues')
+        }
+    },
+
+    async updateIssue(projectId: string, issueId: number, data: UpdateIssueRequest): Promise<IssueResponse> {
+        try {
+            const response = await axios.put<IssueResponse>(`${API_URL}/${projectId}/issues/${issueId}`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la mise à jour de l\'issue'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async deleteIssue(projectId: string, issueId: number): Promise<void> {
+        try {
+            await axios.delete(`${API_URL}/${projectId}/issues/${issueId}`)
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la suppression de l\'issue'
             )
             throw new Error(message)
         }

@@ -32,6 +32,13 @@
           Membres ({{ membersCount }})
         </button>
         <button 
+          class="tab" 
+          :class="{ active: activeTab === 'issues' }"
+          @click="activeTab = 'issues'"
+        >
+          Issues 
+        </button>
+        <button 
           v-if="isOwner"
           class="tab" 
           :class="{ active: activeTab === 'settings' }"
@@ -83,6 +90,16 @@
             @updated="handleProjectUpdated"
           />
         </div>
+
+        <div v-if="activeTab === 'issues'" class="issues-tab">
+          <IssueDetails 
+            :project-id="project.id"
+            :collaborators="collaborators"
+            :creator="project.creator || null"
+            :is-owner="isOwner"
+            :user-id="userId"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -94,6 +111,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { projectStore } from '../../stores/projectStore'
 import ProjectMembers from '../projects/ProjectMembers.vue'
 import ProjectSettings from '../projects/ProjectSettings.vue'
+import IssueDetails from '../issues/IssueDetails.vue'
 
 interface Creator {
   id: number
@@ -115,8 +133,9 @@ const router = useRouter()
 const project = ref<Project | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
-const activeTab = ref<'overview' | 'members' | 'settings'>('overview')
+const activeTab = ref<'overview' | 'members' | 'issues' | 'settings'>('overview')
 const membersCount = ref(0)
+const collaborators = ref<Array<{ id: number; name: string; email: string }>>([])
 
 const userId = parseInt(localStorage.getItem('userId') || '0')
 
@@ -188,16 +207,17 @@ const fetchMembersCount = async () => {
   try {
     const members = await projectStore.getProjectCollaborators(project.value.id)
     membersCount.value = members.length
-  } catch (err) {
-    console.error('Erreur lors du chargement des collaborateurs:', err)
+    collaborators.value = members
+  } catch {
+    console.error('Erreur lors de la récupération des collaborateurs')
   }
 }
 
 const fetchProjects = async () => {
   try {
     await projectStore.getProjects()
-  } catch (err) {
-    console.error('Erreur lors de la mise à jour des projets:', err)
+  } catch {
+    console.error('Erreur lors de la récupération des projets')
   }
 }
 

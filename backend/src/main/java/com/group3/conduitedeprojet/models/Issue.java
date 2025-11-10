@@ -43,6 +43,9 @@ public class Issue {
   @Column(columnDefinition = "text", nullable = true)
   private String description;
 
+  @Column(nullable = false)
+  private Status status = Status.TODO;
+
   @ManyToOne(optional = false)
   private Project project;
 
@@ -67,8 +70,12 @@ public class Issue {
     LOW, MEDIUM, HIGH
   }
 
+  public enum Status {
+    TODO, IN_PROGRESS, CLOSED
+  }
+
   public IssueDto toIssueDto() {
-    IssueDto.IssueDtoBuilder builder = IssueDto.builder().id(id).title(title).priority(priority)
+    IssueDto.IssueDtoBuilder builder = IssueDto.builder().id(id).title(title).priority(priority).status(status)
         .description(description).createdAt(createdAt).storyPoints(storyPoints)
         .projectId(project.getId()).creatorId(creator.getId());
 

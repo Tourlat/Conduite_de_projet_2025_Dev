@@ -89,6 +89,37 @@ public class ProjectController {
     return ResponseEntity.ok(projectService.createIssue(projectId, createIssueRequest, principal));
   }
 
+  @GetMapping("/{projectId}/issues")
+  public ResponseEntity<List<IssueDto>> getProjectIssues(@PathVariable UUID projectId,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.getIssuesByProject(projectId, principal));
+  }
+
+  @DeleteMapping("/{projectId}/issues/{issueId}")
+  public ResponseEntity<Void> deleteIssue(@PathVariable UUID projectId,
+      @PathVariable Long issueId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    projectService.deleteIssue(projectId, issueId, principal);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{projectId}/issues/{issueId}")
+  public ResponseEntity<IssueDto> updateIssue(@PathVariable UUID projectId,
+      @PathVariable Long issueId, @RequestBody UpdateIssueRequest updateIssueRequest, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));  
+  }
+
   @PostMapping("/{projectId}/issues/{issueId}/tasks")
   public ResponseEntity<TaskDto> createTask(@PathVariable UUID projectId,
       @PathVariable Long issueId, @RequestBody CreateTaskRequest createTaskRequest,

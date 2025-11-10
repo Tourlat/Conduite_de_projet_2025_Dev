@@ -9,11 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import com.group3.conduitedeprojet.dto.*;
-import com.group3.conduitedeprojet.dto.AddCollaboratorsRequest;
-import com.group3.conduitedeprojet.dto.CreateProjectRequest;
-import com.group3.conduitedeprojet.dto.ProjectResponse;
-import com.group3.conduitedeprojet.dto.UpdateProjectRequest;
-import com.group3.conduitedeprojet.dto.UserDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
@@ -126,13 +122,89 @@ public class ProjectService {
     IssueBuilder issueBuilder = Issue.builder().title(createIssueRequest.getTitle())
         .description(createIssueRequest.getDescription())
         .storyPoints(createIssueRequest.getStoryPoints()).project(project)
-        .priority(createIssueRequest.getPriority()).creator(creator);
+        .priority(createIssueRequest.getPriority())
+        .status(createIssueRequest.getStatus()).creator(creator);
 
     if (createIssueRequest.getAssigneeId() != null) {
       issueBuilder.assignee(getUser(createIssueRequest.getAssigneeId()));
     }
 
     Issue issue = issueBuilder.build();
+    issueRepository.save(issue);
+    return issue.toIssueDto();
+  }
+
+  public List<IssueDto> getIssuesByProject(UUID projectId, Principal principal) {
+    Optional<Project> optionalProject = projectRepository.findById(projectId);
+    if (optionalProject.isEmpty()) {
+        throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
+    }
+
+    Project project = optionalProject.get();
+
+    String userEmail = principal.getName();
+    boolean hasAccess = project.getCreator().getEmail().equals(userEmail)
+        || project.getCollaborators().stream().anyMatch(u -> u.getEmail().equals(userEmail));
+
+    if (!hasAccess) {
+        throw new NotAuthorizedException("You don't have access to this project");
+    }
+
+    return issueRepository.findByProjectId(projectId).stream()
+        .map(Issue::toIssueDto)
+        .toList();
+  }
+
+  public void deleteIssue(UUID projectId, Long issueId, Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+
+    Optional<Issue> optionalIssue = issueRepository.findByIdAndProjectId(issueId, projectId);
+    if (optionalIssue.isEmpty()) {
+      throw new IssueNotFoundException(
+          "Issue with id " + issueId + " was not found in project " + projectId);
+    }
+
+    issueRepository.delete(optionalIssue.get());
+  }
+
+  public IssueDto updateIssue(UUID projectId, Long issueId, UpdateIssueRequest updateIssueRequest,
+      Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+
+    Optional<Issue> optionalIssue = issueRepository.findByIdAndProjectId(issueId, projectId);
+    if (optionalIssue.isEmpty()) {
+      throw new IssueNotFoundException(
+          "Issue with id " + issueId + " was not found in project " + projectId);
+    }
+
+    Issue issue = optionalIssue.get();
+
+    if (updateIssueRequest.getTitle() != null) {
+      issue.setTitle(updateIssueRequest.getTitle());
+    }
+    if (updateIssueRequest.getDescription() != null) {
+      issue.setDescription(updateIssueRequest.getDescription());
+    }
+    if (updateIssueRequest.getPriority() != null) {
+      issue.setPriority(updateIssueRequest.getPriority());
+    }
+    if (updateIssueRequest.getStoryPoints() != null) {
+      issue.setStoryPoints(updateIssueRequest.getStoryPoints());
+    }
+    if (updateIssueRequest.getStatus() != null) {
+      issue.setStatus(updateIssueRequest.getStatus());
+    }
+    if (updateIssueRequest.getAssigneeId() != null) {
+      Long assigneeId = updateIssueRequest.getAssigneeId();
+      Optional<User> user = userRepository.findById(assigneeId);
+      if (user.isEmpty()) {
+        throw new UserNotFoundException("Assignee with id " + assigneeId + " not found");
+      }
+      issue.setAssignee(user.get());
+    }
+
     issueRepository.save(issue);
     return issue.toIssueDto();
   }
