@@ -111,6 +111,12 @@ onMounted(async () => {
 
 .modal-content.modal-large {
   max-width: 900px;
+  padding: 0;
+}
+
+.modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--terminal-border);
 }
 
 .header-info {
@@ -123,6 +129,7 @@ onMounted(async () => {
 .header-info h2 {
   margin: 0;
   font-size: 1.5rem;
+  line-height: 1.3;
 }
 
 .status-badge {
@@ -150,31 +157,36 @@ onMounted(async () => {
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  max-height: calc(90vh - 100px);
+  gap: 2rem;
+  max-height: calc(90vh - 140px);
   overflow-y: auto;
 }
 
 .issue-info-section {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding-bottom: 1.5rem;
+  gap: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--terminal-border);
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(192, 202, 245, 0.03);
+  border-radius: 6px;
+  border: 1px solid rgba(192, 202, 245, 0.1);
 }
 
 .info-item .label {
@@ -192,14 +204,14 @@ onMounted(async () => {
 }
 
 .description-section {
-  padding: 1.25rem;
+  padding: 1.5rem;
   background: rgba(192, 202, 245, 0.05);
   border: 1px solid var(--terminal-border);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .description-section h4 {
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 1rem 0;
   color: var(--terminal-fg);
   font-size: 1rem;
   font-weight: 600;
@@ -208,7 +220,7 @@ onMounted(async () => {
 .description-section p {
   margin: 0;
   color: rgba(192, 202, 245, 0.8);
-  line-height: 1.6;
+  line-height: 1.7;
   white-space: pre-wrap;
 }
 
