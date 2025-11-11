@@ -14,6 +14,7 @@
         :key="issue.id"
         :issue="issue"
         :can-modify="canModify(issue)"
+        @view="openDetailModal(issue)"
         @edit="openEditModal(issue)"
         @delete="handleDelete(issue)"
         @status-change="handleStatusChange"
@@ -22,6 +23,14 @@
     </div>
 
     <!-- Modals -->
+    <IssueDetailModal
+      v-if="viewingIssue"
+      :project-id="projectId"
+      :issue="viewingIssue"
+      :can-modify="canModify(viewingIssue)"
+      @close="viewingIssue = null"
+    />
+
     <EditIssueForm 
       v-if="editingIssue"
       :project-id="projectId"
@@ -63,6 +72,7 @@ import { computed, ref } from 'vue'
 import type { IssueResponse, IssueStatus } from '../../services/projectService'
 import projectService from '../../services/projectService'
 import IssueCard from './IssueCard.vue'
+import IssueDetailModal from './IssueDetailModal.vue'
 import EditIssueForm from './EditIssueForm.vue'
 import AssignIssueForm from './AssignIssueForm.vue'
 
@@ -82,6 +92,7 @@ const emit = defineEmits<{
   issueDeleted: []
 }>()
 
+const viewingIssue = ref<IssueResponse | null>(null)
 const editingIssue = ref<IssueResponse | null>(null)
 const assigningIssue = ref<IssueResponse | null>(null)
 const deletingIssue = ref<IssueResponse | null>(null)
@@ -101,6 +112,10 @@ const sortedIssues = computed(() => {
 
 const canModify = (issue: IssueResponse): boolean => {
   return props.isOwner || issue.creatorId === props.userId
+}
+
+const openDetailModal = (issue: IssueResponse) => {
+  viewingIssue.value = issue
 }
 
 const openEditModal = (issue: IssueResponse) => {

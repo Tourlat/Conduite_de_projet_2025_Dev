@@ -41,6 +41,12 @@
 
     <div class="actions">
       <button 
+        class="btn-small btn-view"
+        @click="$emit('view')"
+      >
+        Voir détails
+      </button>
+      <button 
         class="btn-small btn-edit"
         :disabled="!canModify"
         @click="$emit('edit')"
@@ -74,6 +80,7 @@ const props = defineProps<IssueCardProps>()
 const emit = defineEmits<{
   edit: []
   delete: []
+  view: []
   'status-change': [issue: IssueResponse, newStatus: IssueStatus]
   'assign-click': []
 }>()
@@ -259,9 +266,19 @@ h4 {
   transition: all 0.2s;
 }
 
+.btn-view {
+  background: rgba(192, 202, 245, 0.1);
+  color: var(--terminal-fg);
+}
+
+.btn-view:hover {
+  background: rgba(192, 202, 245, 0.2);
+  transform: translateY(-1px);
+}
+
 .btn-edit {
   background: var(--terminal-accent);
-  color: var(--terminal-bg);
+  color: white;
 }
 
 .btn-edit:hover:not(:disabled) {
