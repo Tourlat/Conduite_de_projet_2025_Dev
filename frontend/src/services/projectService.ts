@@ -53,6 +53,29 @@ export interface IssueResponse {
     createdAt: string
 }
 
+export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE'
+
+export interface CreateTaskRequest {
+    title: string
+    description?: string
+    definitionOfDone?: string
+    status?: TaskStatus
+    assigneeId?: number
+}
+
+export interface TaskResponse {
+    id: number
+    title: string
+    description?: string
+    definitionOfDone?: string
+    status: TaskStatus
+    issueId: number
+    assigneeId?: number
+    creatorId?: number
+    projectId?: string
+    createdAt: string
+}
+
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
         409: {
@@ -231,6 +254,64 @@ const projectService = {
                 status,
                 errorData?.error,
                 errorData?.message || 'Erreur lors de la suppression de l\'issue'
+            )
+            throw new Error(message)
+        }
+    },
+
+    // Task methods
+    async createTask(projectId: string, issueId: number, data: CreateTaskRequest): Promise<TaskResponse> {
+        try {
+            const response = await axios.post<TaskResponse>(`${API_URL}/${projectId}/issues/${issueId}/tasks`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la création de la tâche'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getTasksByIssue(projectId: string, issueId: number): Promise<TaskResponse[]> {
+        try {
+            const response = await axios.get<TaskResponse[]>(`${API_URL}/${projectId}/issues/${issueId}/tasks`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des tâches')
+        }
+    },
+
+    async updateTask(projectId: string, issueId: number, taskId: number, data: Partial<CreateTaskRequest>): Promise<TaskResponse> {
+        try {
+            const response = await axios.put<TaskResponse>(`${API_URL}/${projectId}/issues/${issueId}/tasks/${taskId}`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la mise à jour de la tâche'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async deleteTask(projectId: string, issueId: number, taskId: number): Promise<void> {
+        try {
+            await axios.delete(`${API_URL}/${projectId}/issues/${issueId}/tasks/${taskId}`)
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la suppression de la tâche'
             )
             throw new Error(message)
         }

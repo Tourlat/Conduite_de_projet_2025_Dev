@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
 import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
+import com.group3.conduitedeprojet.exceptions.TaskNotFoundException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import com.group3.conduitedeprojet.models.Issue;
 import com.group3.conduitedeprojet.models.Issue.IssueBuilder;
@@ -235,6 +236,55 @@ public class ProjectService {
     return task.toTaskDto();
   }
 
+  public List<TaskDto> getTasksByIssue(UUID projectId, Long issueId, Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Issue issue = getIssue(issueId);
+    
+    List<Task> tasks = taskRepository.findByIssueId(issueId);
+    return tasks.stream().map(Task::toTaskDto).toList();
+  }
+
+  public TaskDto updateTask(UUID projectId, Long issueId, Long taskId, 
+      CreateTaskRequest updateTaskRequest, Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Issue issue = getIssue(issueId);
+    Task task = getTask(taskId);
+    
+    if (updateTaskRequest.getTitle() != null && !updateTaskRequest.getTitle().trim().isEmpty()) {
+      task.setTitle(updateTaskRequest.getTitle().trim());
+    }
+    
+    if (updateTaskRequest.getDescription() != null) {
+      task.setDescription(updateTaskRequest.getDescription().trim());
+    }
+    
+    if (updateTaskRequest.getDefinitionOfDone() != null) {
+      task.setDefinitionOfDone(updateTaskRequest.getDefinitionOfDone().trim());
+    }
+    
+    if (updateTaskRequest.getStatus() != null) {
+      task.setStatus(updateTaskRequest.getStatus());
+    }
+    
+    if (updateTaskRequest.getAssigneeId() != null) {
+      task.setAssignee(getUser(updateTaskRequest.getAssigneeId()));
+    }
+    
+    taskRepository.save(task);
+    return task.toTaskDto();
+  }
+
+  public void deleteTask(UUID projectId, Long issueId, Long taskId, Principal principal) {
+    Project project = getProject(projectId);
+    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Issue issue = getIssue(issueId);
+    Task task = getTask(taskId);
+    
+    taskRepository.delete(task);
+  }
+
   public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest updateProjectRequest,
       Principal principal) {
     Project project = getProject(projectId);
@@ -279,6 +329,14 @@ public class ProjectService {
       throw new IssueNotFoundException("Issue with id " + issueId + " was not found");
     }
     return optionalIssue.get();
+  }
+
+  private Task getTask(Long taskId) {
+    Optional<Task> optionalTask = taskRepository.findById(taskId);
+    if (optionalTask.isEmpty()) {
+      throw new TaskNotFoundException("Task with id " + taskId + " was not found");
+    }
+    return optionalTask.get();
   }
 
   private User getUser(Long userId) {

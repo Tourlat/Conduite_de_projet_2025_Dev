@@ -46,7 +46,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  margin-bottom: 0;
 }
 
 .modal-header h2,
@@ -89,6 +90,13 @@
 }
 
 /* Form Styles */
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 .modal-content form {
   padding: 1.5rem;
   display: flex;
