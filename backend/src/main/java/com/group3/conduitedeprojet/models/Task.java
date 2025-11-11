@@ -73,7 +73,9 @@ public class Task {
   public TaskDto toTaskDto() {
     return TaskDto.builder().id(id).title(title).description(description).status(status)
         .creatorId(creator.getId()).projectId(project.getId()).issueId(issue.getId())
-        .definitionOfDone(definitionOfDone).assigneeId(assignee.getId()).createdAt(createdAt)
+        .definitionOfDone(definitionOfDone)
+        .assigneeId(assignee != null ? assignee.getId() : null)
+        .createdAt(createdAt)
         .build();
   }
 }
