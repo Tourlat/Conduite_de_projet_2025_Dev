@@ -108,7 +108,7 @@ describe('TaskList - Tests simples', () => {
     })
     const buttons = wrapper.findAll('.btn-icon')
     if (buttons.length > 0) {
-      await buttons[0].trigger('click')
+      await buttons[0]!.trigger('click')
       expect(wrapper.emitted('edit')).toBeTruthy()
     }
   })
@@ -119,7 +119,7 @@ describe('TaskList - Tests simples', () => {
     })
     const buttons = wrapper.findAll('.btn-icon')
     if (buttons.length > 1) {
-      await buttons[1].trigger('click')
+      await buttons[1]!.trigger('click')
       expect(wrapper.emitted('delete')).toBeTruthy()
     }
   })

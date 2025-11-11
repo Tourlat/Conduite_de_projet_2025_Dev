@@ -33,7 +33,7 @@ describe('TaskDetails - Tests simples', () => {
   })
 
   it('devrait charger les tâches', async () => {
-    const wrapper = mount(TaskDetails, {
+    mount(TaskDetails, {
       props: { projectId: 'p1', issueId: 1, canModify: true, assignableUsers: mockUsers }
     })
     await flushPromises()
