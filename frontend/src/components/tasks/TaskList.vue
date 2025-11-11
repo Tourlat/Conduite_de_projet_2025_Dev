@@ -47,8 +47,14 @@
         
         <h4>{{ task.title }}</h4>
         <p v-if="task.description" class="task-description">{{ task.description }}</p>
+        <p v-if="task.definitionOfDone" class="task-dod">
+          <strong>DoD:</strong> {{ task.definitionOfDone }}
+        </p>
         
         <div class="task-meta">
+          <span v-if="task.assigneeId" class="task-assignee">
+            Assigné à: ID {{ task.assigneeId }}
+          </span>
           <span class="task-date">
             Créée le {{ formatDate(task.createdAt) }}
           </span>
@@ -248,12 +254,33 @@ const formatDate = (dateString: string): string => {
   line-height: 1.4;
 }
 
+.task-dod {
+  margin: 0 0 0.75rem 0;
+  padding: 0.5rem;
+  background: rgba(187, 154, 247, 0.05);
+  border-left: 3px solid var(--terminal-accent);
+  color: rgba(192, 202, 245, 0.8);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  border-radius: 2px;
+}
+
+.task-dod strong {
+  color: var(--terminal-accent);
+}
+
 .task-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   padding-top: 0.5rem;
   border-top: 1px solid var(--terminal-border);
+  flex-wrap: wrap;
+}
+
+.task-assignee {
+  color: rgba(192, 202, 245, 0.7);
+  font-size: 0.8rem;
 }
 
 .task-date {

@@ -14,6 +14,7 @@
       v-if="showCreateForm"
       :project-id="projectId"
       :issue-id="issueId"
+      :assignable-users="assignableUsers"
       @task-created="handleTaskCreated"
       @cancel="showCreateForm = false"
     />
@@ -51,10 +52,17 @@ import TaskList from './TaskList.vue'
 import projectService from '../../services/projectService'
 import type { TaskResponse } from '../../services/projectService'
 
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
 interface TaskDetailsProps {
   projectId: string
   issueId: number
   canModify: boolean
+  assignableUsers: User[]
 }
 
 const props = defineProps<TaskDetailsProps>()

@@ -27,6 +27,33 @@
     </div>
 
     <div class="form-group">
+      <label for="definitionOfDone">Definition of Done</label>
+      <textarea 
+        id="definitionOfDone"
+        v-model="formData.definitionOfDone"
+        rows="2"
+        placeholder="Critères d'acceptation"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="assignee">Assigner à</label>
+      <select 
+        id="assignee"
+        v-model="formData.assigneeId"
+      >
+        <option :value="null">Non assigné</option>
+        <option 
+          v-for="user in assignableUsers" 
+          :key="user.id" 
+          :value="user.id"
+        >
+          {{ user.name }} ({{ user.email }})
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
       <label for="status">Statut</label>
       <select 
         id="status"
@@ -54,15 +81,24 @@ import { reactive, ref } from 'vue'
 import projectService from '../../services/projectService'
 import type { CreateTaskRequest, TaskResponse } from '../../services/projectService'
 
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
 interface CreateTaskFormProps {
   projectId: string
   issueId: number
+  assignableUsers: User[]
 }
 
 interface FormData {
   title: string
   description: string
+  definitionOfDone: string
   status: 'TODO' | 'IN_PROGRESS' | 'DONE'
+  assigneeId: number | null
 }
 
 interface Errors {
@@ -83,7 +119,9 @@ const emit = defineEmits<{
 const formData = reactive<FormData>({
   title: '',
   description: '',
-  status: 'TODO'
+  definitionOfDone: '',
+  status: 'TODO',
+  assigneeId: null
 })
 
 const errors = reactive<Errors>({})
@@ -117,7 +155,9 @@ const handleSubmit = async () => {
     const taskData: CreateTaskRequest = {
       title: formData.title,
       description: formData.description || undefined,
-      status: formData.status
+      definitionOfDone: formData.definitionOfDone || undefined,
+      status: formData.status,
+      assigneeId: formData.assigneeId || undefined
     }
 
     const createdTask = await projectService.createTask(
@@ -134,7 +174,9 @@ const handleSubmit = async () => {
     // Reset form
     formData.title = ''
     formData.description = ''
+    formData.definitionOfDone = ''
     formData.status = 'TODO'
+    formData.assigneeId = null
     Object.keys(errors).forEach(key => delete errors[key as keyof Errors])
 
     setTimeout(() => {

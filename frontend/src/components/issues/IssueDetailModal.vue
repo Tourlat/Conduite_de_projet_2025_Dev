@@ -45,6 +45,7 @@
           :project-id="projectId"
           :issue-id="issue.id"
           :can-modify="canModify"
+          :assignable-users="assignableUsers"
         />
       </div>
     </div>
@@ -55,7 +56,14 @@
 import { ref, onMounted } from 'vue'
 import TaskDetails from '../tasks/TaskDetails.vue'
 import userService from '../../services/userService'
+import projectService from '../../services/projectService'
 import type { IssueResponse } from '../../services/projectService'
+
+interface User {
+  id: number
+  name: string
+  email: string
+}
 
 interface IssueDetailModalProps {
   projectId: string
@@ -70,6 +78,7 @@ defineEmits<{
 }>()
 
 const assigneeName = ref<string>('Non assigné')
+const assignableUsers = ref<User[]>([])
 
 const getStatusLabel = (status: string): string => {
   const labels: { [key: string]: string } = {
@@ -103,6 +112,13 @@ const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise
 
 onMounted(async () => {
   assigneeName.value = await fetchAssigneeName(props.issue.assigneeId)
+  
+  // Récupérer les collaborateurs du projet pour l'assignation
+  try {
+    assignableUsers.value = await projectService.getProjectCollaborators(props.projectId)
+  } catch (error) {
+    console.error('Erreur lors de la récupération des collaborateurs:', error)
+  }
 })
 </script>
 

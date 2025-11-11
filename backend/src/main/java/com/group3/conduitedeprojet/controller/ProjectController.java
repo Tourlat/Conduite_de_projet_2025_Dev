@@ -131,4 +131,36 @@ public class ProjectController {
     return ResponseEntity
         .ok(projectService.createTask(projectId, issueId, createTaskRequest, principal));
   }
+
+  @GetMapping("/{projectId}/issues/{issueId}/tasks")
+  public ResponseEntity<List<TaskDto>> getTasksByIssue(@PathVariable UUID projectId,
+      @PathVariable Long issueId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.getTasksByIssue(projectId, issueId, principal));
+  }
+
+  @PutMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
+  public ResponseEntity<TaskDto> updateTask(@PathVariable UUID projectId,
+      @PathVariable Long issueId, @PathVariable Long taskId,
+      @RequestBody CreateTaskRequest updateTaskRequest, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.updateTask(projectId, issueId, taskId, updateTaskRequest, principal));
+  }
+
+  @DeleteMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
+  public ResponseEntity<Void> deleteTask(@PathVariable UUID projectId,
+      @PathVariable Long issueId, @PathVariable Long taskId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    projectService.deleteTask(projectId, issueId, taskId, principal);
+    return ResponseEntity.noContent().build();
+  }
 }

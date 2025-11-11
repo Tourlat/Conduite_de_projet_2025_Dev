@@ -58,15 +58,21 @@ export type TaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE'
 export interface CreateTaskRequest {
     title: string
     description?: string
+    definitionOfDone?: string
     status?: TaskStatus
+    assigneeId?: number
 }
 
 export interface TaskResponse {
     id: number
     title: string
     description?: string
+    definitionOfDone?: string
     status: TaskStatus
     issueId: number
+    assigneeId?: number
+    creatorId?: number
+    projectId?: string
     createdAt: string
 }
 
