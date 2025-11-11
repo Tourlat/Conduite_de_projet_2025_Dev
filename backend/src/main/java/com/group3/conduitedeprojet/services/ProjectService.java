@@ -216,9 +216,9 @@ public class ProjectService {
     Issue issue = getIssue(issueId);
     User creator = getUserByEmail(principal.getName());
 
-    Task.TaskBuilder taskBuilder =
-        Task.builder().creator(creator).description(createTaskRequest.getDescription())
-            .title(createTaskRequest.getTitle()).project(project).issue(issue);
+    Task.TaskBuilder taskBuilder = Task.builder().creator(creator)
+        .description(createTaskRequest.getDescription()).title(createTaskRequest.getTitle())
+        .project(project).issue(issue).definitionOfDone(createTaskRequest.getDefinitionOfDone());
 
     if (createTaskRequest.getAssigneeId() != null) {
       taskBuilder.assignee(getUser(createTaskRequest.getAssigneeId()));
