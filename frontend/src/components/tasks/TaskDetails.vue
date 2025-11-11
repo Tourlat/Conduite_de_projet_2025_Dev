@@ -23,8 +23,20 @@
       :tasks="tasks"
       :loading="loadingTasks"
       :can-modify="canModify"
+      :assignable-users="assignableUsers"
       @edit="handleEdit"
       @delete="handleDelete"
+    />
+
+    <!-- Edit Task Modal -->
+    <EditTaskForm
+      v-if="editingTask"
+      :project-id="projectId"
+      :issue-id="issueId"
+      :task="editingTask"
+      :assignable-users="assignableUsers"
+      @task-updated="handleTaskUpdated"
+      @close="editingTask = null"
     />
 
     <!-- Delete Confirmation Modal -->
@@ -48,6 +60,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import CreateTaskForm from './CreateTaskForm.vue'
+import EditTaskForm from './EditTaskForm.vue'
 import TaskList from './TaskList.vue'
 import projectService from '../../services/projectService'
 import type { TaskResponse } from '../../services/projectService'
@@ -70,6 +83,7 @@ const props = defineProps<TaskDetailsProps>()
 const tasks = ref<TaskResponse[]>([])
 const loadingTasks = ref(false)
 const showCreateForm = ref(false)
+const editingTask = ref<TaskResponse | null>(null)
 const deletingTask = ref<TaskResponse | null>(null)
 const isDeleting = ref(false)
 
@@ -90,8 +104,12 @@ const handleTaskCreated = async () => {
 }
 
 const handleEdit = (task: TaskResponse) => {
-  // TODO: Implémenter l'édition de tâche (T10.3)
-  console.log('Edit task:', task)
+  editingTask.value = task
+}
+
+const handleTaskUpdated = async () => {
+  editingTask.value = null
+  await loadTasks()
 }
 
 const handleDelete = (task: TaskResponse) => {

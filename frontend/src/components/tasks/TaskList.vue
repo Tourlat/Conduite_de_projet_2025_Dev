@@ -53,7 +53,7 @@
         
         <div class="task-meta">
           <span v-if="task.assigneeId" class="task-assignee">
-            Assigné à: ID {{ task.assigneeId }}
+            Assigné à: {{ getAssigneeName(task.assigneeId) }}
           </span>
           <span class="task-date">
             Créée le {{ formatDate(task.createdAt) }}
@@ -68,10 +68,17 @@
 import { computed } from 'vue'
 import type { TaskResponse } from '../../services/projectService'
 
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
 interface TaskListProps {
   tasks: TaskResponse[]
   loading: boolean
   canModify: boolean
+  assignableUsers: User[]
 }
 
 const props = defineProps<TaskListProps>()
@@ -95,6 +102,12 @@ const getStatusLabel = (status: string): string => {
     'DONE': 'Terminé'
   }
   return labels[status] || status
+}
+
+const getAssigneeName = (assigneeId: number | undefined): string => {
+  if (!assigneeId) return 'Non assigné'
+  const user = props.assignableUsers.find(u => u.id === assigneeId)
+  return user ? user.name : `ID ${assigneeId}`
 }
 
 const formatDate = (dateString: string): string => {
