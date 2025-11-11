@@ -140,10 +140,11 @@ describe('IssueCard', () => {
       }
     })
     
-    const buttons = wrapper.findAll('.btn-small')
-    buttons.forEach(button => {
-      expect(button.attributes('disabled')).toBeDefined()
-    })
+    const editButton = wrapper.find('.btn-edit').element as HTMLButtonElement
+    const deleteButton = wrapper.find('.btn-delete').element as HTMLButtonElement
+    
+    expect(editButton.disabled).toBe(true)
+    expect(deleteButton.disabled).toBe(true)
   })
 
   it('devrait émettre un événement edit quand on clique sur le bouton éditer', async () => {
