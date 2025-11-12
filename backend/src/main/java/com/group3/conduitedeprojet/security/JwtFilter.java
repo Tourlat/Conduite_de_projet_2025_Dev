@@ -53,6 +53,13 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } 
+        catch (io.jsonwebtoken.ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(
+                "{\"error\": \"TokenExpired\", \"message\": \"JWT token has expired\"}"
+            );
         } catch (Exception e) {
             logger.error("Erreur JWT: " + e.getMessage());
         }
