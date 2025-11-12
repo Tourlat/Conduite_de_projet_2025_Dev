@@ -99,7 +99,6 @@ export const clearUserData = (): void => {
     localStorage.removeItem('authToken')
     localStorage.removeItem('userEmail')
     localStorage.removeItem('userName')
-    localStorage.removeItem('token')
     localStorage.removeItem('userId')
 }
 
