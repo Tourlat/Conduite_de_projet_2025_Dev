@@ -48,6 +48,12 @@ In frontend you need to create a .env file based on the .env.example file. - Cop
 }
 ```
 
+#### IntelliJ
+
+1. Install [Google Java Format](https://plugins.jetbrains.com/plugin/8527-google-java-format) plugin
+2. Setup by following these [steps](https://github.com/google/google-java-format?tab=readme-ov-file#intellij-jre-config)
+3. In the IntelliJ settings under [google java format settings](jetbrains://idea/settings?name=google-java-format+Settings) set `Default Google Java Style` and not `AOSP`.
+
 ### Commit Hooks
 
 Execute `git config core.hooksPath hooks` in this repository to adjust the path of the git hooks directory.
