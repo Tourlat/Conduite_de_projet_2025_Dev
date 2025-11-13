@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SprintRepository extends JpaRepository<Sprint, Long> {
   List<Sprint> findByProjectId(UUID projectId);
+
   Optional<Sprint> findByIdAndProjectId(Long id, UUID projectId);
 }

@@ -180,4 +180,72 @@ public class ProjectController {
     projectService.deleteTask(projectId, issueId, taskId, principal);
     return ResponseEntity.noContent().build();
   }
+
+  @PostMapping("/{projectId}/sprints")
+  public ResponseEntity<SprintDto> createSprint(
+      @PathVariable UUID projectId,
+      @RequestBody CreateSprintRequest createSprintRequest,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(
+        projectService.createSprint(projectId, createSprintRequest, principal));
+  }
+
+  @GetMapping("/{projectId}/sprints")
+  public ResponseEntity<List<SprintDto>> getSprintsByProject(
+      @PathVariable UUID projectId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.getSprintsByProject(projectId, principal));
+  }
+
+  @GetMapping("/{projectId}/sprints/{sprintId}")
+  public ResponseEntity<SprintDto> getSprintById(
+      @PathVariable UUID projectId, @PathVariable Long sprintId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.getSprintById(projectId, sprintId, principal));
+  }
+
+  @PutMapping("/{projectId}/sprints/{sprintId}")
+  public ResponseEntity<SprintDto> updateSprint(
+      @PathVariable UUID projectId,
+      @PathVariable Long sprintId,
+      @RequestBody UpdateSprintRequest updateSprintRequest,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(
+        projectService.updateSprint(projectId, sprintId, updateSprintRequest, principal));
+  }
+
+  @DeleteMapping("/{projectId}/sprints/{sprintId}")
+  public ResponseEntity<Void> deleteSprint(
+      @PathVariable UUID projectId, @PathVariable Long sprintId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    projectService.deleteSprint(projectId, sprintId, principal);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/{projectId}/sprints/{sprintId}/issues")
+  public ResponseEntity<List<IssueDto>> getIssuesBySprint(
+      @PathVariable UUID projectId, @PathVariable Long sprintId, Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(projectService.getIssuesBySprint(projectId, sprintId, principal));
+  }
 }

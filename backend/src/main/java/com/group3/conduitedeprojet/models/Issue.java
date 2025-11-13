@@ -69,7 +69,10 @@ public class Issue {
   private User assignee;
 
   @ManyToOne
-  @JoinColumn(name = "sprint_id", nullable = true, foreignKey = @ForeignKey(name = "fk_issue_sprint"))
+  @JoinColumn(
+      name = "sprint_id",
+      nullable = true,
+      foreignKey = @ForeignKey(name = "fk_issue_sprint"))
   private Sprint sprint;
 
   public enum Priority {
