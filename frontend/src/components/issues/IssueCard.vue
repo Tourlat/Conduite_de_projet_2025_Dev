@@ -134,15 +134,15 @@ onMounted(async () => {
 }
 
 .issue-card.priority-high {
-  border-left-color: var(--terminal-magenta);
+  border-left-color: #e0c8ff;
 }
 
 .issue-card.priority-medium {
-  border-left-color: var(--terminal-accent);
+  border-left-color: #bb9af7;
 }
 
 .issue-card.priority-low {
-  border-left-color: var(--terminal-accent-dark);
+  border-left-color: #bb9af7;
 }
 
 .card-header {
@@ -176,18 +176,21 @@ h4 {
 }
 
 .priority-badge.priority-high {
-  background: rgba(247, 118, 142, 0.2);
-  color: var(--terminal-magenta);
+  background: rgba(208, 176, 255, 0.3);
+  color: #e0c8ff;
+  border-color: #e0c8ff;
 }
 
 .priority-badge.priority-medium {
   background: rgba(187, 154, 247, 0.2);
-  color: var(--terminal-accent);
+  color: #bb9af7;
+  border-color: #bb9af7;
 }
 
 .priority-badge.priority-low {
-  background: rgba(157, 124, 216, 0.2);
-  color: var(--terminal-accent-dark);
+  background: rgba(187, 154, 247, 0.2);
+  color: #bb9af7;
+  border-color: #bb9af7;
 }
 
 .description {

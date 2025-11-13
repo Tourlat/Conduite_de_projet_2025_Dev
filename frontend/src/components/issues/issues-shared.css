@@ -248,18 +248,21 @@
 }
 
 .badge.priority-high {
-  background: rgba(247, 118, 142, 0.2);
-  color: var(--terminal-magenta);
+  background: rgba(208, 176, 255, 0.3);
+  color: #e0c8ff;
+  border-color: #e0c8ff;
 }
 
 .badge.priority-medium {
   background: rgba(187, 154, 247, 0.2);
-  color: var(--terminal-accent);
+  color: #bb9af7;
+  border-color: #bb9af7;
 }
 
 .badge.priority-low {
-  background: rgba(157, 124, 216, 0.2);
-  color: var(--terminal-accent-dark);
+  background: rgba(157, 124, 216, 0.1);
+  color: #7a5dc7;
+  border-color: #7a5dc7;
 }
 
 /* Info Box */

@@ -135,7 +135,7 @@ const onCollaborateurInput = () => {
     suggestions.value = allUsers.value.slice(0, 5)
     return
   }
-  // Filtrer côté client les emails qui commencent par la saisie
+
   const lower = cleanedCollaboratorsInput.toLowerCase()
   suggestions.value = allUsers.value
     .filter((user: any) => typeof user.email === 'string' && user.email.toLowerCase().startsWith(lower))
@@ -160,7 +160,7 @@ const removeCollaborator = (email: string) => {
 const maybeAddInputAsCollaborator = () => {
   const cleanedCollaborateursInput = collaborateursInput.value.trim()
   if (!cleanedCollaborateursInput) return
-  // allow comma separated
+
   if (cleanedCollaborateursInput.includes(',')) {
     const parts = cleanedCollaborateursInput.split(',').map(p => p.trim()).filter(Boolean)
     for (const part of parts) addCollaborator(part)
@@ -196,7 +196,7 @@ const validateForm = (): boolean => {
     collaborateursInput.value = ''
   }
 
-  // Validation des collaborateurs (si fournis)
+  // Validation des collaborateurs
   if (formData.collaborateurs && formData.collaborateurs.length) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     for (const email of formData.collaborateurs) {

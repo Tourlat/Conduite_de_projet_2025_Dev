@@ -11,9 +11,14 @@
           ← Retour au tableau de bord
         </button>
         <h1>{{ project.name }}</h1>
-        <span class="badge" :class="isOwner ? 'creator-badge' : 'collaborator-badge'">
-          {{ isOwner ? 'Créateur' : 'Collaborateur' }}
-        </span>
+        <div class="header-actions">
+          <button class="btn-backlog" @click="goToBacklog">
+            📋 Backlog
+          </button>
+          <span class="badge" :class="isOwner ? 'creator-badge' : 'collaborator-badge'">
+            {{ isOwner ? 'Créateur' : 'Collaborateur' }}
+          </span>
+        </div>
       </div>
 
       <div class="tabs">
@@ -159,6 +164,10 @@ const goBack = () => {
   router.push('/dashboard')
 }
 
+const goToBacklog = () => {
+  router.push(`/projects/${route.params.id}/backlog`)
+}
+
 const handleProjectUpdated = (updatedProject: Project) => {
   project.value = { ...project.value, ...updatedProject }
   fetchProjects()
@@ -283,6 +292,28 @@ onMounted(() => {
   color: var(--terminal-accent);
   margin: 0;
   font-size: 2rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-backlog {
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-accent);
+  border: 2px solid var(--terminal-accent);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-backlog:hover {
+  background: rgba(187, 154, 247, 0.1);
 }
 
 .badge {
