@@ -12,7 +12,39 @@
         Chargement du backlog...
       </div>
 
-      <div v-else class="backlog-board">
+      <div v-else>
+        <div class="filters-bar">
+          <div class="filter-group">
+            <label for="priority-filter">Priorité:</label>
+            <select id="priority-filter" v-model="priorityFilter" class="filter-select">
+              <option value="all">Toutes</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="assignment-filter">Assignation:</label>
+            <select id="assignment-filter" v-model="assignmentFilter" class="filter-select">
+              <option value="all">Toutes</option>
+              <option value="assigned">Assignées</option>
+              <option value="unassigned">Non assignées</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="sort-filter">Trier par:</label>
+            <select id="sort-filter" v-model="sortBy" class="filter-select">
+              <option value="alphabetical">Ordre alphabétique</option>
+              <option value="priority-desc">Priorité (haute → basse)</option>
+              <option value="priority-asc">Priorité (basse → haute)</option>
+              <option value="storypoints">Story Points</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="backlog-board">
         <BacklogColumn
           title="À faire"
           :issues="todoIssues"
@@ -37,6 +69,7 @@
           @issue-click="goToIssue"
         />
       </div>
+      </div>
     </div>
   </div>
 </template>
@@ -57,17 +90,75 @@ const issues = ref<IssueResponse[]>([])
 const projectName = ref('')
 const loading = ref(true)
 
-const todoIssues = computed(() => 
-  issues.value.filter(issue => issue.status === 'TODO')
-)
+// Filtres
+const priorityFilter = ref<'all' | 'HIGH' | 'MEDIUM' | 'LOW'>('all')
+const assignmentFilter = ref<'all' | 'assigned' | 'unassigned'>('all')
+const sortBy = ref<'alphabetical' | 'priority-desc' | 'priority-asc' | 'storypoints'>('alphabetical')
 
-const inProgressIssues = computed(() => 
-  issues.value.filter(issue => issue.status === 'IN_PROGRESS')
-)
+// Fonction pour trier les issues
+const sortIssues = (issuesList: IssueResponse[]) => {
+  const sorted = [...issuesList]
+  
+  if (sortBy.value === 'alphabetical') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortBy.value === 'priority-desc') {
+    const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 }
+    sorted.sort((a, b) => {
+      const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0
+      const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0
+      return bPriority - aPriority
+    })
+  } else if (sortBy.value === 'priority-asc') {
+    const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 }
+    sorted.sort((a, b) => {
+      const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0
+      const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0
+      return aPriority - bPriority
+    })
+  } else if (sortBy.value === 'storypoints') {
+    sorted.sort((a, b) => {
+      const aPoints = a.storyPoints || 0
+      const bPoints = b.storyPoints || 0
+      return bPoints - aPoints
+    })
+  }
+  
+  return sorted
+}
 
-const closedIssues = computed(() => 
-  issues.value.filter(issue => issue.status === 'CLOSED')
-)
+// Fonction pour filtrer les issues
+const filterIssues = (issuesList: IssueResponse[]) => {
+  let filtered = [...issuesList]
+  
+  // Filtre par priorité
+  if (priorityFilter.value !== 'all') {
+    filtered = filtered.filter(issue => issue.priority === priorityFilter.value)
+  }
+  
+  // Filtre par assignation
+  if (assignmentFilter.value === 'assigned') {
+    filtered = filtered.filter(issue => issue.assigneeId != null)
+  } else if (assignmentFilter.value === 'unassigned') {
+    filtered = filtered.filter(issue => issue.assigneeId == null)
+  }
+  
+  return filtered
+}
+
+const todoIssues = computed(() => {
+  const filtered = filterIssues(issues.value.filter(issue => issue.status === 'TODO'))
+  return sortIssues(filtered)
+})
+
+const inProgressIssues = computed(() => {
+  const filtered = filterIssues(issues.value.filter(issue => issue.status === 'IN_PROGRESS'))
+  return sortIssues(filtered)
+})
+
+const closedIssues = computed(() => {
+  const filtered = filterIssues(issues.value.filter(issue => issue.status === 'CLOSED'))
+  return sortIssues(filtered)
+})
 
 const loadBacklog = async () => {
   loading.value = true
@@ -145,6 +236,64 @@ onMounted(() => {
   color: var(--terminal-fg);
 }
 
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: rgba(187, 154, 247, 0.05);
+  border: 1px solid rgba(187, 154, 247, 0.2);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--terminal-accent);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.filter-select {
+  padding: 0.6rem 2.5rem 0.6rem 1rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  border: 1px solid rgba(187, 154, 247, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23bb9af7' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  min-width: 180px;
+}
+
+.filter-select:hover {
+  background-color: rgba(187, 154, 247, 0.05);
+  border-color: var(--terminal-accent);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 0 2px rgba(187, 154, 247, 0.1);
+}
+
+.filter-select option {
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  padding: 0.5rem;
+}
+
 .loading {
   text-align: center;
   padding: 3rem;
@@ -177,6 +326,22 @@ onMounted(() => {
 
   .backlog-header h1 {
     font-size: 1.4rem;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filter-group {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .filter-select {
+    width: 100%;
   }
 }
 </style>
