@@ -25,7 +25,7 @@ In frontend you need to create a .env file based on the .env.example file. - Cop
 #### VSCode
 
 1. Install [Run On Save](https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave) plugin
-2. Add the following code to [.vscode/settings.json](.vscode/settings.json). This will 
+2. Add the following code to [.vscode/settings.json](.vscode/settings.json). This will update all Java code on save.
 
 ```
 {
