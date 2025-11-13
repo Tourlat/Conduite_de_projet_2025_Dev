@@ -47,18 +47,21 @@ public class ProjectService {
             .creator(creator)
             .build();
 
+    Set<User> collaborators = new HashSet<>();
     // Ajouter les collaborateurs si présents
     if (createProjectRequest.getCollaborateurs() != null
         && !createProjectRequest.getCollaborateurs().isEmpty()) {
-      Set<User> collaborators = new HashSet<>();
+
       for (String email : createProjectRequest.getCollaborateurs()) {
         Optional<User> collaborator = userRepository.findByEmail(email);
         if (collaborator.isPresent()) {
           collaborators.add(collaborator.get());
         }
       }
-      project.setCollaborators(collaborators);
     }
+
+    collaborators.add(creator);
+    project.setCollaborators(collaborators);
 
     return projectRepository.save(project);
   }
@@ -248,7 +251,7 @@ public class ProjectService {
   public List<TaskDto> getTasksByIssue(UUID projectId, Long issueId, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
-    Issue issue = getIssue(issueId);
+    getIssue(issueId);
 
     List<Task> tasks = taskRepository.findByIssueId(issueId);
     return tasks.stream().map(Task::toTaskDto).toList();
@@ -262,7 +265,7 @@ public class ProjectService {
       Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
-    Issue issue = getIssue(issueId);
+    getIssue(issueId);
     Task task = getTask(taskId);
 
     if (updateTaskRequest.getTitle() != null && !updateTaskRequest.getTitle().trim().isEmpty()) {
@@ -292,7 +295,7 @@ public class ProjectService {
   public void deleteTask(UUID projectId, Long issueId, Long taskId, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
-    Issue issue = getIssue(issueId);
+    getIssue(issueId);
     Task task = getTask(taskId);
 
     taskRepository.delete(task);

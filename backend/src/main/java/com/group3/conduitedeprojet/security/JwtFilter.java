@@ -58,7 +58,6 @@ public class JwtFilter extends OncePerRequestFilter {
     } catch (Exception e) {
       logger.error("Erreur JWT: " + e.getMessage());
     }
-
     filterChain.doFilter(request, response);
   }
 

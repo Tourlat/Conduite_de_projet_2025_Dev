@@ -6,8 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.group3.conduitedeprojet.dto.UserDto;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -90,14 +93,25 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
 
     var addBody = Map.of("collaborators", List.of(collab.getEmail()));
 
-    mockMvc
-        .perform(
-            post("/api/projects/" + projectId + "/collaborators")
-                .header("Authorization", "Bearer " + owner.getToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(addBody)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].email").value(collab.getEmail()));
+    String returnString =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/collaborators")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(addBody)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<UserDto> collaborators =
+        Arrays.stream(objectMapper.readValue(returnString, UserDto[].class)).toList();
+
+    List<String> emails = collaborators.stream().map(UserDto::getEmail).toList();
+
+    Assertions.assertTrue(emails.contains("owner2@example.com"));
+    Assertions.assertTrue(emails.contains("collab@example.com"));
   }
 
   @Test
@@ -180,15 +194,26 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(addBody)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(2));
+        .andExpect(jsonPath("$.length()").value(3));
 
-    mockMvc
-        .perform(
-            delete("/api/projects/" + projectId + "/collaborators/" + collab1.getId())
-                .header("Authorization", "Bearer " + owner.getToken()))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(1))
-        .andExpect(jsonPath("$[0].email").value(collab2.getEmail()));
+    String returnString =
+        mockMvc
+            .perform(
+                delete("/api/projects/" + projectId + "/collaborators/" + collab1.getId())
+                    .header("Authorization", "Bearer " + owner.getToken()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<UserDto> collaborators =
+        Arrays.stream(objectMapper.readValue(returnString, UserDto[].class)).toList();
+
+    List<String> emails = collaborators.stream().map(UserDto::getEmail).toList();
+
+    Assertions.assertTrue(emails.contains(owner.getEmail()));
+    Assertions.assertTrue(emails.contains(collab2.getEmail()));
   }
 
   @Test
