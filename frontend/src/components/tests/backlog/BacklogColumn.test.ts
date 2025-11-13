@@ -73,7 +73,7 @@ describe('BacklogColumn', () => {
     expect(wrapper.findAllComponents(BacklogIssueCard)).toHaveLength(2)
   })
 
-  it('devrait émettre issue-click quand on clique sur une issue', async () => {
+  it('devrait émettre issue-click avec l\'issue complète quand on clique sur une issue', async () => {
     const wrapper = mount(BacklogColumn, {
       props: {
         title: 'À faire',
@@ -84,10 +84,10 @@ describe('BacklogColumn', () => {
     })
 
     const issueCard = wrapper.findComponent(BacklogIssueCard)
-    await issueCard.trigger('click')
+    await issueCard.vm.$emit('click', mockIssues[0])
 
     expect(wrapper.emitted('issue-click')).toBeTruthy()
-    expect(wrapper.emitted('issue-click')?.[0]).toEqual([1])
+    expect(wrapper.emitted('issue-click')?.[0]).toEqual([mockIssues[0]])
   })
 
   it('devrait appliquer la classe CSS correcte selon le statut', () => {

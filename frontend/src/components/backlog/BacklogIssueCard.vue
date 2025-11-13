@@ -2,7 +2,7 @@
   <div 
     class="backlog-issue-card" 
     :class="{ closed: isClosed }"
-    @click="$emit('click')"
+    @click="$emit('click', issue)"
   >
     <h3>{{ issue.title }}</h3>
     <p v-if="issue.description" class="issue-description">
@@ -18,7 +18,7 @@
         </span>
       </div>
       <span v-if="issue.assigneeId" class="assignee">
-        👤 Vous êtes assigné
+       Vous êtes assigné
       </span>
     </div>
   </div>
@@ -35,7 +35,7 @@ interface BacklogIssueCardProps {
 
 const props = defineProps<BacklogIssueCardProps>()
 defineEmits<{
-  'click': []
+  'click': [IssueResponse]
 }>()
 
 const truncate = (text: string, length: number): string => {

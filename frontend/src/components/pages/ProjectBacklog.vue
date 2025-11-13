@@ -50,7 +50,7 @@
           :issues="todoIssues"
           status="TODO"
           empty-message="Aucune issue à faire"
-          @issue-click="goToIssue"
+          @issue-click="openIssueModal"
         />
         
         <BacklogColumn
@@ -58,7 +58,7 @@
           :issues="inProgressIssues"
           status="IN_PROGRESS"
           empty-message="Aucune issue en cours"
-          @issue-click="goToIssue"
+          @issue-click="openIssueModal"
         />
         
         <BacklogColumn
@@ -66,10 +66,17 @@
           :issues="closedIssues"
           status="CLOSED"
           empty-message="Aucune issue fermée"
-          @issue-click="goToIssue"
+          @issue-click="openIssueModal"
         />
       </div>
       </div>
+       <IssueDetailModal
+      v-if="selectedIssue"
+      :project-id="projectId"
+      :issue="selectedIssue"
+      :can-modify="true"
+      @close="selectedIssue = null"
+    />
     </div>
   </div>
 </template>
@@ -78,6 +85,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BacklogColumn from '../backlog/BacklogColumn.vue'
+import IssueDetailModal from '../issues/IssueDetailModal.vue'
 import projectService from '../../services/projectService'
 import { projectStore } from '../../stores/projectStore'
 import type { IssueResponse } from '../../services/projectService'
@@ -89,6 +97,7 @@ const projectId = route.params.id as string
 const issues = ref<IssueResponse[]>([])
 const projectName = ref('')
 const loading = ref(true)
+const selectedIssue = ref<IssueResponse | null>(null)
 
 // Filtres
 const priorityFilter = ref<'all' | 'HIGH' | 'MEDIUM' | 'LOW'>('all')
@@ -185,8 +194,8 @@ const goBack = () => {
   router.push(`/projects/${projectId}`)
 }
 
-const goToIssue = (issueId: number) => {
-  router.push(`/projects/${projectId}#issue-${issueId}`)
+const openIssueModal = (issue: IssueResponse) => {
+  selectedIssue.value = issue
 }
 
 onMounted(() => {

@@ -10,7 +10,7 @@
         :key="issue.id"
         :issue="issue"
         :is-closed="status === 'CLOSED'"
-        @click="$emit('issue-click', issue.id)"
+        @click="$emit('issue-click', issue)"
       />
       <div v-if="issues.length === 0" class="empty-column">
         {{ emptyMessage }}
@@ -32,7 +32,7 @@ interface BacklogColumnProps {
 
 const props = defineProps<BacklogColumnProps>()
 defineEmits<{
-  'issue-click': [issueId: number]
+  'issue-click': [issue: IssueResponse]
 }>()
 
 const statusClass = computed(() => {

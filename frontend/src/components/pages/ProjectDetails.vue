@@ -13,7 +13,7 @@
         <h1>{{ project.name }}</h1>
         <div class="header-actions">
           <button class="btn-backlog" @click="goToBacklog">
-            📋 Backlog
+           Backlog
           </button>
           <span class="badge" :class="isOwner ? 'creator-badge' : 'collaborator-badge'">
             {{ isOwner ? 'Créateur' : 'Collaborateur' }}
