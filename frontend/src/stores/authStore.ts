@@ -1,9 +1,11 @@
 import { reactive, readonly } from 'vue'
+import { getAuthToken, getUserData } from '../utils/localStorage'
 import authService from '../services/authService'
 
 interface User {
-  email: string
-  name: string
+  id: number
+  email: string | null
+  name: string | null
 }
 
 interface AuthState {
@@ -13,10 +15,13 @@ interface AuthState {
   error: string | null
 }
 
+const token = getAuthToken()
+const userData = getUserData()
+
 const state = reactive<AuthState>({
-  isAuthenticated: false,
-  token: null,
-  user: null,
+  isAuthenticated: token !== null,
+  token: token,
+  user: userData ? { id: userData.userId, email: userData.userEmail, name: userData.userName } : null,
   error: null
 })
 
@@ -25,9 +30,7 @@ export const authStore = {
   state: readonly(state),
 
   init() {
-    state.token = null
-    state.isAuthenticated = false
-    authService.removeToken()
+    authService.initializeToken()
   },
 
   async login(email: string, password: string) {
@@ -36,11 +39,11 @@ export const authStore = {
       const response = await authService.login({ email, password })
       state.token = response.token
       state.user = {
+        id: response.id,
         email: response.email,
         name: response.name
       }
       state.isAuthenticated = true
-      authService.setToken(response.token)
       return response
     } catch (error: any) {
       state.error = error.message || 'Erreur de connexion'
@@ -54,11 +57,11 @@ export const authStore = {
       const response = await authService.register({ email, password, name })
       state.token = response.token
       state.user = {
+        id: response.id,
         email: response.email,
         name: response.name
       }
       state.isAuthenticated = true
-      authService.setToken(response.token)
       return response
     } catch (error: any) {
       state.error = error.message || "Erreur d'inscription"
@@ -70,7 +73,7 @@ export const authStore = {
     state.token = null
     state.user = null
     state.isAuthenticated = false
-    authService.removeToken()
+    authService.clearAuthData()
   },
 
   setUser(user: User) {
@@ -88,8 +91,6 @@ export const authStore = {
   getToken(): string | null {
     return state.token
   },
-
 }
-
 
 export default authStore

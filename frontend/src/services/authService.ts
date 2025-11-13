@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { setUserData, clearUserData } from '../utils/localStorage'
+import { setUserData, getAuthToken, clearUserData } from '../utils/localStorage'
 import type { ErrorResponse } from '../utils'
 
 const API_URL = 'http://localhost:8080/auth'
@@ -21,7 +21,6 @@ interface AuthResponse {
     email: string
     name: string
 }
-
 
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
@@ -52,6 +51,7 @@ const authService = {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/login`, credentials)
             addDatasInLocalStorage(response.data)
+            authService.setToken(response.data.token)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -69,6 +69,7 @@ const authService = {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/register`, data)
             addDatasInLocalStorage(response.data)
+            authService.setToken(response.data.token)
             return response.data
         } catch (error: any) {
             const status = error.response?.status
@@ -84,7 +85,7 @@ const authService = {
     },
 
     getToken(): string | null {
-        return null
+        return getAuthToken()
     },
 
     setToken(token: string): void {
@@ -93,9 +94,19 @@ const authService = {
 
     removeToken(): void {
         delete axios.defaults.headers.common['Authorization']
-        clearUserData()
     },
 
+    clearAuthData(): void {
+        clearUserData()
+        authService.removeToken()
+    },
+
+    initializeToken(): void {
+        const token = getAuthToken()
+        if (token) {
+            authService.setToken(token)
+        }
+    }
 }
 
 export default authService
