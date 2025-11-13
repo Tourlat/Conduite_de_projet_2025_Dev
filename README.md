@@ -24,18 +24,29 @@ In frontend you need to create a .env file based on the .env.example file. - Cop
 
 #### VSCode
 
-1. Download [Red Hat Java Language Support](https://marketplace.visualstudio.com/items?itemName=redhat.java).
-2. Set the following URL `https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml` in [settings](vscode://settings/java.format.settings.url).
-3. Enter `GoogleStyle` as the profile in [settings](vscode://settings/java.format.settings.profile).
+1. Install [Run On Save](https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave) plugin
+2. Add the following code to [.vscode/settings.json](.vscode/settings.json). This will 
 
-#### IntelliJ IDEA
-
-1. Download the following [XML formatting file](https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml).
-2. In Settings, go to `Editor > Code Style > Java`. Click on `Import Scheme` and then `Eclipse XML Profile`. Select downloaded XML code style file.
-
-![How to import Code format XML](docs/pictures/intellij-import-java-format-xml.png)
-
-3. Set `Tab Size` to 2
+```
+{
+  "editor.formatOnSave": true,
+  "[java]": {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never"
+    }
+  },
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": ".*\\.java$",
+        "cmd": "cd backend && mvn spotless:apply -DspotlessFiles=\"${file}\"",
+        "runIn": "terminal"
+      }
+    ]
+  }
+}
+```
 
 ### Commit Hooks
 
