@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.group3.conduitedeprojet.models.Project;
-import com.group3.conduitedeprojet.models.Task;
 import com.group3.conduitedeprojet.services.ProjectService;
 
 @RestController
@@ -100,8 +99,8 @@ public class ProjectController {
   }
 
   @DeleteMapping("/{projectId}/issues/{issueId}")
-  public ResponseEntity<Void> deleteIssue(@PathVariable UUID projectId,
-      @PathVariable Long issueId, Principal principal) {
+  public ResponseEntity<Void> deleteIssue(@PathVariable UUID projectId, @PathVariable Long issueId,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -112,12 +111,14 @@ public class ProjectController {
 
   @PutMapping("/{projectId}/issues/{issueId}")
   public ResponseEntity<IssueDto> updateIssue(@PathVariable UUID projectId,
-      @PathVariable Long issueId, @RequestBody UpdateIssueRequest updateIssueRequest, Principal principal) {
+      @PathVariable Long issueId, @RequestBody UpdateIssueRequest updateIssueRequest,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));  
+    return ResponseEntity
+        .ok(projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));
   }
 
   @PostMapping("/{projectId}/issues/{issueId}/tasks")
@@ -150,12 +151,13 @@ public class ProjectController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(projectService.updateTask(projectId, issueId, taskId, updateTaskRequest, principal));
+    return ResponseEntity
+        .ok(projectService.updateTask(projectId, issueId, taskId, updateTaskRequest, principal));
   }
 
   @DeleteMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
-  public ResponseEntity<Void> deleteTask(@PathVariable UUID projectId,
-      @PathVariable Long issueId, @PathVariable Long taskId, Principal principal) {
+  public ResponseEntity<Void> deleteTask(@PathVariable UUID projectId, @PathVariable Long issueId,
+      @PathVariable Long taskId, Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

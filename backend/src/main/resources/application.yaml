@@ -16,7 +16,7 @@ spring:
 security:
   jwt:
     secret-key: 5St66hi6E8M7oRbgHLpZT/VZgErpyKQXZMhUtAfHr6Y= # Only for development
-    expiration-ms: 3600000  # 1 hour in ms
+    expiration-ms: 3600000 # 1 hour in ms
 
 app:
   frontend:
