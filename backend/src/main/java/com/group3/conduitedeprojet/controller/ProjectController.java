@@ -139,20 +139,6 @@ public class ProjectController {
     }
 
     return ResponseEntity.ok(
-        projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));
-  }
-
-  @PostMapping("/{projectId}/issues/{issueId}/tasks")
-  public ResponseEntity<TaskDto> createTask(
-      @PathVariable UUID projectId,
-      @PathVariable Long issueId,
-      @RequestBody CreateTaskRequest createTaskRequest,
-      Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(
         projectService.createTask(projectId, issueId, createTaskRequest, principal));
   }
 
