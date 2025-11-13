@@ -1,5 +1,18 @@
 package com.group3.conduitedeprojet.services;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import com.group3.conduitedeprojet.dto.AuthResponse;
+import com.group3.conduitedeprojet.dto.LoginRequest;
+import com.group3.conduitedeprojet.dto.RegisterRequest;
+import com.group3.conduitedeprojet.exceptions.EmailAlreadyExistsException;
+import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
+import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
+import com.group3.conduitedeprojet.models.User;
+import com.group3.conduitedeprojet.repositories.UserRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,38 +24,18 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.group3.conduitedeprojet.dto.AuthResponse;
-import com.group3.conduitedeprojet.dto.LoginRequest;
-import com.group3.conduitedeprojet.dto.RegisterRequest;
-import com.group3.conduitedeprojet.exceptions.EmailAlreadyExistsException;
-import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
-import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
-import com.group3.conduitedeprojet.models.User;
-import com.group3.conduitedeprojet.repositories.UserRepository;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @Mock
-  private PasswordEncoder passwordEncoder;
+  @Mock private PasswordEncoder passwordEncoder;
 
-  @Mock
-  private JwtService jwtService;
+  @Mock private JwtService jwtService;
 
-  @Mock
-  private AuthenticationManager authenticationManager;
+  @Mock private AuthenticationManager authenticationManager;
 
-  @InjectMocks
-  private AuthService authService;
+  @InjectMocks private AuthService authService;
 
   private RegisterRequest registerRequest;
   private LoginRequest loginRequest;
@@ -59,8 +52,14 @@ public class AuthServiceTest {
     loginRequest.setEmail("test@example.com");
     loginRequest.setPassword("password123");
 
-    testUser = User.builder().id(1L).email("test@example.com").password("encodedPassword")
-        .name("John Doe").enabled(true).build();
+    testUser =
+        User.builder()
+            .id(1L)
+            .email("test@example.com")
+            .password("encodedPassword")
+            .name("John Doe")
+            .enabled(true)
+            .build();
   }
 
   @Test
@@ -84,9 +83,11 @@ public class AuthServiceTest {
   public void testRegisterEmailAlreadyExists() {
     when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
-    assertThrows(EmailAlreadyExistsException.class, () -> {
-      authService.register(registerRequest);
-    });
+    assertThrows(
+        EmailAlreadyExistsException.class,
+        () -> {
+          authService.register(registerRequest);
+        });
 
     verify(userRepository, never()).save(any(User.class));
   }
@@ -136,9 +137,11 @@ public class AuthServiceTest {
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenThrow(new BadCredentialsException("Invalid credentials"));
 
-    assertThrows(InvalidCredentialsException.class, () -> {
-      authService.login(loginRequest);
-    });
+    assertThrows(
+        InvalidCredentialsException.class,
+        () -> {
+          authService.login(loginRequest);
+        });
 
     verify(userRepository, never()).findByEmail(anyString());
   }
@@ -149,9 +152,11 @@ public class AuthServiceTest {
         .thenReturn(new UsernamePasswordAuthenticationToken("test@example.com", "password123"));
     when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
-    assertThrows(UserNotFoundException.class, () -> {
-      authService.login(loginRequest);
-    });
+    assertThrows(
+        UserNotFoundException.class,
+        () -> {
+          authService.login(loginRequest);
+        });
   }
 
   @Test
@@ -159,9 +164,11 @@ public class AuthServiceTest {
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenThrow(new BadCredentialsException("Bad credentials"));
 
-    assertThrows(InvalidCredentialsException.class, () -> {
-      authService.login(loginRequest);
-    });
+    assertThrows(
+        InvalidCredentialsException.class,
+        () -> {
+          authService.login(loginRequest);
+        });
   }
 
   @Test
@@ -187,9 +194,11 @@ public class AuthServiceTest {
 
     when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
-    assertThrows(EmailAlreadyExistsException.class, () -> {
-      authService.register(registerRequest);
-    });
+    assertThrows(
+        EmailAlreadyExistsException.class,
+        () -> {
+          authService.register(registerRequest);
+        });
   }
 
   @Test

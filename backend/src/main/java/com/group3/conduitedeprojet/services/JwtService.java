@@ -4,13 +4,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class JwtService {
 
   /**
    * Extract username from JWT token
-   * 
+   *
    * @param token the JWT token
    * @return the username contained in the token
    */
@@ -36,7 +35,7 @@ public class JwtService {
 
   /**
    * Extract a specific claim from JWT token
-   * 
+   *
    * @param token the JWT token
    * @param claimsResolver function to extract the claim
    * @param <T> type of the claim
@@ -48,16 +47,12 @@ public class JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts.parser()
-        .verifyWith(getSignInKey())
-        .build()
-        .parseSignedClaims(token)
-        .getPayload();
+    return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token).getPayload();
   }
 
   /**
    * Generate a JWT token for a user
-   * 
+   *
    * @param userDetails the user details
    * @return the generated JWT token
    */
@@ -74,9 +69,7 @@ public class JwtService {
   }
 
   private String buildToken(
-      Map<String, Object> extraClaims,
-      String username,
-      long expirationMillis) {
+      Map<String, Object> extraClaims, String username, long expirationMillis) {
     Instant now = Instant.now();
     Instant expiration = now.plusMillis(expirationMillis);
 

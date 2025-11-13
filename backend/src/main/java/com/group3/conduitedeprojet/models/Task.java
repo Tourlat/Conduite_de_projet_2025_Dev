@@ -1,6 +1,5 @@
 package com.group3.conduitedeprojet.models;
 
-import java.time.LocalDateTime;
 import com.group3.conduitedeprojet.dto.TaskDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,7 +44,9 @@ public class Task {
   private Status status;
 
   @ManyToOne(optional = false)
-  @JoinColumn(name = "creator_id", nullable = false,
+  @JoinColumn(
+      name = "creator_id",
+      nullable = false,
       foreignKey = @ForeignKey(name = "fk_project_creator"))
   private User creator;
 
@@ -67,12 +69,20 @@ public class Task {
   }
 
   public enum Status {
-    TODO, IN_PROGRESS, DONE
+    TODO,
+    IN_PROGRESS,
+    DONE
   }
 
   public TaskDto toTaskDto() {
-    return TaskDto.builder().id(id).title(title).description(description).status(status)
-        .creatorId(creator.getId()).projectId(project.getId()).issueId(issue.getId())
+    return TaskDto.builder()
+        .id(id)
+        .title(title)
+        .description(description)
+        .status(status)
+        .creatorId(creator.getId())
+        .projectId(project.getId())
+        .issueId(issue.getId())
         .definitionOfDone(definitionOfDone)
         .assigneeId(assignee != null ? assignee.getId() : null)
         .createdAt(createdAt)

@@ -18,6 +18,10 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Run backend formatting check
+        working-directory: ./backend
+        run: mvn spotless:check
+
       - name: Run backend tests
         working-directory: ./backend
         run: mvn --batch-mode --update-snapshots verify

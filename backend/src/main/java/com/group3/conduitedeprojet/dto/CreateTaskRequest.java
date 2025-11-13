@@ -11,4 +11,3 @@ public class CreateTaskRequest {
   private Task.Status status;
   private Long assigneeId;
 }
-

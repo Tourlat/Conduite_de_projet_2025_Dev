@@ -1,19 +1,19 @@
 package com.group3.conduitedeprojet.models;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,9 +29,7 @@ import lombok.Setter;
 @Table(name = "project")
 public class Project {
 
-  @Id
-  @GeneratedValue
-  private UUID id;
+  @Id @GeneratedValue private UUID id;
 
   @Column(nullable = false)
   private String name;
@@ -48,12 +46,16 @@ public class Project {
   }
 
   @ManyToOne
-  @JoinColumn(name = "creator_id", nullable = false,
+  @JoinColumn(
+      name = "creator_id",
+      nullable = false,
       foreignKey = @ForeignKey(name = "fk_project_creator"))
   private User creator;
 
   @ManyToMany
-  @JoinTable(name = "project_user", joinColumns = @JoinColumn(name = "project_id"),
+  @JoinTable(
+      name = "project_user",
+      joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id"))
   private Set<User> collaborators;
 }

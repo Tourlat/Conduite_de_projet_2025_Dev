@@ -1,11 +1,5 @@
 package com.group3.conduitedeprojet.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.group3.conduitedeprojet.dto.AuthResponse;
 import com.group3.conduitedeprojet.dto.LoginRequest;
 import com.group3.conduitedeprojet.dto.RegisterRequest;
@@ -14,6 +8,11 @@ import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import com.group3.conduitedeprojet.models.User;
 import com.group3.conduitedeprojet.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {

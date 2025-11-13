@@ -1,8 +1,8 @@
 package com.group3.conduitedeprojet.dto;
 
+import com.group3.conduitedeprojet.models.Task;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import com.group3.conduitedeprojet.models.Task;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,11 +1,12 @@
 package com.group3.conduitedeprojet.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.group3.conduitedeprojet.dto.AuthResponse;
-import com.group3.conduitedeprojet.dto.RegisterRequest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group3.conduitedeprojet.dto.AuthResponse;
+import com.group3.conduitedeprojet.dto.RegisterRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,8 +25,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class IntegrationTestWithDatabase {
 
   @Container
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
-      .withDatabaseName("conduitedeprojet_db").withUsername("admin").withPassword("admin");
+  static PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>("postgres:17-alpine")
+          .withDatabaseName("conduitedeprojet_db")
+          .withUsername("admin")
+          .withPassword("admin");
 
   @DynamicPropertySource
   static void registerPgProperties(DynamicPropertyRegistry registry) {
@@ -36,11 +40,9 @@ public abstract class IntegrationTestWithDatabase {
     registry.add("security.jwt.expiration-ms", () -> "3600000");
   }
 
-  @Autowired
-  MockMvc mockMvc;
+  @Autowired MockMvc mockMvc;
 
-  @Autowired
-  ObjectMapper objectMapper;
+  @Autowired ObjectMapper objectMapper;
 
   @AfterAll
   static void tearDown() {
@@ -51,12 +53,17 @@ public abstract class IntegrationTestWithDatabase {
 
   AuthResponse register(String email, String password, String name) throws Exception {
     var req = new RegisterRequest(email, password, name);
-    var mvcRes = mockMvc
-        .perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(req)))
-        .andExpect(status().isOk()).andExpect(jsonPath("$.email").value(email))
-        .andExpect(jsonPath("$.name").value(name)).andExpect(jsonPath("$.token").isNotEmpty())
-        .andReturn();
+    var mvcRes =
+        mockMvc
+            .perform(
+                post("/auth/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(req)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.email").value(email))
+            .andExpect(jsonPath("$.name").value(name))
+            .andExpect(jsonPath("$.token").isNotEmpty())
+            .andReturn();
     String content = mvcRes.getResponse().getContentAsString();
     return objectMapper.readValue(content, AuthResponse.class);
   }

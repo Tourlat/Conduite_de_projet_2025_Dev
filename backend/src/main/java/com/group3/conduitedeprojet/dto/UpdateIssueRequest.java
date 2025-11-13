@@ -1,13 +1,14 @@
 package com.group3.conduitedeprojet.dto;
+
 import com.group3.conduitedeprojet.models.Issue;
 import lombok.Data;
 
 @Data
 public class UpdateIssueRequest {
-   private String title;
-    private String description;
-    private Issue.Priority priority;
-    private Integer storyPoints;
-    private Issue.Status status;
-    private Long assigneeId;
+  private String title;
+  private String description;
+  private Issue.Priority priority;
+  private Integer storyPoints;
+  private Issue.Status status;
+  private Long assigneeId;
 }

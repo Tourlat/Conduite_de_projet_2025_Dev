@@ -1,10 +1,10 @@
 package com.group3.conduitedeprojet.dto;
 
 import com.group3.conduitedeprojet.models.Issue;
-import lombok.Builder;
-import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
