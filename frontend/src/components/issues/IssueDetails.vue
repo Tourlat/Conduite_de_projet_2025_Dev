@@ -70,7 +70,7 @@ const loadIssues = async () => {
   try {
     issues.value = await projectService.getIssuesByProject(props.projectId)
   } catch {
-    // 
+    
   } finally {
     loadingIssues.value = false
   }
