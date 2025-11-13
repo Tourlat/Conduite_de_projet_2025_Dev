@@ -36,7 +36,6 @@ public class ProjectService {
 
   @Autowired private TaskRepository taskRepository;
 
-
   public Project createProject(CreateProjectRequest createProjectRequest) {
     User creator = getUser(createProjectRequest.getUser().getId());
 
