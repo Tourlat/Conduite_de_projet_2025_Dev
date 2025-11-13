@@ -1,17 +1,6 @@
 package com.group3.conduitedeprojet.services;
 
-import java.io.ObjectInputFilter.Status;
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import com.group3.conduitedeprojet.dto.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
 import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
@@ -26,28 +15,37 @@ import com.group3.conduitedeprojet.repositories.IssueRepository;
 import com.group3.conduitedeprojet.repositories.ProjectRepository;
 import com.group3.conduitedeprojet.repositories.TaskRepository;
 import com.group3.conduitedeprojet.repositories.UserRepository;
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProjectService {
 
-  @Autowired
-  private ProjectRepository projectRepository;
+  @Autowired private ProjectRepository projectRepository;
 
-  @Autowired
-  private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-  @Autowired
-  private IssueRepository issueRepository;
+  @Autowired private IssueRepository issueRepository;
 
-  @Autowired
-  private TaskRepository taskRepository;
+  @Autowired private TaskRepository taskRepository;
 
   public Project createProject(CreateProjectRequest createProjectRequest) {
     User creator = getUser(createProjectRequest.getUser().getId());
 
     // Créer le projet
-    Project project = Project.builder().name(createProjectRequest.getName())
-        .description(createProjectRequest.getDescription()).creator(creator).build();
+    Project project =
+        Project.builder()
+            .name(createProjectRequest.getName())
+            .description(createProjectRequest.getDescription())
+            .creator(creator)
+            .build();
 
     // Ajouter les collaborateurs si présents
     if (createProjectRequest.getCollaborateurs() != null
@@ -80,20 +78,23 @@ public class ProjectService {
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
   }
 
-  public List<UserDto> addCollaboratorsToProject(UUID projectId,
-      AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
+  public List<UserDto> addCollaboratorsToProject(
+      UUID projectId, AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreator(project, principal);
 
     Set<User> newCollaborators =
-        addCollaboratorsRequest.getCollaborators().stream().map(collaboratorEmail -> {
-          Optional<User> user = userRepository.findByEmail(collaboratorEmail);
-          if (user.isEmpty()) {
-            throw new UserNotFoundException(
-                "User with email " + collaboratorEmail + " was not found");
-          }
-          return user.get();
-        }).collect(Collectors.toSet());
+        addCollaboratorsRequest.getCollaborators().stream()
+            .map(
+                collaboratorEmail -> {
+                  Optional<User> user = userRepository.findByEmail(collaboratorEmail);
+                  if (user.isEmpty()) {
+                    throw new UserNotFoundException(
+                        "User with email " + collaboratorEmail + " was not found");
+                  }
+                  return user.get();
+                })
+            .collect(Collectors.toSet());
 
     project.getCollaborators().addAll(newCollaborators);
 
@@ -102,8 +103,8 @@ public class ProjectService {
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
   }
 
-  public List<UserDto> removeCollaboratorFromProject(UUID projectId, Long collaboratorId,
-      Principal principal) {
+  public List<UserDto> removeCollaboratorFromProject(
+      UUID projectId, Long collaboratorId, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreator(project, principal);
 
@@ -113,18 +114,22 @@ public class ProjectService {
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
   }
 
-  public IssueDto createIssue(UUID projectId, CreateIssueRequest createIssueRequest,
-      Principal principal) {
+  public IssueDto createIssue(
+      UUID projectId, CreateIssueRequest createIssueRequest, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     User creator = getUserByEmail(principal.getName());
 
-    IssueBuilder issueBuilder = Issue.builder().title(createIssueRequest.getTitle())
-        .description(createIssueRequest.getDescription())
-        .storyPoints(createIssueRequest.getStoryPoints()).project(project)
-        .priority(createIssueRequest.getPriority())
-        .status(createIssueRequest.getStatus()).creator(creator);
+    IssueBuilder issueBuilder =
+        Issue.builder()
+            .title(createIssueRequest.getTitle())
+            .description(createIssueRequest.getDescription())
+            .storyPoints(createIssueRequest.getStoryPoints())
+            .project(project)
+            .priority(createIssueRequest.getPriority())
+            .status(createIssueRequest.getStatus())
+            .creator(creator);
 
     if (createIssueRequest.getAssigneeId() != null) {
       issueBuilder.assignee(getUser(createIssueRequest.getAssigneeId()));
@@ -138,22 +143,21 @@ public class ProjectService {
   public List<IssueDto> getIssuesByProject(UUID projectId, Principal principal) {
     Optional<Project> optionalProject = projectRepository.findById(projectId);
     if (optionalProject.isEmpty()) {
-        throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
+      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
     }
 
     Project project = optionalProject.get();
 
     String userEmail = principal.getName();
-    boolean hasAccess = project.getCreator().getEmail().equals(userEmail)
-        || project.getCollaborators().stream().anyMatch(u -> u.getEmail().equals(userEmail));
+    boolean hasAccess =
+        project.getCreator().getEmail().equals(userEmail)
+            || project.getCollaborators().stream().anyMatch(u -> u.getEmail().equals(userEmail));
 
     if (!hasAccess) {
-        throw new NotAuthorizedException("You don't have access to this project");
+      throw new NotAuthorizedException("You don't have access to this project");
     }
 
-    return issueRepository.findByProjectId(projectId).stream()
-        .map(Issue::toIssueDto)
-        .toList();
+    return issueRepository.findByProjectId(projectId).stream().map(Issue::toIssueDto).toList();
   }
 
   public void deleteIssue(UUID projectId, Long issueId, Principal principal) {
@@ -169,8 +173,8 @@ public class ProjectService {
     issueRepository.delete(optionalIssue.get());
   }
 
-  public IssueDto updateIssue(UUID projectId, Long issueId, UpdateIssueRequest updateIssueRequest,
-      Principal principal) {
+  public IssueDto updateIssue(
+      UUID projectId, Long issueId, UpdateIssueRequest updateIssueRequest, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
 
@@ -210,16 +214,21 @@ public class ProjectService {
     return issue.toIssueDto();
   }
 
-  public TaskDto createTask(UUID projectId, Long issueId, CreateTaskRequest createTaskRequest,
-      Principal principal) {
+  public TaskDto createTask(
+      UUID projectId, Long issueId, CreateTaskRequest createTaskRequest, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
     Issue issue = getIssue(issueId);
     User creator = getUserByEmail(principal.getName());
 
-    Task.TaskBuilder taskBuilder = Task.builder().creator(creator)
-        .description(createTaskRequest.getDescription()).title(createTaskRequest.getTitle())
-        .project(project).issue(issue).definitionOfDone(createTaskRequest.getDefinitionOfDone());
+    Task.TaskBuilder taskBuilder =
+        Task.builder()
+            .creator(creator)
+            .description(createTaskRequest.getDescription())
+            .title(createTaskRequest.getTitle())
+            .project(project)
+            .issue(issue)
+            .definitionOfDone(createTaskRequest.getDefinitionOfDone());
 
     if (createTaskRequest.getAssigneeId() != null) {
       taskBuilder.assignee(getUser(createTaskRequest.getAssigneeId()));
@@ -240,38 +249,42 @@ public class ProjectService {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
     Issue issue = getIssue(issueId);
-    
+
     List<Task> tasks = taskRepository.findByIssueId(issueId);
     return tasks.stream().map(Task::toTaskDto).toList();
   }
 
-  public TaskDto updateTask(UUID projectId, Long issueId, Long taskId, 
-      CreateTaskRequest updateTaskRequest, Principal principal) {
+  public TaskDto updateTask(
+      UUID projectId,
+      Long issueId,
+      Long taskId,
+      CreateTaskRequest updateTaskRequest,
+      Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreatorOrCollaborator(project, principal);
     Issue issue = getIssue(issueId);
     Task task = getTask(taskId);
-    
+
     if (updateTaskRequest.getTitle() != null && !updateTaskRequest.getTitle().trim().isEmpty()) {
       task.setTitle(updateTaskRequest.getTitle().trim());
     }
-    
+
     if (updateTaskRequest.getDescription() != null) {
       task.setDescription(updateTaskRequest.getDescription().trim());
     }
-    
+
     if (updateTaskRequest.getDefinitionOfDone() != null) {
       task.setDefinitionOfDone(updateTaskRequest.getDefinitionOfDone().trim());
     }
-    
+
     if (updateTaskRequest.getStatus() != null) {
       task.setStatus(updateTaskRequest.getStatus());
     }
-    
+
     if (updateTaskRequest.getAssigneeId() != null) {
       task.setAssignee(getUser(updateTaskRequest.getAssigneeId()));
     }
-    
+
     taskRepository.save(task);
     return task.toTaskDto();
   }
@@ -281,12 +294,12 @@ public class ProjectService {
     checkPrincipalIsCreatorOrCollaborator(project, principal);
     Issue issue = getIssue(issueId);
     Task task = getTask(taskId);
-    
+
     taskRepository.delete(task);
   }
 
-  public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest updateProjectRequest,
-      Principal principal) {
+  public ProjectResponse updateProject(
+      UUID projectId, UpdateProjectRequest updateProjectRequest, Principal principal) {
     Project project = getProject(projectId);
     checkPrincipalIsCreator(project, principal);
 
@@ -307,11 +320,19 @@ public class ProjectService {
   private ProjectResponse convertToDto(Project project) {
     User creator = project.getCreator();
 
-    ProjectResponse.CreatorDto creatorDto = ProjectResponse.CreatorDto.builder().id(creator.getId())
-        .email(creator.getEmail()).name(creator.getName()).build();
+    ProjectResponse.CreatorDto creatorDto =
+        ProjectResponse.CreatorDto.builder()
+            .id(creator.getId())
+            .email(creator.getEmail())
+            .name(creator.getName())
+            .build();
 
-    return ProjectResponse.builder().id(project.getId()).name(project.getName())
-        .description(project.getDescription()).createdAt(project.getCreatedAt()).creator(creatorDto)
+    return ProjectResponse.builder()
+        .id(project.getId())
+        .name(project.getName())
+        .description(project.getDescription())
+        .createdAt(project.getCreatedAt())
+        .creator(creatorDto)
         .build();
   }
 
@@ -362,8 +383,10 @@ public class ProjectService {
   }
 
   private void checkPrincipalIsCreatorOrCollaborator(Project project, Principal principal) {
-    boolean principalIsCollaborator = project.getCollaborators().stream().map(User::getEmail)
-        .anyMatch(collaboratorEmail -> collaboratorEmail.equals(principal.getName()));
+    boolean principalIsCollaborator =
+        project.getCollaborators().stream()
+            .map(User::getEmail)
+            .anyMatch(collaboratorEmail -> collaboratorEmail.equals(principal.getName()));
 
     if (!project.getCreator().getUsername().equals(principal.getName())
         && !principalIsCollaborator) {

@@ -1,33 +1,28 @@
 package com.group3.conduitedeprojet.services;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import com.group3.conduitedeprojet.dto.ChangeUserRequest;
 import com.group3.conduitedeprojet.dto.UserDto;
 import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import com.group3.conduitedeprojet.models.User;
 import com.group3.conduitedeprojet.repositories.UserRepository;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class UserService {
 
-  @Autowired
-  UserRepository userRepository;
+  @Autowired UserRepository userRepository;
 
-  @Autowired
-  PasswordEncoder passwordEncoder;
+  @Autowired PasswordEncoder passwordEncoder;
 
   public List<UserDto> findAllUsers() {
-    return userRepository.findAll().stream()
-        .map(User::toUserDto)
-        .collect(Collectors.toList());
+    return userRepository.findAll().stream().map(User::toUserDto).collect(Collectors.toList());
   }
 
   public UserDto findUser(@RequestParam Long id) {
@@ -40,8 +35,10 @@ public class UserService {
   }
 
   public UserDto updateUser(ChangeUserRequest changeUserRequest) {
-    User existing = userRepository.findByEmail(changeUserRequest.getEmail())
-        .orElseThrow(() -> new UserNotFoundException("User with given email was not found"));
+    User existing =
+        userRepository
+            .findByEmail(changeUserRequest.getEmail())
+            .orElseThrow(() -> new UserNotFoundException("User with given email was not found"));
 
     existing.setName(changeUserRequest.getName());
 
@@ -50,8 +47,10 @@ public class UserService {
   }
 
   public void changePassword(String email, String currentPassword, String newPassword) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new UserNotFoundException("User not found"));
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
 
     if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
       throw new InvalidCredentialsException("Mot de passe actuel incorrect");

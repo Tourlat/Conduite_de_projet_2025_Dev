@@ -1,0 +1,14 @@
+#!/bin/bash
+# pre-commit hook: formats backend code correctly
+
+cd backend
+
+CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
+
+if [ -z "$CHANGED_FILES" ]; then
+  echo "✅ No Java files changed, skipping Spotless"
+  exit 0
+fi
+
+echo "🧹 Running Spotless on changed files..."
+mvn spotless:apply -DspotlessFiles="$CHANGED_FILES"

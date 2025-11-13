@@ -1,23 +1,21 @@
 package com.group3.conduitedeprojet.controller;
 
+import com.group3.conduitedeprojet.dto.*;
+import com.group3.conduitedeprojet.models.Project;
+import com.group3.conduitedeprojet.services.ProjectService;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-import com.group3.conduitedeprojet.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.group3.conduitedeprojet.models.Project;
-import com.group3.conduitedeprojet.models.Task;
-import com.group3.conduitedeprojet.services.ProjectService;
 
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-  @Autowired
-  private ProjectService projectService;
+  @Autowired private ProjectService projectService;
 
   @PostMapping
   public ResponseEntity<Project> createProject(
@@ -39,18 +37,20 @@ public class ProjectController {
   }
 
   @PutMapping("/{projectId}")
-  public ResponseEntity<ProjectResponse> updateProject(@PathVariable UUID projectId,
-      @RequestBody UpdateProjectRequest updateProjectRequest, Principal principal) {
+  public ResponseEntity<ProjectResponse> updateProject(
+      @PathVariable UUID projectId,
+      @RequestBody UpdateProjectRequest updateProjectRequest,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    return ResponseEntity
-        .ok(projectService.updateProject(projectId, updateProjectRequest, principal));
+    return ResponseEntity.ok(
+        projectService.updateProject(projectId, updateProjectRequest, principal));
   }
 
   @GetMapping("/{projectId}/collaborators")
-  public ResponseEntity<List<UserDto>> getProjectCollaborators(@PathVariable UUID projectId,
-      Principal principal) {
+  public ResponseEntity<List<UserDto>> getProjectCollaborators(
+      @PathVariable UUID projectId, Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -58,8 +58,10 @@ public class ProjectController {
   }
 
   @PostMapping("/{projectId}/collaborators")
-  public ResponseEntity<List<UserDto>> addCollaboratorToProject(@PathVariable UUID projectId,
-      @RequestBody AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
+  public ResponseEntity<List<UserDto>> addCollaboratorToProject(
+      @PathVariable UUID projectId,
+      @RequestBody AddCollaboratorsRequest addCollaboratorsRequest,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -69,19 +71,21 @@ public class ProjectController {
   }
 
   @DeleteMapping("/{projectId}/collaborators/{collaboratorId}")
-  public ResponseEntity<List<UserDto>> removeCollaboratorFromProject(@PathVariable UUID projectId,
-      @PathVariable Long collaboratorId, Principal principal) {
+  public ResponseEntity<List<UserDto>> removeCollaboratorFromProject(
+      @PathVariable UUID projectId, @PathVariable Long collaboratorId, Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity
-        .ok(projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
+    return ResponseEntity.ok(
+        projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
   }
 
   @PostMapping("/{projectId}/issues")
-  public ResponseEntity<IssueDto> createIssue(@PathVariable UUID projectId,
-      @RequestBody CreateIssueRequest createIssueRequest, Principal principal) {
+  public ResponseEntity<IssueDto> createIssue(
+      @PathVariable UUID projectId,
+      @RequestBody CreateIssueRequest createIssueRequest,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -90,8 +94,8 @@ public class ProjectController {
   }
 
   @GetMapping("/{projectId}/issues")
-  public ResponseEntity<List<IssueDto>> getProjectIssues(@PathVariable UUID projectId,
-      Principal principal) {
+  public ResponseEntity<List<IssueDto>> getProjectIssues(
+      @PathVariable UUID projectId, Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -100,8 +104,8 @@ public class ProjectController {
   }
 
   @DeleteMapping("/{projectId}/issues/{issueId}")
-  public ResponseEntity<Void> deleteIssue(@PathVariable UUID projectId,
-      @PathVariable Long issueId, Principal principal) {
+  public ResponseEntity<Void> deleteIssue(
+      @PathVariable UUID projectId, @PathVariable Long issueId, Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -111,30 +115,36 @@ public class ProjectController {
   }
 
   @PutMapping("/{projectId}/issues/{issueId}")
-  public ResponseEntity<IssueDto> updateIssue(@PathVariable UUID projectId,
-      @PathVariable Long issueId, @RequestBody UpdateIssueRequest updateIssueRequest, Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));  
-  }
-
-  @PostMapping("/{projectId}/issues/{issueId}/tasks")
-  public ResponseEntity<TaskDto> createTask(@PathVariable UUID projectId,
-      @PathVariable Long issueId, @RequestBody CreateTaskRequest createTaskRequest,
+  public ResponseEntity<IssueDto> updateIssue(
+      @PathVariable UUID projectId,
+      @PathVariable Long issueId,
+      @RequestBody UpdateIssueRequest updateIssueRequest,
       Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity
-        .ok(projectService.createTask(projectId, issueId, createTaskRequest, principal));
+    return ResponseEntity.ok(
+        projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));
+  }
+
+  @PostMapping("/{projectId}/issues/{issueId}/tasks")
+  public ResponseEntity<TaskDto> createTask(
+      @PathVariable UUID projectId,
+      @PathVariable Long issueId,
+      @RequestBody CreateTaskRequest createTaskRequest,
+      Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    return ResponseEntity.ok(
+        projectService.createTask(projectId, issueId, createTaskRequest, principal));
   }
 
   @GetMapping("/{projectId}/issues/{issueId}/tasks")
-  public ResponseEntity<List<TaskDto>> getTasksByIssue(@PathVariable UUID projectId,
-      @PathVariable Long issueId, Principal principal) {
+  public ResponseEntity<List<TaskDto>> getTasksByIssue(
+      @PathVariable UUID projectId, @PathVariable Long issueId, Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -143,19 +153,26 @@ public class ProjectController {
   }
 
   @PutMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
-  public ResponseEntity<TaskDto> updateTask(@PathVariable UUID projectId,
-      @PathVariable Long issueId, @PathVariable Long taskId,
-      @RequestBody CreateTaskRequest updateTaskRequest, Principal principal) {
+  public ResponseEntity<TaskDto> updateTask(
+      @PathVariable UUID projectId,
+      @PathVariable Long issueId,
+      @PathVariable Long taskId,
+      @RequestBody CreateTaskRequest updateTaskRequest,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(projectService.updateTask(projectId, issueId, taskId, updateTaskRequest, principal));
+    return ResponseEntity.ok(
+        projectService.updateTask(projectId, issueId, taskId, updateTaskRequest, principal));
   }
 
   @DeleteMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
-  public ResponseEntity<Void> deleteTask(@PathVariable UUID projectId,
-      @PathVariable Long issueId, @PathVariable Long taskId, Principal principal) {
+  public ResponseEntity<Void> deleteTask(
+      @PathVariable UUID projectId,
+      @PathVariable Long issueId,
+      @PathVariable Long taskId,
+      Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

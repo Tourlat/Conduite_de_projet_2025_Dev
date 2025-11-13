@@ -1,6 +1,5 @@
 package com.group3.conduitedeprojet.models;
 
-import java.time.LocalDateTime;
 import com.group3.conduitedeprojet.dto.IssueDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,7 +50,9 @@ public class Issue {
   private Project project;
 
   @ManyToOne(optional = false)
-  @JoinColumn(name = "creator_id", nullable = false,
+  @JoinColumn(
+      name = "creator_id",
+      nullable = false,
       foreignKey = @ForeignKey(name = "fk_project_creator"))
   private User creator;
 
@@ -67,17 +69,29 @@ public class Issue {
   private User assignee;
 
   public enum Priority {
-    LOW, MEDIUM, HIGH
+    LOW,
+    MEDIUM,
+    HIGH
   }
 
   public enum Status {
-    TODO, IN_PROGRESS, CLOSED
+    TODO,
+    IN_PROGRESS,
+    CLOSED
   }
 
   public IssueDto toIssueDto() {
-    IssueDto.IssueDtoBuilder builder = IssueDto.builder().id(id).title(title).priority(priority).status(status)
-        .description(description).createdAt(createdAt).storyPoints(storyPoints)
-        .projectId(project.getId()).creatorId(creator.getId());
+    IssueDto.IssueDtoBuilder builder =
+        IssueDto.builder()
+            .id(id)
+            .title(title)
+            .priority(priority)
+            .status(status)
+            .description(description)
+            .createdAt(createdAt)
+            .storyPoints(storyPoints)
+            .projectId(project.getId())
+            .creatorId(creator.getId());
 
     if (assignee != null) {
       builder.assigneeId(assignee.getId());

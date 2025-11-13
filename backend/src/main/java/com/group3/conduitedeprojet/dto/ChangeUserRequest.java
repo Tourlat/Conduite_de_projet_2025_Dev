@@ -7,4 +7,3 @@ public class ChangeUserRequest {
   private String email;
   private String name;
 }
-
