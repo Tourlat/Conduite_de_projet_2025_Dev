@@ -3,7 +3,7 @@
     <div class="backlog-content">
       <div class="backlog-header">
         <button class="btn-back" @click="goBack">
-          ← Retour au projet
+            <font-awesome-icon :icon="['fas', 'angle-left']" /> Retour au projet
         </button>
         <h1>Backlog - {{ projectName }}</h1>
       </div>

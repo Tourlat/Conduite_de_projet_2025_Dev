@@ -8,7 +8,7 @@
 
       <div class="project-header">
         <button class="btn-back" @click="goBack">
-          ← Retour au tableau de bord
+          <font-awesome-icon :icon="['fas', 'angle-left']" /> Retour au tableau de bord
         </button>
         <h1>{{ project.name }}</h1>
         <div class="header-actions">

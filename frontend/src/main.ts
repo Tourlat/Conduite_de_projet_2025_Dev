@@ -5,6 +5,14 @@ import axios from "axios";
 import authStore from "./stores/authStore";
 import router from "./router/routes";
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
+
+
+library.add(faAngleLeft)
+
+
 axios.defaults.baseURL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
 
@@ -23,7 +31,7 @@ axios.interceptors.response.use(
 );
 
 
-const app = createApp(App);
+const app = createApp(App).component('font-awesome-icon', FontAwesomeIcon);
 
 
 app.use(router);
