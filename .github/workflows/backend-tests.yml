@@ -31,4 +31,4 @@ jobs:
         with:
           name: backend-test-reports
           path: |
-            sbackend/target/surefire-reports
+            backend/target/surefire-reports
