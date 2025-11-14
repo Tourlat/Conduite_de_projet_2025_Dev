@@ -68,6 +68,13 @@ public class Issue {
   @JoinColumn(name = "assignee_id", nullable = true, foreignKey = @ForeignKey(name = "fk_assignee"))
   private User assignee;
 
+  @ManyToOne
+  @JoinColumn(
+      name = "sprint_id",
+      nullable = true,
+      foreignKey = @ForeignKey(name = "fk_issue_sprint"))
+  private Sprint sprint;
+
   public enum Priority {
     LOW,
     MEDIUM,
@@ -95,6 +102,10 @@ public class Issue {
 
     if (assignee != null) {
       builder.assigneeId(assignee.getId());
+    }
+
+    if (sprint != null) {
+      builder.sprintId(sprint.getId());
     }
 
     return builder.build();

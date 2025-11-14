@@ -9,4 +9,8 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
   List<Issue> findByProjectId(java.util.UUID projectId);
 
   Optional<Issue> findByIdAndProjectId(Long id, java.util.UUID projectId);
+
+  List<Issue> findBySprintId(Long sprintId);
+
+  Optional<Issue> findByIdAndSprintId(Long id, Long sprintId);
 }

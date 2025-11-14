@@ -28,4 +28,6 @@ public class IssueDto {
   private Long assigneeId;
 
   private LocalDateTime createdAt;
+
+  private Long sprintId;
 }

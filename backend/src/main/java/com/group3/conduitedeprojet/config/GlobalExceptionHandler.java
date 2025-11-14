@@ -6,6 +6,7 @@ import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
 import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
 import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
+import com.group3.conduitedeprojet.exceptions.SprintNotFoundException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
@@ -107,6 +108,22 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND.value())
             .message("Issue was not found")
             .error("ISSUE_NOT_FOUND")
+            .timestamp(LocalDateTime.now())
+            .path(request.getDescription(false).replace("uri=", ""))
+            .build();
+
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(SprintNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleSprintNotFound(
+      SprintNotFoundException ex, WebRequest request) {
+
+    ErrorResponse error =
+        ErrorResponse.builder()
+            .status(HttpStatus.NOT_FOUND.value())
+            .message("Sprint was not found")
+            .error("SPRINT_NOT_FOUND")
             .timestamp(LocalDateTime.now())
             .path(request.getDescription(false).replace("uri=", ""))
             .build();
