@@ -3,6 +3,7 @@ package com.group3.conduitedeprojet.config;
 import com.group3.conduitedeprojet.dto.ErrorResponse;
 import com.group3.conduitedeprojet.exceptions.EmailAlreadyExistsException;
 import com.group3.conduitedeprojet.exceptions.InvalidCredentialsException;
+import com.group3.conduitedeprojet.exceptions.IssueDoesntBelongToProjectException;
 import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
 import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
@@ -49,6 +50,22 @@ public class GlobalExceptionHandler {
             .build();
 
     return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(IssueDoesntBelongToProjectException.class)
+  public ResponseEntity<ErrorResponse> handleIssueDoesntBelongToProject(
+      IssueDoesntBelongToProjectException ex, WebRequest request) {
+
+    ErrorResponse error =
+        ErrorResponse.builder()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .message(ex.getMessage())
+            .error("ISSUE_DOESNT_BELONG_TO_PROJECT")
+            .timestamp(LocalDateTime.now())
+            .path(request.getDescription(false).replace("uri=", ""))
+            .build();
+
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(InvalidCredentialsException.class)
