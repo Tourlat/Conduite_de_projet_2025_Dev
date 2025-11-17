@@ -165,5 +165,4 @@ onMounted(() => {
 <style scoped>
 @import './sprints-shared.css';
 
-/* Styles spécifiques à EditSprintForm si nécessaire */
 </style>
