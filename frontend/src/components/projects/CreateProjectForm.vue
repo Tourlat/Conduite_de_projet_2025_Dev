@@ -115,7 +115,6 @@ const suggestions = ref<Array<{ email: string; nom?: string }>>([])
 const showSuggestions = ref(false)
 const isSubmitting = ref(false)
 
-// Récupérer tous les utilisateurs au montage du composant
 const fetchAllUsers = async () => {
   try {
     const data = await projectStore.getUsers()
@@ -125,7 +124,6 @@ const fetchAllUsers = async () => {
   }
 }
 
-// Appeler au montage du composant
 fetchAllUsers()
 
 const onCollaborateurInput = () => {
@@ -184,7 +182,6 @@ const validateForm = (): boolean => {
     return false
   }
 
-  // If user left text in the input, try to add it (comma separated) before validating
   if (collaborateursInput.value.trim()) {
     const emails = collaborateursInput.value.split(',').map(e => e.trim()).filter(e => e)
     for (const email of emails) {

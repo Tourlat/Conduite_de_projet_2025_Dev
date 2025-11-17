@@ -10,72 +10,21 @@
       <form @submit.prevent="handleSubmit" class="sprint-form">
         <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
 
-        <div class="form-group">
-          <label for="sprint-name">Nom du Sprint <span class="required">*</span></label>
-          <input
-            id="sprint-name"
-            v-model="formData.name"
-            type="text"
-            placeholder="Ex: Sprint 1"
-            :class="{ error: errors.name }"
-            required
-          />
-          <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
-        </div>
+        <SprintFormFields
+          :name="formData.name"
+          :start-date="formData.startDate"
+          :end-date="formData.endDate"
+          @update:name="formData.name = $event"
+          @update:start-date="formData.startDate = $event"
+          @update:end-date="formData.endDate = $event"
+        />
 
-        <div class="form-group">
-          <label for="start-date">Date de début <span class="required">*</span></label>
-          <input
-            id="start-date"
-            v-model="formData.startDate"
-            type="datetime-local"
-            :class="{ error: errors.startDate }"
-            required
-          />
-          <span v-if="errors.startDate" class="error-message">{{ errors.startDate }}</span>
-        </div>
-
-        <div class="form-group">
-          <label for="end-date">Date de fin <span class="required">*</span></label>
-          <input
-            id="end-date"
-            v-model="formData.endDate"
-            type="datetime-local"
-            :class="{ error: errors.endDate }"
-            required
-          />
-          <span v-if="errors.endDate" class="error-message">{{ errors.endDate }}</span>
-        </div>
-
-        <div class="form-group">
-          <label>Issues associées</label>
-          <div class="issues-selector">
-            <div v-if="loadingIssues" class="loading-issues">
-              Chargement des issues...
-            </div>
-            <div v-else-if="availableIssues.length === 0" class="no-issues">
-              Aucune issue disponible
-            </div>
-            <div v-else class="issues-list">
-              <label v-for="issue in availableIssues" :key="issue.id" class="issue-checkbox">
-                <input
-                  type="checkbox"
-                  :value="issue.id"
-                  v-model="formData.issueIds"
-                />
-                <div class="issue-info">
-                  <span class="issue-title">{{ issue.title }}</span>
-                  <div class="issue-meta">
-                    <span :class="['priority-badge', `priority-${issue.priority.toLowerCase()}`]">
-                      {{ issue.priority }}
-                    </span>
-                    <span class="status-badge">{{ issue.status }}</span>
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
+        <IssueSelector
+          :issues="availableIssues"
+          :selected-issue-ids="formData.issueIds || []"
+          :loading="loadingIssues"
+          @update:selected-issue-ids="formData.issueIds = $event"
+        />
 
         <div class="form-actions">
           <button type="button" class="btn-cancel" @click="$emit('close')">
@@ -94,6 +43,8 @@
 import { reactive, ref, onMounted } from 'vue'
 import projectService from '../../services/projectService'
 import type { UpdateSprintRequest, SprintResponse, IssueResponse } from '../../services/projectService'
+import SprintFormFields from './SprintFormFields.vue'
+import IssueSelector from './IssueSelector.vue'
 
 interface EditSprintFormProps {
   projectId: string

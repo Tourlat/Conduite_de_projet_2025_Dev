@@ -239,6 +239,11 @@ const fetchProjects = async () => {
 
 onMounted(() => {
   fetchProject()
+  
+  // Si un query parameter 'issue' est présent, ouvrir l'onglet issues
+  if (route.query.issue) {
+    activeTab.value = 'issues'
+  }
 })
 </script>
 

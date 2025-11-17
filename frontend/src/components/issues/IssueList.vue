@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import type { IssueResponse, IssueStatus } from '../../services/projectService'
 import projectService from '../../services/projectService'
 import IssueCard from './IssueCard.vue'
@@ -83,6 +83,7 @@ interface IssueListProps {
   userId: number
   loading: boolean
   assignees: Array<{ id: number; name: string; email: string }>
+  selectedIssueId?: number | null
 }
 
 const props = defineProps<IssueListProps>()
@@ -117,6 +118,26 @@ const canModify = (issue: IssueResponse): boolean => {
 const openDetailModal = (issue: IssueResponse) => {
   viewingIssue.value = issue
 }
+
+// Auto-open issue if selectedIssueId is provided
+onMounted(() => {
+  if (props.selectedIssueId) {
+    const selectedIssue = props.issues.find(issue => issue.id === props.selectedIssueId)
+    if (selectedIssue) {
+      openDetailModal(selectedIssue)
+    }
+  }
+})
+
+// Watch for changes in selectedIssueId (in case of navigation updates)
+watch(() => props.selectedIssueId, (newId) => {
+  if (newId) {
+    const selectedIssue = props.issues.find(issue => issue.id === newId)
+    if (selectedIssue) {
+      openDetailModal(selectedIssue)
+    }
+  }
+})
 
 const openEditModal = (issue: IssueResponse) => {
   editingIssue.value = issue
