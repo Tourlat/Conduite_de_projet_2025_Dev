@@ -1,7 +1,6 @@
 package com.group3.conduitedeprojet.dto;
 
 import com.group3.conduitedeprojet.models.Release;
-
 import java.util.List;
 import lombok.Data;
 
