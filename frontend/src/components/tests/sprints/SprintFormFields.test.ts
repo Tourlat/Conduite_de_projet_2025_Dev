@@ -55,7 +55,9 @@ describe('SprintFormFields', () => {
     })
     
     const startDateInput = wrapper.findAll('input[type="datetime-local"]')[0]
-    await startDateInput.setValue('2025-11-01T10:00')
+    if (startDateInput) {
+      await startDateInput.setValue('2025-11-01T10:00')
+    }
     
     expect(wrapper.emitted('update:startDate')).toBeTruthy()
     expect(wrapper.emitted('update:startDate')?.[0]).toEqual(['2025-11-01T10:00'])
@@ -71,7 +73,9 @@ describe('SprintFormFields', () => {
     })
     
     const endDateInput = wrapper.findAll('input[type="datetime-local"]')[1]
-    await endDateInput.setValue('2025-11-15T10:00')
+    if (endDateInput) {
+      await endDateInput.setValue('2025-11-15T10:00')
+    }
     
     expect(wrapper.emitted('update:endDate')).toBeTruthy()
     expect(wrapper.emitted('update:endDate')?.[0]).toEqual(['2025-11-15T10:00'])

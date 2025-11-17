@@ -68,7 +68,9 @@ describe('SprintIssuesList', () => {
     })
     
     const firstIssueCard = wrapper.findAll('.issue-card')[0]
-    await firstIssueCard.trigger('click')
+    if (firstIssueCard) {
+      await firstIssueCard.trigger('click')
+    }
     
     expect(wrapper.emitted('issue-click')).toBeTruthy()
     expect(wrapper.emitted('issue-click')?.[0]).toEqual([1])

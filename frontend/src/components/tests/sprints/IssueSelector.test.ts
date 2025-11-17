@@ -75,8 +75,8 @@ describe('IssueSelector', () => {
     })
     
     const checkboxes = wrapper.findAll('input[type="checkbox"]')
-    expect((checkboxes[0].element as HTMLInputElement).checked).toBe(true)
-    expect((checkboxes[1].element as HTMLInputElement).checked).toBe(false)
+    expect((checkboxes[0]?.element as HTMLInputElement).checked).toBe(true)
+    expect((checkboxes[1]?.element as HTMLInputElement).checked).toBe(false)
   })
 
   it('devrait émettre update:selectedIssueIds lors de la sélection', async () => {
@@ -89,7 +89,9 @@ describe('IssueSelector', () => {
     })
     
     const firstCheckbox = wrapper.findAll('input[type="checkbox"]')[0]
-    await firstCheckbox.setValue(true)
+    if (firstCheckbox) {
+      await firstCheckbox.setValue(true)
+    }
     
     expect(wrapper.emitted('update:selectedIssueIds')).toBeTruthy()
     expect(wrapper.emitted('update:selectedIssueIds')?.[0]).toEqual([[1]])
@@ -105,7 +107,9 @@ describe('IssueSelector', () => {
     })
     
     const firstCheckbox = wrapper.findAll('input[type="checkbox"]')[0]
-    await firstCheckbox.setValue(false)
+    if (firstCheckbox) {
+      await firstCheckbox.setValue(false)
+    }
     
     expect(wrapper.emitted('update:selectedIssueIds')).toBeTruthy()
     expect(wrapper.emitted('update:selectedIssueIds')?.[0]).toEqual([[2]])

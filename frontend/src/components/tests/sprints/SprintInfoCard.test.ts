@@ -9,9 +9,9 @@ describe('SprintInfoCard', () => {
     name: 'Sprint 1',
     startDate: '2025-11-01T00:00:00Z',
     endDate: '2025-11-15T00:00:00Z',
-    status: 'ACTIVE',
     projectId: 'proj-123',
-    createdAt: '2025-10-30T10:00:00Z'
+    createdAt: '2025-10-30T10:00:00Z',
+    issueIds: [1, 2, 3, 4, 5]
   }
 
   it('devrait afficher les informations du sprint', () => {
