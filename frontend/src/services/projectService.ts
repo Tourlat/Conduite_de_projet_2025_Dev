@@ -76,6 +76,30 @@ export interface TaskResponse {
     createdAt: string
 }
 
+export interface CreateSprintRequest {
+    name: string
+    startDate: string
+    endDate: string
+    issueIds?: number[]
+}
+
+export interface UpdateSprintRequest {
+    name?: string
+    startDate?: string
+    endDate?: string
+    issueIds?: number[]
+}
+
+export interface SprintResponse {
+    id: number
+    name: string
+    startDate: string
+    endDate: string
+    projectId: string
+    issueIds: number[]
+    createdAt: string
+}
+
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
         409: {
@@ -314,6 +338,84 @@ const projectService = {
                 errorData?.message || 'Erreur lors de la suppression de la tâche'
             )
             throw new Error(message)
+        }
+    },
+
+    // Sprint methods
+    async createSprint(projectId: string, data: CreateSprintRequest): Promise<SprintResponse> {
+        try {
+            const response = await axios.post<SprintResponse>(`${API_URL}/${projectId}/sprints`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la création du sprint'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getSprintsByProject(projectId: string): Promise<SprintResponse[]> {
+        try {
+            const response = await axios.get<SprintResponse[]>(`${API_URL}/${projectId}/sprints`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des sprints')
+        }
+    },
+
+    async getSprint(projectId: string, sprintId: number): Promise<SprintResponse> {
+        try {
+            const response = await axios.get<SprintResponse>(`${API_URL}/${projectId}/sprints/${sprintId}`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération du sprint')
+        }
+    },
+
+    async updateSprint(projectId: string, sprintId: number, data: UpdateSprintRequest): Promise<SprintResponse> {
+        try {
+            const response = await axios.put<SprintResponse>(`${API_URL}/${projectId}/sprints/${sprintId}`, data)
+            return response.data
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la mise à jour du sprint'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async deleteSprint(projectId: string, sprintId: number): Promise<void> {
+        try {
+            await axios.delete(`${API_URL}/${projectId}/sprints/${sprintId}`)
+        } catch (error: any) {
+            const status = error.response?.status
+            const errorData: ErrorResponse = error.response?.data
+            const message = getErrorMessage(
+                status,
+                errorData?.error,
+                errorData?.message || 'Erreur lors de la suppression du sprint'
+            )
+            throw new Error(message)
+        }
+    },
+
+    async getIssuesBySprint(projectId: string, sprintId: number): Promise<IssueResponse[]> {
+        try {
+            const response = await axios.get<IssueResponse[]>(`${API_URL}/${projectId}/sprints/${sprintId}/issues`)
+            return response.data
+        } catch (error: any) {
+            const errorData: ErrorResponse = error.response?.data
+            throw new Error(errorData?.message || 'Erreur lors de la récupération des issues du sprint')
         }
     }
 }
