@@ -16,10 +16,6 @@
     <div v-else class="no-notes">
       Aucune note de release
     </div>
-
-    <div class="release-footer">
-      <span class="creator">Par {{ creatorName }}</span>
-    </div>
   </div>
 </template>
 
@@ -65,10 +61,6 @@ const truncatedNotes = computed(() => {
     return props.release.releaseNotes
   }
   return props.release.releaseNotes.substring(0, maxLength) + '...'
-})
-
-const creatorName = computed(() => {
-  return `Créateur #${props.release.creatorId}`
 })
 </script>
 
@@ -149,19 +141,6 @@ const creatorName = computed(() => {
   opacity: 0.5;
   font-style: italic;
   margin-bottom: 1rem;
-}
-
-.release-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--terminal-border);
-}
-
-.creator {
-  color: var(--terminal-fg);
-  opacity: 0.6;
-  font-size: 0.85rem;
 }
 
 @media (max-width: 768px) {

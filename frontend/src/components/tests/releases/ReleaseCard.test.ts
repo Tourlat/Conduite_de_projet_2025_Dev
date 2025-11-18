@@ -95,15 +95,6 @@ describe('ReleaseCard', () => {
     expect(notesText).toContain('...')
   })
 
-  it('devrait afficher le créateur', () => {
-    const wrapper = mount(ReleaseCard, {
-      props: {
-        release: mockRelease
-      }
-    })
-    expect(wrapper.find('.creator').text()).toContain('Créateur #1')
-  })
-
   it('devrait afficher 0.0.0 si la version est invalide', () => {
     const releaseWithInvalidVersion: ReleaseResponse = {
       ...mockRelease,
