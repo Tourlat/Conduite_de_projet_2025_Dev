@@ -18,6 +18,9 @@
           <button class="btn-sprints" @click="goToSprints">
            Sprints
           </button>
+          <button class="btn-releases" @click="goToReleases">
+           Releases
+          </button>
           <span class="badge" :class="isOwner ? 'creator-badge' : 'collaborator-badge'">
             {{ isOwner ? 'Créateur' : 'Collaborateur' }}
           </span>
@@ -175,6 +178,10 @@ const goToSprints = () => {
   router.push(`/projects/${route.params.id}/sprints`)
 }
 
+const goToReleases = () => {
+  router.push(`/projects/${route.params.id}/releases`)
+}
+
 const handleProjectUpdated = (updatedProject: Project) => {
   project.value = { ...project.value, ...updatedProject }
   fetchProjects()
@@ -327,7 +334,8 @@ onMounted(() => {
   background: rgba(187, 154, 247, 0.1);
 }
 
-.btn-sprints {
+.btn-sprints,
+.btn-releases {
   padding: 0.6rem 1.2rem;
   background: var(--terminal-bg);
   color: var(--terminal-accent);
@@ -339,7 +347,8 @@ onMounted(() => {
   transition: all 0.2s;
 }
 
-.btn-sprints:hover {
+.btn-sprints:hover,
+.btn-releases:hover {
   background: rgba(187, 154, 247, 0.1);
 }
 
