@@ -44,6 +44,7 @@ public class Issue {
   private String description;
 
   @Column(nullable = false)
+  @Builder.Default
   private Status status = Status.TODO;
 
   @ManyToOne(optional = false)
@@ -74,6 +75,13 @@ public class Issue {
       nullable = true,
       foreignKey = @ForeignKey(name = "fk_issue_sprint"))
   private Sprint sprint;
+
+  @ManyToOne
+  @JoinColumn(
+      name = "release_id",
+      nullable = true,
+      foreignKey = @ForeignKey(name = "fk_issue_release"))
+  private Release release;
 
   public enum Priority {
     LOW,

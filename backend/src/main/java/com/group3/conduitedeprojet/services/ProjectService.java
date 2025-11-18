@@ -3,8 +3,6 @@ package com.group3.conduitedeprojet.services;
 import com.group3.conduitedeprojet.dto.*;
 import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
-import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
-import com.group3.conduitedeprojet.exceptions.TaskNotFoundException;
 import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import com.group3.conduitedeprojet.models.Issue;
 import com.group3.conduitedeprojet.models.Issue.IssueBuilder;
@@ -36,10 +34,11 @@ public class ProjectService {
 
   @Autowired private TaskRepository taskRepository;
 
-  public Project createProject(CreateProjectRequest createProjectRequest) {
-    User creator = getUser(createProjectRequest.getUser().getId());
+  @Autowired private EntityLookupService entityLookupService;
 
-    // Créer le projet
+  public Project createProject(CreateProjectRequest createProjectRequest) {
+    User creator = entityLookupService.getUser(createProjectRequest.getUser().getId());
+
     Project project =
         Project.builder()
             .name(createProjectRequest.getName())
@@ -48,7 +47,7 @@ public class ProjectService {
             .build();
 
     Set<User> collaborators = new HashSet<>();
-    // Ajouter les collaborateurs si présents
+
     if (createProjectRequest.getCollaborateurs() != null
         && !createProjectRequest.getCollaborateurs().isEmpty()) {
 
@@ -67,7 +66,7 @@ public class ProjectService {
   }
 
   public List<ProjectResponse> findProjectsByUser(String email) {
-    User user = getUserByEmail(email);
+    User user = entityLookupService.getUserByEmail(email);
 
     List<Project> projects = projectRepository.findAllByUserParticipation(user);
 
@@ -75,16 +74,16 @@ public class ProjectService {
   }
 
   public List<UserDto> getProjectCollaborators(UUID projectId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
   }
 
   public List<UserDto> addCollaboratorsToProject(
       UUID projectId, AddCollaboratorsRequest addCollaboratorsRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreator(project, principal);
 
     Set<User> newCollaborators =
         addCollaboratorsRequest.getCollaborators().stream()
@@ -108,10 +107,10 @@ public class ProjectService {
 
   public List<UserDto> removeCollaboratorFromProject(
       UUID projectId, Long collaboratorId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreator(project, principal);
 
-    project.getCollaborators().remove(getUser(collaboratorId));
+    project.getCollaborators().remove(entityLookupService.getUser(collaboratorId));
     projectRepository.save(project);
 
     return project.getCollaborators().stream().map(User::convertToUserDto).toList();
@@ -119,10 +118,10 @@ public class ProjectService {
 
   public IssueDto createIssue(
       UUID projectId, CreateIssueRequest createIssueRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
-    User creator = getUserByEmail(principal.getName());
+    User creator = entityLookupService.getUserByEmail(principal.getName());
 
     IssueBuilder issueBuilder =
         Issue.builder()
@@ -135,7 +134,7 @@ public class ProjectService {
             .creator(creator);
 
     if (createIssueRequest.getAssigneeId() != null) {
-      issueBuilder.assignee(getUser(createIssueRequest.getAssigneeId()));
+      issueBuilder.assignee(entityLookupService.getUser(createIssueRequest.getAssigneeId()));
     }
 
     Issue issue = issueBuilder.build();
@@ -144,12 +143,7 @@ public class ProjectService {
   }
 
   public List<IssueDto> getIssuesByProject(UUID projectId, Principal principal) {
-    Optional<Project> optionalProject = projectRepository.findById(projectId);
-    if (optionalProject.isEmpty()) {
-      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
-    }
-
-    Project project = optionalProject.get();
+    Project project = entityLookupService.getProject(projectId);
 
     String userEmail = principal.getName();
     boolean hasAccess =
@@ -164,8 +158,8 @@ public class ProjectService {
   }
 
   public void deleteIssue(UUID projectId, Long issueId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     Optional<Issue> optionalIssue = issueRepository.findByIdAndProjectId(issueId, projectId);
     if (optionalIssue.isEmpty()) {
@@ -178,8 +172,8 @@ public class ProjectService {
 
   public IssueDto updateIssue(
       UUID projectId, Long issueId, UpdateIssueRequest updateIssueRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     Optional<Issue> optionalIssue = issueRepository.findByIdAndProjectId(issueId, projectId);
     if (optionalIssue.isEmpty()) {
@@ -219,10 +213,10 @@ public class ProjectService {
 
   public TaskDto createTask(
       UUID projectId, Long issueId, CreateTaskRequest createTaskRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
-    Issue issue = getIssue(issueId);
-    User creator = getUserByEmail(principal.getName());
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Issue issue = entityLookupService.getIssue(issueId);
+    User creator = entityLookupService.getUserByEmail(principal.getName());
 
     Task.TaskBuilder taskBuilder =
         Task.builder()
@@ -234,7 +228,7 @@ public class ProjectService {
             .definitionOfDone(createTaskRequest.getDefinitionOfDone());
 
     if (createTaskRequest.getAssigneeId() != null) {
-      taskBuilder.assignee(getUser(createTaskRequest.getAssigneeId()));
+      taskBuilder.assignee(entityLookupService.getUser(createTaskRequest.getAssigneeId()));
     }
 
     if (createTaskRequest.getStatus() == null) {
@@ -249,9 +243,9 @@ public class ProjectService {
   }
 
   public List<TaskDto> getTasksByIssue(UUID projectId, Long issueId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
-    getIssue(issueId);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
+    entityLookupService.getIssue(issueId);
 
     List<Task> tasks = taskRepository.findByIssueId(issueId);
     return tasks.stream().map(Task::toTaskDto).toList();
@@ -263,10 +257,10 @@ public class ProjectService {
       Long taskId,
       CreateTaskRequest updateTaskRequest,
       Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
-    getIssue(issueId);
-    Task task = getTask(taskId);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
+    entityLookupService.getIssue(issueId);
+    Task task = entityLookupService.getTask(taskId);
 
     if (updateTaskRequest.getTitle() != null && !updateTaskRequest.getTitle().trim().isEmpty()) {
       task.setTitle(updateTaskRequest.getTitle().trim());
@@ -285,7 +279,7 @@ public class ProjectService {
     }
 
     if (updateTaskRequest.getAssigneeId() != null) {
-      task.setAssignee(getUser(updateTaskRequest.getAssigneeId()));
+      task.setAssignee(entityLookupService.getUser(updateTaskRequest.getAssigneeId()));
     }
 
     taskRepository.save(task);
@@ -293,18 +287,18 @@ public class ProjectService {
   }
 
   public void deleteTask(UUID projectId, Long issueId, Long taskId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
-    getIssue(issueId);
-    Task task = getTask(taskId);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
+    entityLookupService.getIssue(issueId);
+    Task task = entityLookupService.getTask(taskId);
 
     taskRepository.delete(task);
   }
 
   public ProjectResponse updateProject(
       UUID projectId, UpdateProjectRequest updateProjectRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreator(project, principal);
 
     if (updateProjectRequest.getName() != null
         && !updateProjectRequest.getName().trim().isEmpty()) {
@@ -337,63 +331,5 @@ public class ProjectService {
         .createdAt(project.getCreatedAt())
         .creator(creatorDto)
         .build();
-  }
-
-  private Project getProject(UUID projectId) {
-    Optional<Project> optionalProject = projectRepository.findById(projectId);
-    if (optionalProject.isEmpty()) {
-      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
-    }
-    return optionalProject.get();
-  }
-
-  private Issue getIssue(Long issueId) {
-    Optional<Issue> optionalIssue = issueRepository.findById(issueId);
-    if (optionalIssue.isEmpty()) {
-      throw new IssueNotFoundException("Issue with id " + issueId + " was not found");
-    }
-    return optionalIssue.get();
-  }
-
-  private Task getTask(Long taskId) {
-    Optional<Task> optionalTask = taskRepository.findById(taskId);
-    if (optionalTask.isEmpty()) {
-      throw new TaskNotFoundException("Task with id " + taskId + " was not found");
-    }
-    return optionalTask.get();
-  }
-
-  private User getUser(Long userId) {
-    Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
-      throw new UserNotFoundException("User with id " + userId + " was not found");
-    }
-    return optionalUser.get();
-  }
-
-  private User getUserByEmail(String email) {
-    Optional<User> optionalUser = userRepository.findByEmail(email);
-    if (optionalUser.isEmpty()) {
-      throw new UserNotFoundException("User with email " + email + " was not found");
-    }
-    return optionalUser.get();
-  }
-
-  private void checkPrincipalIsCreator(Project project, Principal principal) {
-    if (!project.getCreator().getUsername().equals(principal.getName())) {
-      throw new NotAuthorizedException("Only the project creator can make changes");
-    }
-  }
-
-  private void checkPrincipalIsCreatorOrCollaborator(Project project, Principal principal) {
-    boolean principalIsCollaborator =
-        project.getCollaborators().stream()
-            .map(User::getEmail)
-            .anyMatch(collaboratorEmail -> collaboratorEmail.equals(principal.getName()));
-
-    if (!project.getCreator().getUsername().equals(principal.getName())
-        && !principalIsCollaborator) {
-      throw new NotAuthorizedException("Only a collaborator or creator can make change");
-    }
   }
 }

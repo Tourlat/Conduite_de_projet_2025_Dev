@@ -4,20 +4,15 @@ import com.group3.conduitedeprojet.dto.CreateSprintRequest;
 import com.group3.conduitedeprojet.dto.IssueDto;
 import com.group3.conduitedeprojet.dto.SprintDto;
 import com.group3.conduitedeprojet.dto.UpdateSprintRequest;
-import com.group3.conduitedeprojet.exceptions.IssueNotFoundException;
 import com.group3.conduitedeprojet.exceptions.NotAuthorizedException;
-import com.group3.conduitedeprojet.exceptions.ProjectNotFoundException;
 import com.group3.conduitedeprojet.exceptions.SprintNotFoundException;
 import com.group3.conduitedeprojet.models.Issue;
 import com.group3.conduitedeprojet.models.Project;
 import com.group3.conduitedeprojet.models.Sprint;
-import com.group3.conduitedeprojet.models.User;
 import com.group3.conduitedeprojet.repositories.IssueRepository;
-import com.group3.conduitedeprojet.repositories.ProjectRepository;
 import com.group3.conduitedeprojet.repositories.SprintRepository;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +22,8 @@ public class SprintService {
 
   @Autowired private SprintRepository sprintRepository;
   @Autowired private IssueRepository issueRepository;
-  @Autowired private ProjectRepository projectRepository;
+
+  @Autowired private EntityLookupService entityLookupService;
 
   private void assignIssuesToSprint(UUID projectId, List<Long> issueIds, Sprint sprint) {
     if (issueIds == null || issueIds.isEmpty()) {
@@ -35,7 +31,7 @@ public class SprintService {
     }
 
     for (Long issueId : issueIds) {
-      Issue issue = getIssue(issueId);
+      Issue issue = entityLookupService.getIssue(issueId);
       if (!issue.getProject().getId().equals(projectId)) {
         throw new NotAuthorizedException("Issue does not belong to this project");
       }
@@ -45,44 +41,10 @@ public class SprintService {
     }
   }
 
-  private Project getProject(UUID projectId) {
-    Optional<Project> optionalProject = projectRepository.findById(projectId);
-    if (optionalProject.isEmpty()) {
-      throw new ProjectNotFoundException("Project with id " + projectId + " was not found");
-    }
-    return optionalProject.get();
-  }
-
-  private Issue getIssue(Long issueId) {
-    Optional<Issue> optionalIssue = issueRepository.findById(issueId);
-    if (optionalIssue.isEmpty()) {
-      throw new IssueNotFoundException("Issue with id " + issueId + " was not found");
-    }
-    return optionalIssue.get();
-  }
-
-  private void checkPrincipalIsCreator(Project project, Principal principal) {
-    if (!project.getCreator().getUsername().equals(principal.getName())) {
-      throw new NotAuthorizedException("Only the project creator can make changes");
-    }
-  }
-
-  private void checkPrincipalIsCreatorOrCollaborator(Project project, Principal principal) {
-    boolean principalIsCollaborator =
-        project.getCollaborators().stream()
-            .map(User::getEmail)
-            .anyMatch(collaboratorEmail -> collaboratorEmail.equals(principal.getName()));
-
-    if (!project.getCreator().getUsername().equals(principal.getName())
-        && !principalIsCollaborator) {
-      throw new NotAuthorizedException("Only a collaborator or creator can make change");
-    }
-  }
-
   public SprintDto createSprint(
       UUID projectId, CreateSprintRequest createSprintRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     Sprint sprint =
         Sprint.builder()
@@ -100,15 +62,15 @@ public class SprintService {
   }
 
   public List<SprintDto> getSprintsByProject(UUID projectId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     return sprintRepository.findByProjectId(projectId).stream().map(Sprint::toSprintDto).toList();
   }
 
   public SprintDto getSprintById(UUID projectId, Long sprintId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     Sprint sprint =
         sprintRepository
@@ -119,8 +81,8 @@ public class SprintService {
   }
 
   public void deleteSprint(UUID projectId, Long sprintId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     Sprint sprint =
         sprintRepository
@@ -138,8 +100,8 @@ public class SprintService {
 
   public SprintDto updateSprint(
       UUID projectId, Long sprintId, UpdateSprintRequest updateSprintRequest, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     Sprint sprint =
         sprintRepository
@@ -170,8 +132,8 @@ public class SprintService {
   }
 
   public List<IssueDto> getIssuesBySprint(UUID projectId, Long sprintId, Principal principal) {
-    Project project = getProject(projectId);
-    checkPrincipalIsCreatorOrCollaborator(project, principal);
+    Project project = entityLookupService.getProject(projectId);
+    entityLookupService.checkPrincipalIsCreatorOrCollaborator(project, principal);
 
     sprintRepository
         .findByIdAndProjectId(sprintId, projectId)
