@@ -20,8 +20,7 @@ vi.mock('../../../stores/releaseStore', () => {
         return mockReleases
       },
       set releases(value: any[]) {
-        mockReleases.length = 0
-        (releaseStore as any)._mockReleases.push(...value)
+        mockReleases.splice(0, mockReleases.length, ...value)
       },
       loading: false,
       error: null

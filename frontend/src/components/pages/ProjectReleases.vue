@@ -3,7 +3,7 @@
     <div class="releases-content">
       <div class="releases-header">
         <button class="btn-back" @click="goBack">
-          <font-awesome-icon :icon="['fas', 'arrow-left']" /> Retour au projet
+          &lt; Retour au projet
         </button>
         <h1>Releases - {{ projectName }}</h1>
         <button class="btn-create" @click="showCreateModal = true">
@@ -55,7 +55,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import ReleaseCard from '../releases/ReleaseCard.vue'
 import CreateReleaseForm from '../releases/CreateReleaseForm.vue'
 import releaseStore from '../../stores/releaseStore'
@@ -122,56 +121,64 @@ onMounted(() => {
 
 .releases-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 1.5rem;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.releases-header h1 {
-  color: var(--terminal-accent);
-  font-size: 2rem;
-  margin: 0;
-  flex: 1;
 }
 
 .btn-back {
-  background: transparent;
-  border: 2px solid rgba(187, 154, 247, 0.3);
-  color: var(--terminal-fg);
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-accent);
+  border: 2px solid var(--terminal-accent);
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
   transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .btn-back:hover {
-  border-color: var(--terminal-accent);
   background: rgba(187, 154, 247, 0.1);
 }
 
-.btn-create,
-.btn-create-empty {
+.releases-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--terminal-fg);
+  flex: 1;
+}
+
+.btn-create {
+  padding: 0.6rem 1.2rem;
   background: var(--terminal-accent);
   color: var(--terminal-bg);
   border: none;
-  padding: 0.75rem 1.5rem;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
   transition: all 0.2s;
 }
 
-.btn-create:hover,
+.btn-create:hover {
+  background: #9d7cd8;
+}
+
+.btn-create-empty {
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-accent);
+  color: var(--terminal-bg);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
 .btn-create-empty:hover {
   background: #9d7cd8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(187, 154, 247, 0.3);
 }
 
 .loading {
@@ -230,24 +237,17 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
+  .releases-content {
+    padding: 1rem;
+  }
+
   .releases-header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .releases-header h1 {
-    order: -1;
-    text-align: center;
-  }
-
-  .btn-back,
-  .btn-create {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .releases-content {
-    padding: 1rem;
+    font-size: 1.4rem;
   }
 }
 </style>
