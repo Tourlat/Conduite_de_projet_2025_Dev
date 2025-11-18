@@ -237,7 +237,7 @@ const validateForm = (): boolean => {
     delete errors[key]
   }
 
-  // Vérifier que les valeurs sont définies et valides
+  // Test values are defined and valid
   if (formData.version.major === undefined || formData.version.major === null || formData.version.major < 0) {
     errors.major = 'La version major est requise et doit être >= 0'
     return false
@@ -253,7 +253,7 @@ const validateForm = (): boolean => {
     return false
   }
 
-  // Vérifier si la version existe déjà
+  // Check for duplicate versions
   const existingVersions = releaseStore.state.releases
   const versionExists = existingVersions.some(release => 
     release.version.major === formData.version.major &&
