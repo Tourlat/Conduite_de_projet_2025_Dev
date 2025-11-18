@@ -59,6 +59,9 @@ public class Release {
   @OneToMany @Builder.Default private Set<Issue> issues = new HashSet<>();
 
   @Embeddable
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
   public static class Version {
     private int major;
     private int minor;
