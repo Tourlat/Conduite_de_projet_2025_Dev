@@ -141,6 +141,12 @@
   background: var(--terminal-bg);
 }
 
+.form-group select option {
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  padding: 0.5rem;
+}
+
 .form-group input.error,
 .form-group textarea.error,
 .form-group select.error {

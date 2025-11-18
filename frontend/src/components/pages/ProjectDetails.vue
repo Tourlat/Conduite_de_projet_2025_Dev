@@ -15,6 +15,9 @@
           <button class="btn-backlog" @click="goToBacklog">
            Backlog
           </button>
+          <button class="btn-sprints" @click="goToSprints">
+           Sprints
+          </button>
           <span class="badge" :class="isOwner ? 'creator-badge' : 'collaborator-badge'">
             {{ isOwner ? 'Créateur' : 'Collaborateur' }}
           </span>
@@ -168,6 +171,10 @@ const goToBacklog = () => {
   router.push(`/projects/${route.params.id}/backlog`)
 }
 
+const goToSprints = () => {
+  router.push(`/projects/${route.params.id}/sprints`)
+}
+
 const handleProjectUpdated = (updatedProject: Project) => {
   project.value = { ...project.value, ...updatedProject }
   fetchProjects()
@@ -232,6 +239,10 @@ const fetchProjects = async () => {
 
 onMounted(() => {
   fetchProject()
+  
+  if (route.query.issue) {
+    activeTab.value = 'issues'
+  }
 })
 </script>
 
@@ -313,6 +324,22 @@ onMounted(() => {
 }
 
 .btn-backlog:hover {
+  background: rgba(187, 154, 247, 0.1);
+}
+
+.btn-sprints {
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-accent);
+  border: 2px solid var(--terminal-accent);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-sprints:hover {
   background: rgba(187, 154, 247, 0.1);
 }
 

@@ -45,6 +45,18 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/projects/:id/sprints',
+    name: 'ProjectSprints',
+    component: () => import('@/components/pages/ProjectSprints.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/projects/:id/sprints/:sprintId',
+    name: 'SprintDetails',
+    component: () => import('@/components/pages/SprintDetails.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/profile',
     name: 'UserProfile',
     component: () => import('@/components/pages/UserProfile.vue'),

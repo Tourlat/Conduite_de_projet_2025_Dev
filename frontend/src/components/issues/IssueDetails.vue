@@ -25,6 +25,7 @@
       :user-id="userId"
       :loading="loadingIssues"
       :assignees="allAssignees"
+      :selected-issue-id="selectedIssueId"
       @issue-updated="loadIssues"
       @issue-deleted="loadIssues"
     />
@@ -33,6 +34,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import CreateIssueForm from './CreateIssueForm.vue'
 import IssueList from './IssueList.vue'
 import projectService from '../../services/projectService'
@@ -53,9 +55,14 @@ interface IssueDetailsProps {
 }
 const props = defineProps<IssueDetailsProps>()
 
+const route = useRoute()
 const issues = ref<IssueResponse[]>([])
 const loadingIssues = ref(false)
 const showCreateForm = ref(false)
+const selectedIssueId = computed(() => {
+  const issueParam = route.query.issue
+  return issueParam ? parseInt(issueParam as string) : null
+})
 
 const allAssignees = computed(() => {
   const assignees = [...props.collaborators]

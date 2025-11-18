@@ -1,0 +1,431 @@
+/* Sprint Modal Styles */
+.sprint-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  position: relative;
+  background: var(--terminal-bg);
+  border: 2px solid var(--terminal-accent);
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid rgba(187, 154, 247, 0.2);
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--terminal-fg);
+  font-size: 1.5rem;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: var(--terminal-fg);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: rgba(187, 154, 247, 0.1);
+  color: var(--terminal-accent);
+}
+
+/* Sprint Form Styles */
+.sprint-form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: var(--terminal-fg);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: var(--terminal-accent);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  border: 2px solid rgba(187, 154, 247, 0.3);
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  color-scheme: dark;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--terminal-accent);
+}
+
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.form-group input.error {
+  border-color: var(--terminal-magenta);
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.error-message {
+  color: var(--terminal-magenta);
+  font-size: 0.85rem;
+}
+
+/* Messages */
+.message {
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.message.success {
+  background: rgba(187, 154, 247, 0.15);
+  color: var(--terminal-accent);
+  border: 1px solid rgba(187, 154, 247, 0.3);
+}
+
+.message.error {
+  background: rgba(224, 200, 255, 0.15);
+  color: var(--terminal-magenta);
+  border: 1px solid rgba(224, 200, 255, 0.3);
+}
+
+/* Issues Selector */
+.issues-selector {
+  border: 2px solid rgba(187, 154, 247, 0.3);
+  border-radius: 4px;
+  background: var(--terminal-bg);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.loading-issues,
+.no-issues {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--terminal-fg-muted);
+}
+
+.issues-list {
+  padding: 0.5rem;
+}
+
+.issue-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.issue-checkbox:hover {
+  background: rgba(187, 154, 247, 0.1);
+}
+
+.issue-checkbox input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+  accent-color: var(--terminal-accent);
+}
+
+.issue-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.issue-title {
+  color: var(--terminal-fg);
+  font-weight: 500;
+}
+
+.issue-meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Sprint Badges */
+.priority-badge,
+.status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.priority-high {
+  background: rgba(224, 200, 255, 0.3);
+  color: #e0c8ff;
+}
+
+.priority-medium {
+  background: rgba(187, 154, 247, 0.2);
+  color: #bb9af7;
+}
+
+.priority-low {
+  background: rgba(122, 93, 199, 0.1);
+  color: #7a5dc7;
+}
+
+.status-badge {
+  background: rgba(187, 154, 247, 0.1);
+  color: var(--terminal-accent);
+}
+
+/* Sprint Status Badges */
+.sprint-status {
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.sprint-status.status-active,
+.status-active {
+  background: rgba(187, 154, 247, 0.2);
+  color: #bb9af7;
+}
+
+.sprint-status.status-completed,
+.status-completed {
+  background: rgba(157, 124, 216, 0.2);
+  color: #9d7cd8;
+}
+
+.sprint-status.status-planned,
+.status-planned {
+  background: rgba(122, 93, 199, 0.1);
+  color: #7a5dc7;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(187, 154, 247, 0.2);
+}
+
+.btn-cancel,
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.btn-cancel {
+  background: rgba(192, 202, 245, 0.1);
+  color: var(--terminal-fg);
+}
+
+.btn-cancel:hover {
+  background: rgba(192, 202, 245, 0.15);
+}
+
+.btn-submit {
+  background: var(--terminal-accent);
+  color: var(--terminal-bg);
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #a78bfa;
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Buttons */
+.btn-back {
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-accent);
+  border: 2px solid var(--terminal-accent);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(187, 154, 247, 0.1);
+}
+
+.btn-create,
+.btn-edit {
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-accent);
+  color: var(--terminal-bg);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-create:hover,
+.btn-edit:hover {
+  background: #a78bfa;
+  transform: translateY(-1px);
+}
+
+/* Filter Styles */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: rgba(187, 154, 247, 0.05);
+  border: 1px solid rgba(187, 154, 247, 0.2);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--terminal-accent);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.filter-select {
+  padding: 0.6rem 2.5rem 0.6rem 1rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  border: 1px solid rgba(187, 154, 247, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23bb9af7' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  min-width: 180px;
+}
+
+.filter-select:hover {
+  background-color: rgba(187, 154, 247, 0.05);
+  border-color: var(--terminal-accent);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 0 2px rgba(187, 154, 247, 0.1);
+}
+
+.filter-select option {
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  padding: 0.5rem;
+}
+
+/* Loading and Empty States */
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: var(--terminal-accent);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--terminal-fg-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters-bar {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+}
