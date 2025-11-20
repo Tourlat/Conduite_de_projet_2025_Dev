@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { ErrorResponse } from '../utils'
 import { getHeaders } from '../utils'
 
-const API_URL = 'http://localhost:8080/api/users'
+const API_URL = '/api/users'
 
 interface ChangeUserInfoRequest {
     email: string

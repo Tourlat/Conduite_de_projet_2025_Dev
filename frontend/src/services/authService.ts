@@ -2,7 +2,7 @@ import axios from 'axios'
 import { setUserData, getAuthToken, clearUserData } from '../utils/localStorage'
 import type { ErrorResponse } from '../utils'
 
-const API_URL = 'http://localhost:8080/auth'
+const API_URL = '/api/auth'
 
 interface LoginRequest {
     email: string

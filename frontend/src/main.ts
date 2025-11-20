@@ -12,10 +12,6 @@ import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faAngleLeft)
 
-
-axios.defaults.baseURL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:8080";
-
 axios.interceptors.response.use(
   (response) => response,
   (error) => {

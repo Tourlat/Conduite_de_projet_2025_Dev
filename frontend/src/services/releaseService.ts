@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getHeaders } from '../utils/headers'
 
-const API_URL = 'http://localhost:8080/api/projects'
+const API_URL = '/api/projects'
 
 export interface ReleaseVersion {
   major: number

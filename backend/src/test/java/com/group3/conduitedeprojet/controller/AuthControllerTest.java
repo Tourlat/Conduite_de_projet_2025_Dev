@@ -17,7 +17,7 @@ public class AuthControllerTest extends IntegrationTestWithDatabase {
 
     mockMvc
         .perform(
-            post("/auth/register")
+            post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isOk())
@@ -34,14 +34,14 @@ public class AuthControllerTest extends IntegrationTestWithDatabase {
 
     mockMvc
         .perform(
-            post("/auth/register")
+            post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isOk());
 
     mockMvc
         .perform(
-            post("/auth/register")
+            post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isConflict())
@@ -56,7 +56,7 @@ public class AuthControllerTest extends IntegrationTestWithDatabase {
 
     mockMvc
         .perform(
-            post("/auth/register")
+            post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerReq)))
         .andExpect(status().isOk());
@@ -66,7 +66,7 @@ public class AuthControllerTest extends IntegrationTestWithDatabase {
 
     mockMvc
         .perform(
-            post("/auth/login")
+            post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginReq)))
         .andExpect(status().isOk())
@@ -78,7 +78,7 @@ public class AuthControllerTest extends IntegrationTestWithDatabase {
         new com.group3.conduitedeprojet.dto.LoginRequest("carol@example.com", "wrongpass");
     mockMvc
         .perform(
-            post("/auth/login")
+            post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(badLogin)))
         .andExpect(status().isUnauthorized())
