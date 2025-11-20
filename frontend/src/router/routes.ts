@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { authStore } from '../stores/authStore'
 
+/**
+ * Application routes definition.
+ * Each route is associated with a component and can have metadata (like requiresAuth).
+ */
 const routes: RouteRecordRaw[] = [
   {
     path: '/auth',
@@ -80,23 +84,30 @@ const routes: RouteRecordRaw[] = [
   }
 ]
 
+/**
+ * Vue Router instance.
+ * Uses HTML5 history mode.
+ */
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
 
 /**
- * Garde de navigation global.
- * Vérifie si l'utilisateur est authentifié avant d'accéder aux routes protégées.
+ * Global navigation guard.
+ * Checks if the user is authenticated before accessing protected routes.
+ * @param to - The target route
+ * @param from - The current route
+ * @param next - Function to resolve the hook
  */
 router.beforeEach((to, _from, next) => {
   const isAuthenticated = authStore.isLoggedIn()
 
-  // Redirection vers /auth si la route nécessite une authentification et que l'utilisateur n'est pas connecté
+  // Redirect to /auth if the route requires authentication and the user is not logged in
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/auth')
   } 
-  // Redirection vers /dashboard si l'utilisateur est déjà connecté et tente d'accéder à /auth
+  // Redirect to /dashboard if the user is already logged in and tries to access /auth
   else if (!to.meta.requiresAuth && isAuthenticated && to.path === '/auth') {
     next('/dashboard')
   } else {

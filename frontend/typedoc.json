@@ -1,0 +1,12 @@
+{
+  "entryPoints": ["src"],
+  "entryPointStrategy": "expand",
+  "out": "docs/gen",
+  "plugin": ["typedoc-plugin-vue"],
+  "name": "Documentation Frontend",
+  "includeVersion": true,
+  "disableSources": false,
+  "readme": "README.md",
+  "skipErrorChecking": true,
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/tests/**"]
+}

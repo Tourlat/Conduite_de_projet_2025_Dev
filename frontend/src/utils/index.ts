@@ -1,3 +1,8 @@
+/**
+ * Entry point for utilities.
+ * Exports all types and utility functions.
+ */
+
 // Types
 export * from './types'
 

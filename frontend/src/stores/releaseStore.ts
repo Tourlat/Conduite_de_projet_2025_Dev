@@ -1,6 +1,9 @@
 import { reactive, readonly } from 'vue'
 import releaseService, { type CreateReleaseRequest, type ReleaseResponse } from '../services/releaseService'
 
+/**
+ * State of the release store.
+ */
 interface ReleaseState {
   releases: ReleaseResponse[]
   error: string | null
@@ -13,7 +16,11 @@ const state = reactive<ReleaseState>({
   loading: false
 })
 
+/**
+ * Store managing release state.
+ */
 export const releaseStore = {
+  /** Read-only state */
   state: readonly(state),
 
   /**
@@ -30,7 +37,7 @@ export const releaseStore = {
       state.releases.unshift(response)
       return response
     } catch (error: any) {
-      state.error = error.response?.data?.message || 'Erreur lors de la création de la release'
+      state.error = error.response?.data?.message || 'Error creating release'
       throw error
     } finally {
       state.loading = false
@@ -52,13 +59,16 @@ export const releaseStore = {
       )
       return response
     } catch (error: any) {
-      state.error = error.response?.data?.message || 'Erreur lors du chargement des releases'
+      state.error = error.response?.data?.message || 'Error loading releases'
       throw error
     } finally {
       state.loading = false
     }
   },
 
+  /**
+   * Resets release state.
+   */
   clearReleases() {
     state.releases = []
     state.error = null
