@@ -138,4 +138,6 @@ The frontend documentation is generated using TypeDoc. To generate the documenta
 npm run doc
 ```
 
+The generated documentation will be available in the `frontend/docs/gen` directory.
+
 ### Backend Documentation
