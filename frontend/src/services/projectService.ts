@@ -4,13 +4,13 @@ import axios from 'axios'
 
 const API_URL = '/api/projects'
 
-interface CreateProjectRequest {
+export interface CreateProjectRequest {
     name: string
     description?: string
     collaborateurs?: string[]
 }
 
-interface ProjectResponse {
+export interface ProjectResponse {
     id: string
     name: string
     description?: string
@@ -98,40 +98,55 @@ export interface SprintResponse {
     createdAt: string
 }
 
-const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
+/**
+ * Maps HTTP error codes and business error codes to readable user messages.
+ * @param status HTTP Code (e.g., 401, 404)
+ * @param errorCode Specific error code returned by the backend (e.g., 'EMAIL_ALREADY_EXISTS')
+ * @param defaultMessage Default message if no match is found
+ */
+export const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
         409: {
-            EMAIL_ALREADY_EXISTS: 'Cet email est déjà utilisé'
+            EMAIL_ALREADY_EXISTS: 'This email is already in use'
         },
         401: {
-            INVALID_CREDENTIALS: 'Email ou mot de passe incorrect',
-            BAD_CREDENTIALS: 'Email ou mot de passe incorrect'
+            INVALID_CREDENTIALS: 'Incorrect email or password',
+            BAD_CREDENTIALS: 'Incorrect email or password'
         },
         404: {
-            USER_NOT_FOUND: 'Utilisateur non trouvé'
+            USER_NOT_FOUND: 'User not found'
         },
         400: {
-            VALIDATION_ERROR: 'Données invalides'
+            VALIDATION_ERROR: 'Invalid data'
         }
     }
 
     return errorMap[status]?.[errorCode] || defaultMessage
 }
 
+/**
+ * Service for managing projects, issues, sprints, and tasks.
+ * Handles API communication for all project-related operations.
+ */
 const projectService = {
-    async createProject(data: CreateProjectRequest): Promise<ProjectResponse> {
+    /**
+     * Creates a new project.
+     * @param projectData Data for the new project
+     * @returns The created project
+     */
+    async createProject(projectData: CreateProjectRequest): Promise<ProjectResponse> {
         try {
             const userId = getUserId().toString()
             const userEmail = getUserEmail()
 
             if (!userId || !userEmail) {
-                throw new Error('Utilisateur non connecté')
+                throw new Error('User not logged in')
             }
 
             const requestData = {
-                name: data.name,
-                description: data.description || null,
-                collaborateurs: data.collaborateurs || [],
+                name: projectData.name,
+                description: projectData.description || null,
+                collaborateurs: projectData.collaborateurs || [],
                 user: {
                     id: parseInt(userId),
                     email: userEmail
@@ -146,7 +161,7 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la création du projet'
+                errorData?.message || 'Error creating project'
             )
             throw new Error(message)
         }
@@ -154,16 +169,26 @@ const projectService = {
 
    
 
+    /**
+     * Retrieves the list of all projects.
+     * @returns List of projects
+     */
     async getProjects(): Promise<ProjectResponse[]> {
         try {
             const response = await axios.get<ProjectResponse[]>(`${API_URL}`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des projets')
+            throw new Error(errorData?.message || 'Error retrieving projects')
         }
     },
 
+    /**
+     * Updates an existing project.
+     * @param projectId - Project ID
+     * @param data - Data to update
+     * @returns The updated project
+     */
     async updateProject(projectId: string, data: { name: string; description?: string }): Promise<ProjectResponse> {
         try {
             const response = await axios.put<ProjectResponse>(`${API_URL}/${projectId}`, data)
@@ -174,22 +199,32 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la mise à jour du projet'
+                errorData?.message || 'Error updating project'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Retrieves collaborators of a project.
+     * @returns List of collaborators
+     */
     async getProjectCollaborators(projectId: string): Promise<any[]> {
         try {
             const response = await axios.get(`${API_URL}/${projectId}/collaborators`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des collaborateurs')
+            throw new Error(errorData?.message || 'Error retrieving collaborators')
         }
     },
 
+    /**
+     * Adds collaborators to a project.
+     * @param projectId - Project ID
+     * @param collaboratorEmails - List of collaborator emails
+     * @returns Updated list of collaborators
+     */
     async addProjectCollaborators(projectId: string, collaboratorEmails: string[]): Promise<any[]> {
         try {
             const response = await axios.post(`${API_URL}/${projectId}/collaborators`, {
@@ -202,12 +237,18 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de l\'ajout des collaborateurs'
+                errorData?.message || 'Error adding collaborators'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Removes a collaborator from a project.
+     * @param projectId - Project ID
+     * @param collaboratorId - Collaborator ID
+     * @returns Updated list of collaborators
+     */
     async removeProjectCollaborator(projectId: string, collaboratorId: number): Promise<any[]> {
         try {
             const response = await axios.delete(`${API_URL}/${projectId}/collaborators/${collaboratorId}`)
@@ -218,12 +259,18 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la suppression du collaborateur'
+                errorData?.message || 'Error removing collaborator'
             )
             throw new Error(message)
         }
     },
     
+    /**
+     * Creates a new issue.
+     * @param projectId - Project ID
+     * @param data - Issue data
+     * @returns The created issue
+     */
     async createIssue(projectId: string, data: CreateIssueRequest): Promise<IssueResponse> {
         try {
             const response = await axios.post<IssueResponse>(`${API_URL}/${projectId}/issues`, data)
@@ -234,22 +281,34 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la création du ticket'
+                errorData?.message || 'Error creating issue'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Retrieves all issues of a project.
+     * @param projectId - Project ID
+     * @returns List of issues
+     */
     async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
         try {
             const response = await axios.get<IssueResponse[]>(`${API_URL}/${projectId}/issues`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des issues')
+            throw new Error(errorData?.message || 'Error retrieving issues')
         }
     },
 
+    /**
+     * Updates an issue.
+     * @param projectId - Project ID
+     * @param issueId - Issue ID
+     * @param data - Data to update
+     * @returns The updated issue
+     */
     async updateIssue(projectId: string, issueId: number, data: UpdateIssueRequest): Promise<IssueResponse> {
         try {
             const response = await axios.put<IssueResponse>(`${API_URL}/${projectId}/issues/${issueId}`, data)
@@ -260,12 +319,17 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la mise à jour de l\'issue'
+                errorData?.message || 'Error updating issue'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Deletes an issue.
+     * @param projectId - Project ID
+     * @param issueId - Issue ID
+     */
     async deleteIssue(projectId: string, issueId: number): Promise<void> {
         try {
             await axios.delete(`${API_URL}/${projectId}/issues/${issueId}`)
@@ -275,13 +339,20 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la suppression de l\'issue'
+                errorData?.message || 'Error deleting issue'
             )
             throw new Error(message)
         }
     },
 
     // Task methods
+    /**
+     * Creates a new task for an issue.
+     * @param projectId - Project ID
+     * @param issueId - Issue ID
+     * @param data - Task data
+     * @returns The created task
+     */
     async createTask(projectId: string, issueId: number, data: CreateTaskRequest): Promise<TaskResponse> {
         try {
             const response = await axios.post<TaskResponse>(`${API_URL}/${projectId}/issues/${issueId}/tasks`, data)
@@ -292,22 +363,36 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la création de la tâche'
+                errorData?.message || 'Error creating task'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Retrieves tasks of an issue.
+     * @param projectId - Project ID
+     * @param issueId - Issue ID
+     * @returns List of tasks
+     */
     async getTasksByIssue(projectId: string, issueId: number): Promise<TaskResponse[]> {
         try {
             const response = await axios.get<TaskResponse[]>(`${API_URL}/${projectId}/issues/${issueId}/tasks`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des tâches')
+            throw new Error(errorData?.message || 'Error retrieving tasks')
         }
     },
 
+    /**
+     * Updates a task.
+     * @param projectId - Project ID
+     * @param issueId - Issue ID
+     * @param taskId - Task ID
+     * @param data - Data to update
+     * @returns The updated task
+     */
     async updateTask(projectId: string, issueId: number, taskId: number, data: Partial<CreateTaskRequest>): Promise<TaskResponse> {
         try {
             const response = await axios.put<TaskResponse>(`${API_URL}/${projectId}/issues/${issueId}/tasks/${taskId}`, data)
@@ -318,12 +403,18 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la mise à jour de la tâche'
+                errorData?.message || 'Error updating task'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Deletes a task.
+     * @param projectId - Project ID
+     * @param issueId - Issue ID
+     * @param taskId - Task ID
+     */
     async deleteTask(projectId: string, issueId: number, taskId: number): Promise<void> {
         try {
             await axios.delete(`${API_URL}/${projectId}/issues/${issueId}/tasks/${taskId}`)
@@ -333,13 +424,19 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la suppression de la tâche'
+                errorData?.message || 'Error deleting task'
             )
             throw new Error(message)
         }
     },
 
     // Sprint methods
+    /**
+     * Creates a new sprint.
+     * @param projectId - Project ID
+     * @param data - Sprint data
+     * @returns The created sprint
+     */
     async createSprint(projectId: string, data: CreateSprintRequest): Promise<SprintResponse> {
         try {
             const response = await axios.post<SprintResponse>(`${API_URL}/${projectId}/sprints`, data)
@@ -350,32 +447,50 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la création du sprint'
+                errorData?.message || 'Error creating sprint'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Retrieves all sprints of a project.
+     * @param projectId - Project ID
+     * @returns List of sprints
+     */
     async getSprintsByProject(projectId: string): Promise<SprintResponse[]> {
         try {
             const response = await axios.get<SprintResponse[]>(`${API_URL}/${projectId}/sprints`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des sprints')
+            throw new Error(errorData?.message || 'Error retrieving sprints')
         }
     },
 
+    /**
+     * Retrieves a specific sprint.
+     * @param projectId - Project ID
+     * @param sprintId - Sprint ID
+     * @returns The sprint
+     */
     async getSprint(projectId: string, sprintId: number): Promise<SprintResponse> {
         try {
             const response = await axios.get<SprintResponse>(`${API_URL}/${projectId}/sprints/${sprintId}`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération du sprint')
+            throw new Error(errorData?.message || 'Error retrieving sprint')
         }
     },
 
+    /**
+     * Updates a sprint.
+     * @param projectId - Project ID
+     * @param sprintId - Sprint ID
+     * @param data - Data to update
+     * @returns The updated sprint
+     */
     async updateSprint(projectId: string, sprintId: number, data: UpdateSprintRequest): Promise<SprintResponse> {
         try {
             const response = await axios.put<SprintResponse>(`${API_URL}/${projectId}/sprints/${sprintId}`, data)
@@ -386,12 +501,17 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la mise à jour du sprint'
+                errorData?.message || 'Error updating sprint'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Deletes a sprint.
+     * @param projectId - Project ID
+     * @param sprintId - Sprint ID
+     */
     async deleteSprint(projectId: string, sprintId: number): Promise<void> {
         try {
             await axios.delete(`${API_URL}/${projectId}/sprints/${sprintId}`)
@@ -401,19 +521,25 @@ const projectService = {
             const message = getErrorMessage(
                 status,
                 errorData?.error,
-                errorData?.message || 'Erreur lors de la suppression du sprint'
+                errorData?.message || 'Error deleting sprint'
             )
             throw new Error(message)
         }
     },
 
+    /**
+     * Retrieves issues associated with a sprint.
+     * @param projectId - Project ID
+     * @param sprintId - Sprint ID
+     * @returns List of sprint issues
+     */
     async getIssuesBySprint(projectId: string, sprintId: number): Promise<IssueResponse[]> {
         try {
             const response = await axios.get<IssueResponse[]>(`${API_URL}/${projectId}/sprints/${sprintId}/issues`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des issues du sprint')
+            throw new Error(errorData?.message || 'Error retrieving sprint issues')
         }
     }
 }

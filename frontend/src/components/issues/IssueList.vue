@@ -100,6 +100,8 @@ const deletingIssue = ref<IssueResponse | null>(null)
 const isDeleting = ref(false)
 
 const sortedIssues = computed(() => {
+  // Sorts issues first by priority (HIGH -> MEDIUM -> LOW)
+  // Then by status (TODO -> IN_PROGRESS -> CLOSED)
   return [...props.issues].sort((a, b) => {
     const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 }
     const statusOrder = { 'TODO': 0, 'IN_PROGRESS': 1, 'CLOSED': 2 }
@@ -111,6 +113,7 @@ const sortedIssues = computed(() => {
   })
 })
 
+// Checks if the current user can modify the issue (must be project owner or issue creator)
 const canModify = (issue: IssueResponse): boolean => {
   return props.isOwner || issue.creatorId === props.userId
 }
@@ -169,6 +172,7 @@ const handleDelete = (issue: IssueResponse) => {
 const confirmDelete = async () => {
   if (!deletingIssue.value) return
   
+  // Sets loading state, calls API to delete, then emits event to refresh list
   isDeleting.value = true
   try {
     await projectService.deleteIssue(props.projectId, deletingIssue.value.id)

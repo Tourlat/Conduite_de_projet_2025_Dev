@@ -100,6 +100,7 @@ const formatDate = (dateString: string): string => {
   }).format(date)
 }
 
+// Fetches user name by ID, returns 'Non assigné' if not found or null
 const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise<string> => {
   if (!assigneeId) return 'Non assigné'
   try {
@@ -111,6 +112,7 @@ const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise
 }
 
 onMounted(async () => {
+  // Loads assignee name and list of project collaborators on mount
   assigneeName.value = await fetchAssigneeName(props.issue.assigneeId)
   
   // Récupérer les collaborateurs du projet pour l'assignation

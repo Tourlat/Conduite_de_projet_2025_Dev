@@ -80,6 +80,7 @@ const currentAssigneeName = ref<string>('Non assigné')
 const message = ref<Message | null>(null)
 const isSubmitting = ref(false)
 
+// Fetches user name by ID, returns 'Non assigné' if not found or null
 const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise<string> => {
   if (!assigneeId) return 'Non assigné'
   try {
@@ -95,6 +96,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
+    // Updates issue with new assignee ID
     const updateData = {
       assigneeId: selectedAssigneeId.value || undefined
     }
