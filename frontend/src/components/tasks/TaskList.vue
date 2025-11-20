@@ -89,6 +89,7 @@ defineEmits<{
 }>()
 
 const sortedTasks = computed(() => {
+  // Sorts tasks by status: TODO -> IN_PROGRESS -> DONE
   return [...props.tasks].sort((a, b) => {
     const statusOrder = { 'TODO': 0, 'IN_PROGRESS': 1, 'DONE': 2 }
     return statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder]
@@ -104,6 +105,7 @@ const getStatusLabel = (status: string): string => {
   return labels[status] || status
 }
 
+// Retrieves assignee name from ID, returns 'Non assigné' if null
 const getAssigneeName = (assigneeId: number | undefined): string => {
   if (!assigneeId) return 'Non assigné'
   const user = props.assignableUsers.find(u => u.id === assigneeId)

@@ -129,6 +129,7 @@ const emit = defineEmits<{
 }>()
 
 const allAssignees = computed(() => {
+  // Combines collaborators and creator, ensuring creator is in the list
   const assignees = [...props.collaborators]
   if (props.creator && !assignees.some(c => c.id === props.creator?.id)) {
     assignees.unshift(props.creator)
@@ -150,6 +151,7 @@ const message = ref<Message | null>(null)
 const isSubmitting = ref(false)
 
 
+// Validates required fields: title, priority, and story points
 const validateForm = (): boolean => {
   errors.title = formData.title.trim() ? '' : 'Le titre est requis'
   errors.priority = formData.priority ? '' : 'La priorité est requise'
@@ -168,6 +170,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
+    // Prepares data payload and calls API to create issue
     const issueData: CreateIssueRequest = {
       title: formData.title,
       description: formData.description || undefined,
@@ -186,6 +189,7 @@ const handleSubmit = async () => {
 
     emit('issueCreated', createdIssue)
 
+    // Resets form after successful creation
     formData.title = ''
     formData.description = ''
     formData.priority = ''

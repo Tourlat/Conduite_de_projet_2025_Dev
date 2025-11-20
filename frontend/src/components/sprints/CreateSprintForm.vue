@@ -84,7 +84,7 @@ const loadIssues = async () => {
 const handleSubmit = async () => {
   error.value = ''
 
-  // Validation
+  // Validates sprint name and ensures end date is after start date
   if (!formData.value.name.trim()) {
     error.value = 'Le nom du sprint est requis'
     return
