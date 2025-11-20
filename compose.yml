@@ -19,7 +19,7 @@ services:
       database:
         condition: service_healthy
   
-  nginx:
+  gateway:
     image: nginx:latest
     ports:
       - "80:80"
