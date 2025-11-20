@@ -65,7 +65,7 @@ const userService = {
      */
      async getUsers(): Promise<User[]> {
         try {
-            const response = await axios.get<User[]>(`http://localhost:8080/api/users`)
+            const response = await axios.get<User[]>(API_URL)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
