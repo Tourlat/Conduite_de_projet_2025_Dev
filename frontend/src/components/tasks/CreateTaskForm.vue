@@ -129,6 +129,7 @@ const message = ref<Message | null>(null)
 const isSubmitting = ref(false)
 
 const validateForm = (): boolean => {
+  // Clears previous errors and checks if title is valid (required and max length)
   Object.keys(errors).forEach(key => delete errors[key as keyof Errors])
   let isValid = true
 
@@ -152,6 +153,7 @@ const handleSubmit = async () => {
   message.value = null
 
   try {
+    // Prepares task data and calls API to create task linked to the issue
     const taskData: CreateTaskRequest = {
       title: formData.title,
       description: formData.description || undefined,

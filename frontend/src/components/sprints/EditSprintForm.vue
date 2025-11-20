@@ -88,6 +88,7 @@ const loadIssues = async () => {
 }
 
 const validateForm = (): boolean => {
+  // Clears errors and validates name and date range (end > start)
   Object.keys(errors).forEach(key => delete errors[key])
 
   if (!formData.name.trim()) {
@@ -125,6 +126,7 @@ const handleSubmit = async () => {
   message.value = null
 
   try {
+    // Prepares update data and calls API to update sprint
     const sprintData: UpdateSprintRequest = {
       name: formData.name,
       startDate: formData.startDate,

@@ -47,6 +47,7 @@ defineEmits<{
   click: []
 }>()
 
+// Determines sprint status based on current date vs start/end dates
 const getSprintStatus = () => {
   const now = new Date()
   const start = new Date(props.sprint.startDate)

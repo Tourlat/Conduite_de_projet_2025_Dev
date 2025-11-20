@@ -49,6 +49,7 @@ const emit = defineEmits<{
   'update:selectedIssueIds': [value: number[]]
 }>()
 
+// Toggles issue selection: adds if missing, removes if present
 const toggleIssue = (issueId: number) => {
   const newSelection = props.selectedIssueIds.includes(issueId)
     ? props.selectedIssueIds.filter(id => id !== issueId)

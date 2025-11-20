@@ -4,27 +4,43 @@ import { getHeaders } from '../utils'
 
 const API_URL = 'http://localhost:8080/api/users'
 
-interface ChangeUserInfoRequest {
+/**
+ * Data to update user information.
+ */
+export interface ChangeUserInfoRequest {
     email: string
     name: string
 }
 
-interface ChangeUserPasswordRequest {
+/**
+ * Data to change user password.
+ */
+export interface ChangeUserPasswordRequest {
     email: string
     currentPassword: string
     newPassword: string
 }
-interface UserDto {
+
+/**
+ * User Data Transfer Object (DTO).
+ */
+export interface UserDto {
     id: number
     email: string
     name: string
 }
 
-interface User {
+/**
+ * Simplified user interface.
+ */
+export interface User {
     email: string
     name?: string
 }
 
+/**
+ * Service managing user-related operations.
+ */
 const userService = {
 
     /**
@@ -39,17 +55,21 @@ const userService = {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.response?.data?.message || 'Erreur lors de la récupération des données')
+            throw new Error(error.response?.data?.message || 'Error retrieving data')
         }
     },
 
+    /**
+     * Retrieves the list of all users.
+     * @returns List of users
+     */
      async getUsers(): Promise<User[]> {
         try {
             const response = await axios.get<User[]>(`http://localhost:8080/api/users`)
             return response.data
         } catch (error: any) {
             const errorData: ErrorResponse = error.response?.data
-            throw new Error(errorData?.message || 'Erreur lors de la récupération des utilisateurs')
+            throw new Error(errorData?.message || 'Error retrieving users')
         }
     },
 
@@ -65,7 +85,7 @@ const userService = {
             })
             return response.data
         } catch (error: any) {
-            throw new Error(error.response?.data?.message || 'Erreur lors de la mise à jour')
+            throw new Error(error.response?.data?.message || 'Error during update')
         }
     },
 
@@ -79,7 +99,7 @@ const userService = {
                 headers: getHeaders()
             })
         } catch (error: any) {
-            throw new Error(error.response?.data?.message || 'Erreur lors du changement de mot de passe')
+            throw new Error(error.response?.data?.message || 'Error changing password')
         }
     }
 

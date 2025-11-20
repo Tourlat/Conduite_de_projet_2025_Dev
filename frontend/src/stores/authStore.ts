@@ -15,9 +15,11 @@ interface AuthState {
   error: string | null
 }
 
+// Initialize state from LocalStorage to persist session
 const token = getAuthToken()
 const userData = getUserData()
 
+// Global reactive state (private, not exported directly to avoid uncontrolled mutations)
 const state = reactive<AuthState>({
   isAuthenticated: token !== null,
   token: token,
@@ -25,10 +27,18 @@ const state = reactive<AuthState>({
   error: null
 })
 
+/**
+ * Authentication Store (Reactive Store Pattern).
+ * Exposes read-only state and methods to modify it.
+ */
 export const authStore = {
 
+  // Expose read-only state for components
   state: readonly(state),
 
+  /**
+   * Initializes Axios token on application startup.
+   */
   init() {
     authService.initializeToken()
   },
@@ -37,6 +47,7 @@ export const authStore = {
     state.error = null
     try {
       const response = await authService.login({ email, password })
+      // Update reactive state
       state.token = response.token
       state.user = {
         id: response.id,
@@ -46,7 +57,7 @@ export const authStore = {
       state.isAuthenticated = true
       return response
     } catch (error: any) {
-      state.error = error.message || 'Erreur de connexion'
+      state.error = error.message || 'Connection error'
       throw error
     }
   },
@@ -64,11 +75,15 @@ export const authStore = {
       state.isAuthenticated = true
       return response
     } catch (error: any) {
-      state.error = error.message || "Erreur d'inscription"
+      state.error = error.message || "Registration error"
       throw error
     }
   },
 
+  /**
+   * Logs out the user.
+   * Removes token and resets state.
+   */
   logout() {
     state.token = null
     state.user = null
@@ -76,18 +91,34 @@ export const authStore = {
     authService.clearAuthData()
   },
 
+  /**
+   * Updates the user in the state.
+   * @param user - The new user data
+   */
   setUser(user: User) {
     state.user = user
   },
 
+  /**
+   * Vérifie si l'utilisateur est connecté.
+   * @returns true si connecté, false sinon
+   */
   isLoggedIn(): boolean {
     return state.isAuthenticated && state.token !== null
   },
 
+  /**
+   * Récupère l'utilisateur actuel.
+   * @returns L'utilisateur ou null
+   */
   getUser(): User | null {
     return state.user
   },
 
+  /**
+   * Récupère le token actuel.
+   * @returns Le token ou null
+   */
   getToken(): string | null {
     return state.token
   },

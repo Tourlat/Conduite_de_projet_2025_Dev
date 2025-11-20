@@ -1,0 +1,17 @@
+{
+  "source": {
+    "include": ["src"],
+    "includePattern": ".+\\.(js|ts|vue)$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "destination": "./docs/gen",
+    "recurse": true,
+    "readme": "README.md"
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}
