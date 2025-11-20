@@ -85,13 +85,19 @@ const router = createRouter({
   routes
 })
 
-
+/**
+ * Garde de navigation global.
+ * Vérifie si l'utilisateur est authentifié avant d'accéder aux routes protégées.
+ */
 router.beforeEach((to, _from, next) => {
   const isAuthenticated = authStore.isLoggedIn()
 
+  // Redirection vers /auth si la route nécessite une authentification et que l'utilisateur n'est pas connecté
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/auth')
-  } else if (!to.meta.requiresAuth && isAuthenticated && to.path === '/auth') {
+  } 
+  // Redirection vers /dashboard si l'utilisateur est déjà connecté et tente d'accéder à /auth
+  else if (!to.meta.requiresAuth && isAuthenticated && to.path === '/auth') {
     next('/dashboard')
   } else {
     next()

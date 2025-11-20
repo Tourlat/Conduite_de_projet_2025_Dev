@@ -22,6 +22,12 @@ interface AuthResponse {
     name: string
 }
 
+/**
+ * Mappe les codes d'erreur HTTP et les codes d'erreur métier vers des messages utilisateur lisibles.
+ * @param status Code HTTP (ex: 401, 404)
+ * @param errorCode Code d'erreur spécifique renvoyé par le backend (ex: 'EMAIL_ALREADY_EXISTS')
+ * @param defaultMessage Message par défaut si aucune correspondance n'est trouvée
+ */
 const getErrorMessage = (status: number, errorCode: string, defaultMessage: string): string => {
     const errorMap: { [key: number]: { [key: string]: string } } = {
         409: {
@@ -42,11 +48,19 @@ const getErrorMessage = (status: number, errorCode: string, defaultMessage: stri
     return errorMap[status]?.[errorCode] || defaultMessage
 }
 
+/**
+ * Stocke les informations de l'utilisateur connecté dans le LocalStorage.
+ * Cette fonction est appelée après une connexion ou une inscription réussie.
+ */
 function addDatasInLocalStorage(data: AuthResponse): void {
     setUserData(data)
 }
 
 const authService = {
+    /**
+     * Authentifie l'utilisateur auprès de l'API.
+     * En cas de succès, stocke le token et les infos utilisateur.
+     */
     async login(credentials: LoginRequest): Promise<AuthResponse> {
         try {
             const response = await axios.post<AuthResponse>(`${API_URL}/login`, credentials)

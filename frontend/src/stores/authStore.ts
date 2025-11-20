@@ -15,9 +15,11 @@ interface AuthState {
   error: string | null
 }
 
+// Initialisation de l'état à partir du LocalStorage pour persister la session
 const token = getAuthToken()
 const userData = getUserData()
 
+// État réactif global (privé, non exporté directement pour éviter les mutations incontrôlées)
 const state = reactive<AuthState>({
   isAuthenticated: token !== null,
   token: token,
@@ -25,10 +27,18 @@ const state = reactive<AuthState>({
   error: null
 })
 
+/**
+ * Store d'authentification (Pattern Store Réactif).
+ * Expose l'état en lecture seule et des méthodes pour le modifier.
+ */
 export const authStore = {
 
+  // Expose l'état en lecture seule pour les composants
   state: readonly(state),
 
+  /**
+   * Initialise le token Axios au démarrage de l'application
+   */
   init() {
     authService.initializeToken()
   },
@@ -37,6 +47,7 @@ export const authStore = {
     state.error = null
     try {
       const response = await authService.login({ email, password })
+      // Mise à jour de l'état réactif
       state.token = response.token
       state.user = {
         id: response.id,
