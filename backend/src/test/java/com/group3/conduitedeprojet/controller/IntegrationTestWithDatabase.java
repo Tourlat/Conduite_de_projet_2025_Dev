@@ -56,7 +56,7 @@ public abstract class IntegrationTestWithDatabase {
     var mvcRes =
         mockMvc
             .perform(
-                post("/auth/register")
+                post("/api/auth/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(req)))
             .andExpect(status().isOk())

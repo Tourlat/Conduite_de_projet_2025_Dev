@@ -1,10 +1,8 @@
-const API_URL = 'http://localhost:8080/api/projects'
 import type { ErrorResponse } from '../utils'
 import { getUserId, getUserEmail } from '../utils'
-
 import axios from 'axios'
 
-
+const API_URL = '/api/projects'
 
 export interface CreateProjectRequest {
     name: string

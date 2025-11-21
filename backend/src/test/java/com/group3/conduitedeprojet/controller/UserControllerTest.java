@@ -62,7 +62,7 @@ public class UserControllerTest extends IntegrationTestWithDatabase {
     var loginOk = new LoginRequest("eve@example.com", "newpass123");
     mockMvc
         .perform(
-            post("/auth/login")
+            post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginOk)))
         .andExpect(status().isOk())
@@ -73,7 +73,7 @@ public class UserControllerTest extends IntegrationTestWithDatabase {
     var loginBad = new LoginRequest("eve@example.com", "password123");
     mockMvc
         .perform(
-            post("/auth/login")
+            post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginBad)))
         .andExpect(status().isUnauthorized())

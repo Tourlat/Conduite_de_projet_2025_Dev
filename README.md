@@ -128,6 +128,50 @@ Execute `docker compose up --build -d` in the root directory of the project. Thi
 
 To stop the docker containers execute `docker compose down -v`.
 
+## Deployment
+
+### Initial Setup of VM
+
+1. Create VM on a cloud provider. We use Azure and all following steps will use Azure. Follow this [tutorial](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-portal) to create an Azure VM.
+
+2. Download VM private key from Azure. Move key to `~/.ssh` folder.
+
+3. Connect via SSH
+
+```
+ssh -i ~/.ssh/<key name>.pem azureuser@<VM public IP>
+```
+
+3. Apt Update and Upgrade
+
+```
+sudo apt update
+sudo apt upgrade
+```
+
+4. Install Docker and Docker Compose
+
+```
+sudo apt install docker.io
+sudo apt install docker-compose-plugin
+```
+
+5. Clone repository
+
+```
+git clone https://github.com/Tourlat/Conduite_de_projet_2025_Dev.git
+```
+
+### Deployment of new Version
+
+1. Checkout out repository on version that should be released/deployed
+
+2. Start application
+
+```
+sudo docker-compose up --build -d
+```
+
 ## Documentation
 
 ###  Frontend Documentation
