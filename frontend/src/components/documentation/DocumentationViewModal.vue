@@ -88,7 +88,7 @@ const parsedContent = computed(() => {
 
 /* Markdown Content Styling */
 .markdown-content :deep(h1) {
-  color: var(--terminal-accent);
+  color: white;
   font-size: 2em;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -96,7 +96,7 @@ const parsedContent = computed(() => {
 }
 
 .markdown-content :deep(h2) {
-  color: var(--terminal-accent);
+  color: white;
   font-size: 1.5em;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -104,7 +104,7 @@ const parsedContent = computed(() => {
 }
 
 .markdown-content :deep(h3) {
-  color: var(--terminal-fg);
+  color: white;
   font-size: 1.17em;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -112,14 +112,14 @@ const parsedContent = computed(() => {
 }
 
 .markdown-content :deep(p) {
-  color: var(--terminal-fg);
+  color: white;
   margin-bottom: 1em;
   line-height: 1.6;
 }
 
 .markdown-content :deep(ul),
 .markdown-content :deep(ol) {
-  color: var(--terminal-fg);
+  color: white;
   padding-left: 2em;
   margin-bottom: 1em;
 }
@@ -140,7 +140,7 @@ const parsedContent = computed(() => {
   border-left: 4px solid var(--terminal-accent);
   padding-left: 1em;
   margin-left: 0;
-  color: var(--terminal-fg);
+  color: white;
   opacity: 0.8;
   font-style: italic;
   margin-bottom: 1em;
@@ -169,7 +169,7 @@ const parsedContent = computed(() => {
   background: transparent;
   border: none;
   padding: 0;
-  color: var(--terminal-fg);
+  color: white;
 }
 
 .markdown-content :deep(a) {

@@ -197,7 +197,7 @@ watch(() => props.initialDoc, (newVal) => {
 
 /* Markdown Preview Styling */
 .markdown-preview :deep(h1) {
-  color: var(--terminal-accent);
+  color: white;
   font-size: 2em;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -205,7 +205,7 @@ watch(() => props.initialDoc, (newVal) => {
 }
 
 .markdown-preview :deep(h2) {
-  color: var(--terminal-accent);
+  color: white;
   font-size: 1.5em;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -213,7 +213,7 @@ watch(() => props.initialDoc, (newVal) => {
 }
 
 .markdown-preview :deep(h3) {
-  color: var(--terminal-fg);
+  color: white;
   font-size: 1.17em;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -221,14 +221,14 @@ watch(() => props.initialDoc, (newVal) => {
 }
 
 .markdown-preview :deep(p) {
-  color: var(--terminal-fg);
+  color: white;
   margin-bottom: 1em;
   line-height: 1.6;
 }
 
 .markdown-preview :deep(ul),
 .markdown-preview :deep(ol) {
-  color: var(--terminal-fg);
+  color: white;
   padding-left: 2em;
   margin-bottom: 1em;
 }
@@ -249,7 +249,7 @@ watch(() => props.initialDoc, (newVal) => {
   border-left: 4px solid var(--terminal-accent);
   padding-left: 1em;
   margin-left: 0;
-  color: var(--terminal-fg);
+  color: white;
   opacity: 0.8;
   font-style: italic;
   margin-bottom: 1em;
@@ -278,7 +278,7 @@ watch(() => props.initialDoc, (newVal) => {
   background: transparent;
   border: none;
   padding: 0;
-  color: var(--terminal-fg);
+  color: white;
 }
 
 .markdown-preview :deep(a) {
