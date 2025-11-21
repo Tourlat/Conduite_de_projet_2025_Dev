@@ -55,6 +55,12 @@ const localDoc = ref<DocumentationDto>({
   ...props.initialDoc
 })
 
+// Configure marked to handle line breaks
+marked.setOptions({
+  breaks: true,
+  gfm: true
+})
+
 const parsedContent = computed(() => {
   return marked(localDoc.value.content || '')
 })

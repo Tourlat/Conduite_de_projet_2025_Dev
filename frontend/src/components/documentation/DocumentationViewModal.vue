@@ -23,6 +23,12 @@ defineEmits<{
   (e: 'close'): void
 }>()
 
+// Configure marked to handle line breaks
+marked.setOptions({
+  breaks: true,
+  gfm: true
+})
+
 const parsedContent = computed(() => {
   return marked(props.doc.content)
 })
