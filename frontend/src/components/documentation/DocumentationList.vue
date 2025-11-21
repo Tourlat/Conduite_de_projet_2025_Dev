@@ -1,6 +1,9 @@
 <template>
   <div class="documentation-list">
     <div class="header">
+      <button class="btn-back" @click="goBack">
+            <font-awesome-icon :icon="['fas', 'angle-left']" /> Retour au projet
+        </button>
       <h2>Documentation du Projet</h2>
       <button @click="startCreating" class="btn-new">
         Nouveau Document
@@ -49,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import documentationService, { type DocumentationDto } from '../../services/documentationService'
 import MarkdownEditor from './MarkdownEditor.vue'
 import DocumentationCard from './DocumentationCard.vue'
@@ -57,6 +60,7 @@ import DocumentationViewModal from './DocumentationViewModal.vue'
 import DocumentationDeleteModal from './DocumentationDeleteModal.vue'
 
 const route = useRoute()
+const router = useRouter()
 const projectId = route.params.id as string
 
 const docs = ref<DocumentationDto[]>([])
@@ -64,6 +68,10 @@ const isEditing = ref(false)
 const editingDoc = ref<DocumentationDto | undefined>(undefined)
 const viewingDoc = ref<DocumentationDto | null>(null)
 const deletingDoc = ref<DocumentationDto | null>(null)
+
+const goBack = () => {
+  router.push(`/projects/${projectId}`)
+}
 
 const loadDocs = async () => {
   try {
@@ -200,5 +208,21 @@ onMounted(() => {
   color: var(--terminal-fg);
   opacity: 0.7;
   font-size: 1.1rem;
+}
+
+.btn-back {
+  padding: 0.6rem 1.2rem;
+  background: var(--terminal-bg);
+  color: var(--terminal-accent);
+  border: 2px solid var(--terminal-accent);
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(187, 154, 247, 0.1);
 }
 </style>

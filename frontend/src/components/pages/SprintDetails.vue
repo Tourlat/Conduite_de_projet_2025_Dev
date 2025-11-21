@@ -3,7 +3,7 @@
     <div class="sprint-details-content">
       <div class="sprint-header">
         <button class="btn-back" @click="goBack">
-          < Retour aux sprints
+            <font-awesome-icon :icon="['fas', 'angle-left']" /> Retour au projet
         </button>
         <div class="header-content">
           <div class="header-info">

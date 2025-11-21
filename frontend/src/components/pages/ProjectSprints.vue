@@ -3,7 +3,7 @@
     <div class="sprints-content">
       <div class="sprints-header">
         <button class="btn-back" @click="goBack">
-          < Retour au projet
+            <font-awesome-icon :icon="['fas', 'angle-left']" /> Retour au projet
         </button>
         <h1>Sprints - {{ projectName }}</h1>
         <button class="btn-create" @click="showCreateModal = true">
