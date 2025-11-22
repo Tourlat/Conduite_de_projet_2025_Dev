@@ -15,10 +15,22 @@ This repository contains the source code for the Conduite de Projet 2025 develop
 
 ## Configuration
 
-- Backend configuration is located in `backend/src/main/resources/application.properties`.
-- Frontend configuration is managed via environment variables in the `.env` file located in the `frontend/` directory.
+### Backend
+1. Copy `backend/.env.example` to `backend/.env`
+2. Update the environment variables:
+   - **POSTGRES_PASSWORD**: Choose a strong password
+   - **JWT_SECRET_KEY**: Generate a new secret key (see below)
+   - Other variables as needed
 
-In frontend you need to create a .env file based on the .env.example file. - Copy the `.env.example` file to `.env`. - Update the `VITE_BACKEND_URL` and `VITE_PORT` variables as needed.
+#### Generate a secure JWT secret key:
+```bash
+openssl rand -base64 32
+```
+
+### Frontend
+1. Copy `frontend/.env.example` to `frontend/.env`
+2. Update `VITE_BACKEND_URL` and `VITE_PORT` as needed
+
 
 ### IDE Setup
 
@@ -63,6 +75,21 @@ Make hooks in the [hooks](./hooks/) folder executable by running `chmod +x <path
 ### Linting
 
 For the backend install SonarQube in your IDE/Editor to give you linting suggestions.
+
+For the frontend, ESLint is already configured. You can run the linter using:
+
+```bash
+npm run lint
+```
+
+### Formatting
+
+For the backend, Maven Spotless is configured. 
+If you don't want to use the IDE setup, you can format the code using:
+
+```bash
+mvn spotless:apply
+```
 
 ## Running the Application
 
