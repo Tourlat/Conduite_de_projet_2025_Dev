@@ -9,8 +9,15 @@ const mockRoute = {
   params: { id: 'test-project-id' }
 }
 
+const mockPush = vi.fn()
+const mockRouter = {
+  push: mockPush,
+  back: vi.fn()
+}
+
 vi.mock('vue-router', () => ({
-  useRoute: () => mockRoute
+  useRoute: () => mockRoute,
+  useRouter: () => mockRouter
 }))
 
 // Mock du service documentation
