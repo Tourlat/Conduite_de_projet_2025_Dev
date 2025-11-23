@@ -79,6 +79,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/test-playground',
+    name: 'TestPlayground',
+    component: () => import('@/components/testView/TestPlayground.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/',
     redirect: () => {
       return authStore.isLoggedIn() ? '/dashboard' : '/auth'
