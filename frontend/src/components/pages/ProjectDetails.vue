@@ -24,6 +24,9 @@
           <button class="btn-docs" @click="goToDocs">
            Documentation
           </button>
+          <button class="btn-tests" @click="goToTests">
+           Tests
+          </button>
           <span class="badge" :class="isOwner ? 'creator-badge' : 'collaborator-badge'">
             {{ isOwner ? 'Créateur' : 'Collaborateur' }}
           </span>
@@ -189,6 +192,10 @@ const goToDocs = () => {
   router.push(`/projects/${project.value?.id}/docs`)
 }
 
+const goToTests = () => {
+  router.push(`/projects/${project.value?.id}/tests`)
+}
+
 const handleProjectUpdated = (updatedProject: Project) => {
   project.value = { ...project.value, ...updatedProject }
   fetchProjects()
@@ -343,7 +350,8 @@ onMounted(() => {
 
 .btn-sprints,
 .btn-releases,
-.btn-docs {
+.btn-docs,
+.btn-tests {
   padding: 0.6rem 1.2rem;
   background: var(--terminal-bg);
   color: var(--terminal-accent);
@@ -357,7 +365,8 @@ onMounted(() => {
 
 .btn-sprints:hover,
 .btn-releases:hover,
-.btn-docs:hover {
+.btn-docs:hover,
+.btn-tests:hover {
   background: rgba(187, 154, 247, 0.1);
 }
 

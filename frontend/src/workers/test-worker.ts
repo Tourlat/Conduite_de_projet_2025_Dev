@@ -1,5 +1,26 @@
+interface TestResultItem {
+  type: 'pass' | 'fail' | 'log'
+  message: string
+  error?: string
+}
+
+interface WorkerMessage {
+  code: string
+  tests: string
+}
+
+interface WorkerResponse {
+  success: boolean
+  output?: string
+  error?: string
+  stack?: string
+  testCount?: number
+  passedCount?: number
+  failedCount?: number
+}
+
 // Web Worker pour exécuter le code utilisateur de manière isolée
-self.onmessage = function(e) {
+globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
   const { code, tests } = e.data
   
   try {
@@ -9,12 +30,13 @@ self.onmessage = function(e) {
     // Créer un timeout qui force l'arrêt
     const timeoutId = setTimeout(() => {
       isTimedOut = true
-      self.postMessage({
+      const response: WorkerResponse = {
         success: false,
         error: 'Timeout: L\'exécution a été interrompue après 5 secondes (boucle infinie détectée?)',
         stack: ''
-      })
-      self.close()
+      }
+      globalThis.postMessage(response)
+      globalThis.close()
     }, TIMEOUT)
     
     // Compteur pour vérifier le timeout
@@ -32,7 +54,7 @@ self.onmessage = function(e) {
     }
     
     // Système de capture des résultats de tests
-    const testResults = []
+    const testResults: TestResultItem[] = []
     let testCount = 0
     let passedCount = 0
     let failedCount = 0
@@ -40,19 +62,27 @@ self.onmessage = function(e) {
     // Contexte d'exécution avec système de tests structuré
     const executionContext = {
       console: {
-        log: (...args) => {
+        log: (...args: unknown[]) => {
           // Capturer les logs comme messages informatifs
           testResults.push({
             type: 'log',
-            message: args.map(arg => 
-              typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-            ).join(' ')
+            message: args.map(arg => {
+              if (arg === null || arg === undefined) return String(arg)
+              if (typeof arg === 'object') {
+                try {
+                  return JSON.stringify(arg, null, 2)
+                } catch {
+                  return String(arg)
+                }
+              }
+              return String(arg)
+            }).join(' ')
           })
         }
       },
       checkTimeout,
       // Fonction de test structurée
-      test: (description, testFn) => {
+      test: (description: string, testFn: () => void) => {
         testCount++
         try {
           testFn()
@@ -66,32 +96,32 @@ self.onmessage = function(e) {
           testResults.push({
             type: 'fail',
             message: `❌ Test ${testCount}: ${description}`,
-            error: error.message
+            error: error instanceof Error ? error.message : String(error)
           })
         }
       },
       // Assertions
-      assert: (condition, message) => {
+      assert: (condition: unknown, message?: string) => {
         if (!condition) {
           throw new Error(message || 'Assertion failed')
         }
       },
-      assertEquals: (actual, expected, message) => {
+      assertEquals: (actual: unknown, expected: unknown, message?: string) => {
         if (actual !== expected) {
           throw new Error(message || `Expected ${JSON.stringify(expected)} but got ${JSON.stringify(actual)}`)
         }
       },
-      assertNotEquals: (actual, expected, message) => {
+      assertNotEquals: (actual: unknown, expected: unknown, message?: string) => {
         if (actual === expected) {
           throw new Error(message || `Expected values to be different, but both are ${JSON.stringify(actual)}`)
         }
       },
-      assertTrue: (condition, message) => {
+      assertTrue: (condition: unknown, message?: string) => {
         if (condition !== true) {
           throw new Error(message || `Expected true but got ${condition}`)
         }
       },
-      assertFalse: (condition, message) => {
+      assertFalse: (condition: unknown, message?: string) => {
         if (condition !== false) {
           throw new Error(message || `Expected false but got ${condition}`)
         }
@@ -109,12 +139,6 @@ self.onmessage = function(e) {
       // Séparateur
       
       ${instrumentedTests}
-      
-      // Retourner un objet avec toutes les fonctions et variables définies
-      return {
-        // Capturer toutes les variables et fonctions du scope
-        ...this
-      }
     `
     
     // Exécuter le code dans un contexte isolé
@@ -148,9 +172,9 @@ self.onmessage = function(e) {
     
     if (!isTimedOut) {
       // Formater les résultats
-      const outputLines = []
+      const outputLines: string[] = []
       
-      testResults.forEach(result => {
+      for (const result of testResults) {
         if (result.type === 'pass') {
           outputLines.push(result.message)
         } else if (result.type === 'fail') {
@@ -161,13 +185,15 @@ self.onmessage = function(e) {
         } else if (result.type === 'log') {
           outputLines.push(`ℹ️  ${result.message}`)
         }
-      })
+      }
       
       // Ajouter un résumé si des tests ont été exécutés
       if (testCount > 0) {
-        outputLines.push('')
-        outputLines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-        outputLines.push(`📊 Résumé: ${passedCount} réussi(s), ${failedCount} échoué(s) sur ${testCount} test(s)`)
+        outputLines.push(
+          '',
+          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+          `📊 Résumé: ${passedCount} réussi(s), ${failedCount} échoué(s) sur ${testCount} test(s)`
+        )
         
         if (failedCount === 0) {
           outputLines.push('✨ Tous les tests sont passés avec succès !')
@@ -178,56 +204,58 @@ self.onmessage = function(e) {
         ? outputLines.join('\n')
         : '✅ Code exécuté avec succès !\n\nUtilisez test() pour exécuter des tests.'
       
-      self.postMessage({
+      const response: WorkerResponse = {
         success: true,
         output: output,
         testCount,
         passedCount,
         failedCount
-      })
+      }
+      globalThis.postMessage(response)
     }
     
   } catch (error) {
-    self.postMessage({
+    const response: WorkerResponse = {
       success: false,
-      error: error.message,
-      stack: error.stack
-    })
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    }
+    globalThis.postMessage(response)
   }
 }
 
 // Fonction pour instrumenter le code avec des vérifications de timeout
-function instrumentCodeWithTimeoutChecks(code) {
+function instrumentCodeWithTimeoutChecks(code: string): string {
   let instrumented = code
   
   // Instrumenter les boucles while
   instrumented = instrumented.replace(
     /while\s*\([^)]+\)\s*\{/g, 
-    match => match + '\ncheckTimeout();'
+    (match: string) => match + '\ncheckTimeout();'
   )
   
   // Instrumenter les boucles for classiques
   instrumented = instrumented.replace(
     /for\s*\([^)]*;[^)]*;[^)]*\)\s*\{/g,
-    match => match + '\ncheckTimeout();'
+    (match: string) => match + '\ncheckTimeout();'
   )
   
   // Instrumenter les boucles for...of
   instrumented = instrumented.replace(
     /for\s*\([^)]+of[^)]+\)\s*\{/g,
-    match => match + '\ncheckTimeout();'
+    (match: string) => match + '\ncheckTimeout();'
   )
   
   // Instrumenter les boucles for...in
   instrumented = instrumented.replace(
     /for\s*\([^)]+in[^)]+\)\s*\{/g,
-    match => match + '\ncheckTimeout();'
+    (match: string) => match + '\ncheckTimeout();'
   )
   
   // Instrumenter les boucles do-while
   instrumented = instrumented.replace(
     /do\s*\{/g,
-    match => match + '\ncheckTimeout();'
+    (match: string) => match + '\ncheckTimeout();'
   )
   
   return instrumented
