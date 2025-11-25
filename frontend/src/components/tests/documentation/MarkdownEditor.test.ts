@@ -3,6 +3,24 @@ import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import MarkdownEditor from '../../documentation/MarkdownEditor.vue'
 
+// Mock du router
+const mockRoute = {
+  params: { id: 'test-project-id' }
+}
+
+vi.mock('vue-router', () => ({
+  useRoute: () => mockRoute
+}))
+
+// Mock d'axios pour les appels API
+vi.mock('axios', () => ({
+  default: {
+    get: vi.fn().mockResolvedValue({ data: [] }),
+    post: vi.fn(),
+    delete: vi.fn()
+  }
+}))
+
 describe('MarkdownEditor', () => {
   const mockDoc = {
     id: 1,
