@@ -18,56 +18,12 @@
         ></textarea>
 
         <!-- Section de liaison avec les issues -->
-        <div v-if="localDoc.id" class="linked-issues-section">
-          <label>Issues liées</label>
-          <div class="linked-issues-list">
-            <div v-if="linkedIssues.length === 0" class="no-issues">
-              Aucune issue liée
-            </div>
-            <div
-              v-for="link in linkedIssues"
-              :key="link.id"
-              class="linked-issue-item"
-            >
-              <div class="issue-info">
-                <span class="issue-title">{{ link.issueTitle }}</span>
-                <span :class="['issue-priority', `priority-${link.issuePriority.toLowerCase()}`]">
-                  {{ link.issuePriority }}
-                </span>
-                <span :class="['issue-status', `status-${link.issueStatus.toLowerCase()}`]">
-                  {{ link.issueStatus }}
-                </span>
-              </div>
-              <button
-                @click="unlinkIssue(link.issueId)"
-                class="btn-unlink"
-                title="Délier cette issue"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-          
-          <div class="add-issue-section">
-            <select v-model="selectedIssueId" class="issue-select">
-              <option value="">Sélectionner une issue à lier...</option>
-              <option
-                v-for="issue in availableIssues"
-                :key="issue.id"
-                :value="issue.id"
-              >
-                {{ issue.title }} ({{ issue.priority }})
-              </option>
-            </select>
-            <button
-              @click="linkIssue"
-              :disabled="!selectedIssueId"
-              class="btn-link"
-            >
-              Lier
-            </button>
-          </div>
-        </div>
+        <IssueLinker
+          :linked-issues="linkedIssues"
+          :available-issues="availableIssues"
+          @link="handleLinkIssue"
+          @unlink="handleUnlinkIssue"
+        />
       </div>
       
       <div class="preview-section">
@@ -96,13 +52,14 @@ import documentationIssueService, {
   type DocumentationIssueDto
 } from '../../services/documentationIssueService'
 import axios from 'axios'
+import IssueLinker from './IssueLinker.vue'
 
 const props = defineProps<{
   initialDoc?: DocumentationDto
 }>()
 
 const emit = defineEmits<{
-  (e: 'save', doc: DocumentationDto): void
+  (e: 'save', doc: DocumentationDto, issueIds: number[]): void
   (e: 'cancel'): void
 }>()
 
@@ -117,7 +74,7 @@ const localDoc = ref<DocumentationDto>({
 
 const linkedIssues = ref<DocumentationIssueDto[]>([])
 const availableIssues = ref<any[]>([])
-const selectedIssueId = ref<number | string>('')
+const pendingIssueIds = ref<number[]>([])
 
 // Configure marked to handle line breaks
 marked.setOptions({
@@ -150,30 +107,46 @@ const loadAvailableIssues = async () => {
   }
 }
 
-const linkIssue = async () => {
-  if (!localDoc.value.id || !selectedIssueId.value) return
-
-  try {
-    await documentationIssueService.linkDocumentationToIssue(
-      localDoc.value.id,
-      Number(selectedIssueId.value)
-    )
-    selectedIssueId.value = ''
-    await loadLinkedIssues()
-  } catch (error: any) {
-    console.error('Error linking issue:', error)
-    if (error.response?.status === 500) {
-      alert('Cette issue est déjà liée à cette documentation')
-    } else {
-      alert('Erreur lors de la liaison de l\'issue')
+const handleLinkIssue = async (issueId: number) => {
+  // Si le document existe déjà, lier immédiatement
+  if (localDoc.value.id) {
+    try {
+      await documentationIssueService.linkDocumentationToIssue(
+        localDoc.value.id,
+        issueId
+      )
+      await loadLinkedIssues()
+    } catch (error: any) {
+      console.error('Error linking issue:', error)
+      if (error.response?.status === 500) {
+        alert('Cette issue est déjà liée à cette documentation')
+      } else {
+        alert('Erreur lors de la liaison de l\'issue')
+      }
+    }
+  } else {
+    // Si le document n'existe pas encore, ajouter à la liste pending
+    if (!pendingIssueIds.value.includes(issueId)) {
+      pendingIssueIds.value.push(issueId)
+      // Simuler un linkedIssue pour l'affichage
+      const issue = availableIssues.value.find(i => i.id === issueId)
+      if (issue) {
+        linkedIssues.value.push({
+          id: 0,
+          documentationId: 0,
+          issueId: issue.id,
+          issueTitle: issue.title,
+          issuePriority: issue.priority,
+          issueStatus: issue.status
+        })
+      }
     }
   }
 }
 
-const unlinkIssue = async (issueId: number) => {
-  if (!localDoc.value.id) return
-
-  if (confirm('Êtes-vous sûr de vouloir délier cette issue ?')) {
+const handleUnlinkIssue = async (issueId: number) => {
+  // Si le document existe déjà, délier immédiatement
+  if (localDoc.value.id) {
     try {
       await documentationIssueService.unlinkDocumentationFromIssue(localDoc.value.id, issueId)
       await loadLinkedIssues()
@@ -181,11 +154,15 @@ const unlinkIssue = async (issueId: number) => {
       console.error('Error unlinking issue:', error)
       alert('Erreur lors de la suppression de la liaison')
     }
+  } else {
+    // Si le document n'existe pas encore, retirer de la liste pending
+    pendingIssueIds.value = pendingIssueIds.value.filter(id => id !== issueId)
+    linkedIssues.value = linkedIssues.value.filter(link => link.issueId !== issueId)
   }
 }
 
 const save = () => {
-  emit('save', localDoc.value)
+  emit('save', localDoc.value, pendingIssueIds.value)
 }
 
 watch(
@@ -194,6 +171,7 @@ watch(
     if (newVal) {
       localDoc.value = { ...newVal }
       loadLinkedIssues()
+      pendingIssueIds.value = []
     }
   },
   { deep: true }
@@ -265,158 +243,6 @@ onMounted(() => {
 .input-section textarea:focus {
   outline: none;
   border-color: var(--terminal-accent);
-}
-
-/* Linked Issues Section */
-.linked-issues-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: var(--terminal-bg);
-  border: 1px solid var(--terminal-border);
-  border-radius: 4px;
-}
-
-.linked-issues-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.no-issues {
-  color: var(--terminal-fg);
-  opacity: 0.6;
-  font-style: italic;
-  padding: 0.5rem;
-  text-align: center;
-}
-
-.linked-issue-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: var(--terminal-hover);
-  border: 1px solid var(--terminal-border);
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.linked-issue-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.issue-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 1;
-}
-
-.issue-title {
-  color: var(--terminal-fg);
-  font-weight: 500;
-}
-
-.issue-priority,
-.issue-status {
-  padding: 0.25rem 0.5rem;
-  border-radius: 3px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.priority-high {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-}
-
-.priority-medium {
-  background: rgba(251, 146, 60, 0.2);
-  color: #fb923c;
-}
-
-.priority-low {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-.status-todo {
-  background: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
-}
-
-.status-in_progress {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-}
-
-.status-closed {
-  background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
-}
-
-.btn-unlink {
-  padding: 0.25rem 0.5rem;
-  background: transparent;
-  color: var(--terminal-fg);
-  border: 1px solid var(--terminal-border);
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.9rem;
-}
-
-.btn-unlink:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: #ef4444;
-  color: #ef4444;
-}
-
-.add-issue-section {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.issue-select {
-  flex: 1;
-  padding: 0.5rem;
-  background: var(--terminal-bg);
-  color: var(--terminal-fg);
-  border: 1px solid var(--terminal-border);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.issue-select:focus {
-  outline: none;
-  border-color: var(--terminal-accent);
-}
-
-.btn-link {
-  padding: 0.5rem 1rem;
-  background: var(--terminal-accent);
-  color: var(--terminal-bg);
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-link:hover:not(:disabled) {
-  background: var(--terminal-accent-dark);
-}
-
-.btn-link:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .preview-section {

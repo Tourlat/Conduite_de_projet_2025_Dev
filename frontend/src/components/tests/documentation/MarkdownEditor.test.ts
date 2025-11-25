@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import MarkdownEditor from '../../documentation/MarkdownEditor.vue'
+import IssueLinker from '../../documentation/IssueLinker.vue'
 
 // Mock du router
 const mockRoute = {
@@ -18,6 +19,15 @@ vi.mock('axios', () => ({
     get: vi.fn().mockResolvedValue({ data: [] }),
     post: vi.fn(),
     delete: vi.fn()
+  }
+}))
+
+// Mock du service documentationIssueService
+vi.mock('../../services/documentationIssueService', () => ({
+  default: {
+    getIssuesByDocumentation: vi.fn().mockResolvedValue([]),
+    linkDocumentationToIssue: vi.fn().mockResolvedValue({}),
+    unlinkDocumentationFromIssue: vi.fn().mockResolvedValue({})
   }
 }))
 
@@ -99,7 +109,7 @@ describe('MarkdownEditor', () => {
     expect(cancelButton.text()).toContain('Annuler')
   })
 
-  it('devrait émettre save avec les données du document', async () => {
+  it('devrait émettre save avec les données du document et les issues', async () => {
     const wrapper = mount(MarkdownEditor)
 
     await wrapper.find('input#title').setValue('New Title')
@@ -113,8 +123,10 @@ describe('MarkdownEditor', () => {
     const saveEvents = wrapper.emitted('save')
     if (saveEvents && saveEvents[0]) {
       const emittedData = saveEvents[0][0] as any
+      const emittedIssueIds = saveEvents[0][1] as number[]
       expect(emittedData.title).toBe('New Title')
       expect(emittedData.content).toBe('# New Content')
+      expect(Array.isArray(emittedIssueIds)).toBe(true)
     }
   })
 
@@ -183,5 +195,63 @@ describe('MarkdownEditor', () => {
     const preview = wrapper.find('.markdown-preview')
     // Avec l'option breaks: true de marked, les retours à la ligne simples deviennent des <br>
     expect(preview.html()).toContain('<br>')
+  })
+
+  it('devrait afficher le composant IssueLinker', () => {
+    const wrapper = mount(MarkdownEditor)
+    const issueLinker = wrapper.findComponent(IssueLinker)
+    expect(issueLinker.exists()).toBe(true)
+  })
+
+  it('devrait gérer la liaison d\'issues lors de la création', async () => {
+    const wrapper = mount(MarkdownEditor, {
+      props: {
+        initialDoc: { title: '', content: '' }
+      }
+    })
+
+    // Simuler la liaison d'une issue via IssueLinker
+    const issueLinker = wrapper.findComponent(IssueLinker)
+    await issueLinker.vm.$emit('link', 123)
+    await nextTick()
+
+    // Sauvegarder
+    await wrapper.find('.btn-save').trigger('click')
+    await nextTick()
+
+    // Vérifier que l'issue ID est émis
+    const saveEvents = wrapper.emitted('save')
+    if (saveEvents && saveEvents[0]) {
+      const emittedIssueIds = saveEvents[0][1] as number[]
+      expect(emittedIssueIds).toContain(123)
+    }
+  })
+
+  it('devrait gérer la suppression d\'issues en attente', async () => {
+    const wrapper = mount(MarkdownEditor, {
+      props: {
+        initialDoc: { title: '', content: '' }
+      }
+    })
+
+    // Lier une issue
+    const issueLinker = wrapper.findComponent(IssueLinker)
+    await issueLinker.vm.$emit('link', 123)
+    await nextTick()
+
+    // Délier l'issue
+    await issueLinker.vm.$emit('unlink', 123)
+    await nextTick()
+
+    // Sauvegarder
+    await wrapper.find('.btn-save').trigger('click')
+    await nextTick()
+
+    // Vérifier que l'issue ID n'est pas émis
+    const saveEvents = wrapper.emitted('save')
+    if (saveEvents && saveEvents[0]) {
+      const emittedIssueIds = saveEvents[0][1] as number[]
+      expect(emittedIssueIds).not.toContain(123)
+    }
   })
 })
