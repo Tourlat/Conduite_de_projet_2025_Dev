@@ -18,14 +18,14 @@
           <span :class="['issue-status', `status-${link.issueStatus.toLowerCase()}`]">
             {{ link.issueStatus }}
           </span>
+          <button
+            @click="handleUnlink(link.issueId)"
+            class="btn-unlink"
+            title="Délier cette issue"
+          >
+            ✕
+          </button>
         </div>
-        <button
-          @click="handleUnlink(link.issueId)"
-          class="btn-unlink"
-          title="Délier cette issue"
-        >
-          ✕
-        </button>
       </div>
     </div>
     
@@ -154,9 +154,9 @@ const handleUnlink = (issueId: number) => {
 }
 
 .issue-priority.priority-high {
-  background: rgba(247, 118, 142, 0.2);
-  color: #f7768e;
-  border: 1px solid #f7768e;
+  background: rgba(224, 200, 255, 0.3);
+  color: #e0c8ff;
+  border: 1px solid #e0c8ff;
 }
 
 .issue-priority.priority-medium {
@@ -166,27 +166,28 @@ const handleUnlink = (issueId: number) => {
 }
 
 .issue-priority.priority-low {
-  background: rgba(192, 202, 245, 0.2);
-  color: #c0caf5;
-  border: 1px solid #c0caf5;
+  background: rgba(122, 93, 199, 0.1);
+  color: #7a5dc7;
+  border: 1px solid #7a5dc7;
 }
 
+.issue-status.status-todo,
 .issue-status.status-open {
-  background: rgba(192, 202, 245, 0.2);
-  color: #c0caf5;
-  border: 1px solid #c0caf5;
+  background: rgba(187, 154, 247, 0.2);
+  color: var(--terminal-accent);
+  border: 1px solid var(--terminal-accent);
 }
 
 .issue-status.status-in_progress {
-  background: rgba(187, 154, 247, 0.2);
-  color: #bb9af7;
-  border: 1px solid #bb9af7;
+  background: rgba(224, 200, 255, 0.2);
+  color: #e0c8ff;
+  border: 1px solid #e0c8ff;
 }
 
 .issue-status.status-closed {
-  background: rgba(157, 124, 216, 0.2);
-  color: #9d7cd8;
-  border: 1px solid #9d7cd8;
+  background: rgba(150, 150, 150, 0.2);
+  color: #aaa;
+  border: 1px solid #aaa;
 }
 
 .btn-unlink {

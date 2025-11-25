@@ -11,7 +11,7 @@ describe('IssueLinker', () => {
       issueId: 100,
       issueTitle: 'Issue 1',
       issuePriority: 'HIGH',
-      issueStatus: 'OPEN'
+      issueStatus: 'TODO'
     },
     {
       id: 2,
@@ -24,10 +24,10 @@ describe('IssueLinker', () => {
   ]
 
   const mockAvailableIssues = [
-    { id: 100, title: 'Issue 1', priority: 'HIGH', status: 'OPEN' },
+    { id: 100, title: 'Issue 1', priority: 'HIGH', status: 'TODO' },
     { id: 101, title: 'Issue 2', priority: 'MEDIUM', status: 'IN_PROGRESS' },
     { id: 102, title: 'Issue 3', priority: 'LOW', status: 'CLOSED' },
-    { id: 103, title: 'Issue 4', priority: 'HIGH', status: 'OPEN' }
+    { id: 103, title: 'Issue 4', priority: 'HIGH', status: 'TODO' }
   ]
 
   beforeEach(() => {
@@ -46,7 +46,7 @@ describe('IssueLinker', () => {
     expect(wrapper.text()).toContain('Issue 2')
     expect(wrapper.text()).toContain('HIGH')
     expect(wrapper.text()).toContain('MEDIUM')
-    expect(wrapper.text()).toContain('OPEN')
+    expect(wrapper.text()).toContain('TODO')
     expect(wrapper.text()).toContain('IN_PROGRESS')
   })
 
@@ -216,7 +216,7 @@ describe('IssueLinker', () => {
 
     const statusBadges = wrapper.findAll('.issue-status')
     expect(statusBadges.length).toBeGreaterThanOrEqual(2)
-    expect(statusBadges[0]!.classes()).toContain('status-open')
+    expect(statusBadges[0]!.classes()).toContain('status-todo')
     expect(statusBadges[1]!.classes()).toContain('status-in_progress')
   })
 })
