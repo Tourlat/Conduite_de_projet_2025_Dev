@@ -102,6 +102,17 @@ const loadAvailableIssues = async () => {
   try {
     const response = await axios.get(`/api/projects/${projectId}/issues`)
     availableIssues.value = response.data
+    
+    // Charger les tâches pour chaque issue
+    for (const issue of availableIssues.value) {
+      try {
+        const tasksResponse = await axios.get(`/api/projects/${projectId}/issues/${issue.id}/tasks`)
+        issue.tasks = tasksResponse.data
+      } catch (error) {
+        console.error(`Error loading tasks for issue ${issue.id}:`, error)
+        issue.tasks = []
+      }
+    }
   } catch (error) {
     console.error('Error loading available issues:', error)
   }
