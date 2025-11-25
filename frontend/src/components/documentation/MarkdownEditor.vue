@@ -107,6 +107,48 @@ const loadAvailableIssues = async () => {
   }
 }
 
+const generateIssuesMarkdown = () => {
+  if (linkedIssues.value.length === 0) return ''
+  
+  let markdown = '\n\n---\n\n## Issues Liées\n\n'
+  
+  linkedIssues.value.forEach((link, index) => {
+    const issue = availableIssues.value.find(i => i.id === link.issueId)
+    
+    markdown += `### ${index + 1}. ${link.issueTitle}\n\n`
+    
+    if (issue?.description) {
+      markdown += `**Description:**\n${issue.description}\n\n`
+    }
+    
+    if (issue?.tasks && issue.tasks.length > 0) {
+      markdown += `**Tâches associées:**\n\n`
+      issue.tasks.forEach((task: any) => {
+        markdown += `- **${task.title}**`
+        if (task.description) {
+          markdown += `: ${task.description}`
+        }
+        markdown += '\n'
+      })
+      markdown += '\n'
+    }
+  })
+  
+  return markdown
+}
+
+const updateContentWithIssues = () => {
+  const content = localDoc.value.content || ''
+  
+  // Supprimer l'ancienne section "Issues Liées" si elle existe
+  const issuesSectionRegex = /\n*---\n*## Issues Liées\n\n[\s\S]*?(?=\n\n---|$)/
+  let cleanContent = content.replace(issuesSectionRegex, '')
+  
+  // Ajouter la nouvelle section
+  const issuesMarkdown = generateIssuesMarkdown()
+  localDoc.value.content = cleanContent + issuesMarkdown
+}
+
 const handleLinkIssue = async (issueId: number) => {
   // Si le document existe déjà, lier immédiatement
   if (localDoc.value.id) {
@@ -116,6 +158,7 @@ const handleLinkIssue = async (issueId: number) => {
         issueId
       )
       await loadLinkedIssues()
+      updateContentWithIssues()
     } catch (error: any) {
       console.error('Error linking issue:', error)
       if (error.response?.status === 500) {
@@ -139,6 +182,7 @@ const handleLinkIssue = async (issueId: number) => {
           issuePriority: issue.priority,
           issueStatus: issue.status
         })
+        updateContentWithIssues()
       }
     }
   }
@@ -150,6 +194,7 @@ const handleUnlinkIssue = async (issueId: number) => {
     try {
       await documentationIssueService.unlinkDocumentationFromIssue(localDoc.value.id, issueId)
       await loadLinkedIssues()
+      updateContentWithIssues()
     } catch (error) {
       console.error('Error unlinking issue:', error)
       alert('Erreur lors de la suppression de la liaison')
@@ -158,6 +203,7 @@ const handleUnlinkIssue = async (issueId: number) => {
     // Si le document n'existe pas encore, retirer de la liste pending
     pendingIssueIds.value = pendingIssueIds.value.filter(id => id !== issueId)
     linkedIssues.value = linkedIssues.value.filter(link => link.issueId !== issueId)
+    updateContentWithIssues()
   }
 }
 
@@ -170,16 +216,23 @@ watch(
   (newVal) => {
     if (newVal) {
       localDoc.value = { ...newVal }
-      loadLinkedIssues()
+      loadLinkedIssues().then(() => {
+        if (linkedIssues.value.length > 0) {
+          updateContentWithIssues()
+        }
+      })
       pendingIssueIds.value = []
     }
   },
   { deep: true }
 )
 
-onMounted(() => {
-  loadLinkedIssues()
-  loadAvailableIssues()
+onMounted(async () => {
+  await loadAvailableIssues()
+  await loadLinkedIssues()
+  if (linkedIssues.value.length > 0) {
+    updateContentWithIssues()
+  }
 })
 </script>
 

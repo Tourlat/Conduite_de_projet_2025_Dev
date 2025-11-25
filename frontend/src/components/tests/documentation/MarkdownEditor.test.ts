@@ -16,9 +16,53 @@ vi.mock('vue-router', () => ({
 // Mock d'axios pour les appels API
 vi.mock('axios', () => ({
   default: {
-    get: vi.fn().mockResolvedValue({ data: [] }),
-    post: vi.fn(),
-    delete: vi.fn()
+    get: vi.fn((url: string) => {
+      if (url.includes('/issues')) {
+        return Promise.resolve({
+          data: [
+            {
+              id: 123,
+              title: 'Test Issue',
+              description: 'Description de test',
+              priority: 'HIGH',
+              status: 'TODO',
+              tasks: [
+                { id: 1, title: 'Task 1', status: 'TODO' },
+                { id: 2, title: 'Task 2', status: 'DONE' }
+              ]
+            }
+          ]
+        })
+      }
+      if (url.includes('/documentation-issues/documentation/')) {
+        return Promise.resolve({
+          data: [
+            {
+              id: 1,
+              documentationId: 1,
+              issueId: 123,
+              issueTitle: 'Test Issue',
+              issuePriority: 'HIGH',
+              issueStatus: 'TODO'
+            }
+          ]
+        })
+      }
+      return Promise.resolve({ data: [] })
+    }),
+    post: vi.fn(() => {
+      return Promise.resolve({
+        data: {
+          id: 1,
+          documentationId: 1,
+          issueId: 123,
+          issueTitle: 'Test Issue',
+          issuePriority: 'HIGH',
+          issueStatus: 'TODO'
+        }
+      })
+    }),
+    delete: vi.fn(() => Promise.resolve({ data: {} }))
   }
 }))
 
@@ -26,7 +70,19 @@ vi.mock('axios', () => ({
 vi.mock('../../services/documentationIssueService', () => ({
   default: {
     getIssuesByDocumentation: vi.fn().mockResolvedValue([]),
-    linkDocumentationToIssue: vi.fn().mockResolvedValue({}),
+    linkDocumentationToIssue: vi.fn().mockResolvedValue({
+      data: {
+        id: 123,
+        title: 'Test Issue',
+        description: 'Description de test',
+        priority: 'HIGH',
+        status: 'TODO',
+        tasks: [
+          { id: 1, title: 'Task 1', status: 'TODO' },
+          { id: 2, title: 'Task 2', status: 'DONE' }
+        ]
+      }
+    }),
     unlinkDocumentationFromIssue: vi.fn().mockResolvedValue({})
   }
 }))
@@ -253,5 +309,51 @@ describe('MarkdownEditor', () => {
       const emittedIssueIds = saveEvents[0][1] as number[]
       expect(emittedIssueIds).not.toContain(123)
     }
+  })
+
+  it('devrait ajouter une section markdown avec les issues liées', async () => {
+    const wrapper = mount(MarkdownEditor, {
+      props: {
+        initialDoc: { id: 1, title: 'Test', content: '# Content' }
+      }
+    })
+
+    // Attendre que le composant se charge complètement
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    // Lier une issue
+    const issueLinker = wrapper.findComponent(IssueLinker)
+    await issueLinker.vm.$emit('link', 123)
+    
+    // Attendre que les appels async se terminent
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 50))
+
+    // Vérifier que le contenu contient la section issues
+    const contentTextarea = wrapper.find('textarea#content')
+    const content = (contentTextarea.element as HTMLTextAreaElement).value
+    expect(content).toContain('## Issues Liées')
+  })
+
+  it('devrait mettre à jour la section markdown lors de la suppression d\'une issue', async () => {
+    const wrapper = mount(MarkdownEditor, {
+      props: {
+        initialDoc: { title: 'Test', content: '# Content' }
+      }
+    })
+
+    // Lier puis délier une issue
+    const issueLinker = wrapper.findComponent(IssueLinker)
+    await issueLinker.vm.$emit('link', 123)
+    await nextTick()
+    
+    await issueLinker.vm.$emit('unlink', 123)
+    await nextTick()
+
+    // Vérifier que la section issues a été retirée
+    const contentTextarea = wrapper.find('textarea#content')
+    const content = (contentTextarea.element as HTMLTextAreaElement).value
+    expect(content).not.toContain('## Issues Liées')
   })
 })
