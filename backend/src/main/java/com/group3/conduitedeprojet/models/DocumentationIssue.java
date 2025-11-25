@@ -12,9 +12,7 @@ import lombok.*;
 @Setter
 @Table(
     name = "documentation_issues",
-    uniqueConstraints = {
-      @UniqueConstraint(columnNames = {"documentation_id", "issue_id"})
-    })
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"documentation_id", "issue_id"})})
 public class DocumentationIssue {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

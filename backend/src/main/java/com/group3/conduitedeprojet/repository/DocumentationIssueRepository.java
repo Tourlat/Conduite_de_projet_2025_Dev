@@ -12,8 +12,7 @@ public interface DocumentationIssueRepository extends JpaRepository<Documentatio
 
   List<DocumentationIssue> findByIssueId(Long issueId);
 
-  Optional<DocumentationIssue> findByDocumentationIdAndIssueId(
-      Long documentationId, Long issueId);
+  Optional<DocumentationIssue> findByDocumentationIdAndIssueId(Long documentationId, Long issueId);
 
   void deleteByDocumentationIdAndIssueId(Long documentationId, Long issueId);
 }

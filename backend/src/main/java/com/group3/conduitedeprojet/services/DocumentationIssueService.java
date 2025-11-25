@@ -5,8 +5,8 @@ import com.group3.conduitedeprojet.models.Documentation;
 import com.group3.conduitedeprojet.models.DocumentationIssue;
 import com.group3.conduitedeprojet.models.Issue;
 import com.group3.conduitedeprojet.repositories.DocumentationRepository;
-import com.group3.conduitedeprojet.repository.DocumentationIssueRepository;
 import com.group3.conduitedeprojet.repositories.IssueRepository;
+import com.group3.conduitedeprojet.repository.DocumentationIssueRepository;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,10 +66,7 @@ public class DocumentationIssueService {
 
     // Créer la liaison
     DocumentationIssue link =
-        DocumentationIssue.builder()
-            .documentation(documentation)
-            .issue(issue)
-            .build();
+        DocumentationIssue.builder().documentation(documentation).issue(issue).build();
 
     DocumentationIssue savedLink = documentationIssueRepository.save(link);
     return convertToDto(savedLink);

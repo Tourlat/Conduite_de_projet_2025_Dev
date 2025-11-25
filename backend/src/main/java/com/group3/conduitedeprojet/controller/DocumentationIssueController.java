@@ -17,8 +17,7 @@ public class DocumentationIssueController {
   @GetMapping("/documentation/{documentationId}")
   public ResponseEntity<List<DocumentationIssueDto>> getIssuesByDocumentation(
       @PathVariable Long documentationId) {
-    return ResponseEntity.ok(
-        documentationIssueService.getIssuesByDocumentation(documentationId));
+    return ResponseEntity.ok(documentationIssueService.getIssuesByDocumentation(documentationId));
   }
 
   @GetMapping("/issue/{issueId}")
