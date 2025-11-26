@@ -20,9 +20,12 @@ This repository contains the source code for the Conduite de Projet 2025 develop
 2. Update the environment variables:
    - **POSTGRES_PASSWORD**: Choose a strong password
    - **JWT_SECRET_KEY**: Generate a new secret key (see below)
+   - **API_DOCS_ENABLED**: For development set it to `true`
    - Other variables as needed
+3. Export
 
-#### Generate a secure JWT secret key:
+#### Generate a secure JWT secret key
+
 ```bash
 openssl rand -base64 32
 ```
@@ -30,7 +33,6 @@ openssl rand -base64 32
 ### Frontend
 1. Copy `frontend/.env.example` to `frontend/.env`
 2. Update `VITE_BACKEND_URL` and `VITE_PORT` as needed
-
 
 ### IDE Setup
 
@@ -95,11 +97,11 @@ mvn spotless:apply
 
 ### Backend
 
-1. Navigate to the `backend/` directory.
-2. Launch the Spring Boot application using Maven:
-   ```bash
-   mvn spring-boot:run
-   ```
+1. Start the application and database using
+
+```
+docker compose up --build database backend
+```
 
 The backend will start on the port specified in `application.properties` (default is 8080).
 
@@ -212,3 +214,17 @@ npm run doc
 The generated documentation will be available in the `frontend/docs/gen` directory.
 
 ### Backend Documentation
+
+The documentation of the backend endpoints can be found as OpenAPI specification under [backend/docs/openapi.json](backend/docs/openapi.json).
+
+To regenerate the OpenAPI specification execute the following command. Make sure that the environment varilable `API_DOCS_ENABLED` is set to `true` in [.env](backend/.env).
+
+```
+mvn -DskipTests springdoc-openapi:generate
+```
+
+To access the swagger documentation start the backend application and go to the following URL in the browser.
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
