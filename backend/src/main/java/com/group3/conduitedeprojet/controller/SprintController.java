@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/projects/{projectId}/sprints")
 public class SprintController {
 
-  @Autowired private SprintService SprintService;
+  @Autowired private SprintService sprintService;
 
   @Operation(summary = "Create a sprint", description = "Creates a new sprint for a project")
   @ApiResponses(
@@ -64,7 +64,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.createSprint(projectId, createSprintRequest, principal));
+    return ResponseEntity.ok(sprintService.createSprint(projectId, createSprintRequest, principal));
   }
 
   @Operation(
@@ -103,7 +103,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.getSprintsByProject(projectId, principal));
+    return ResponseEntity.ok(sprintService.getSprintsByProject(projectId, principal));
   }
 
   @Operation(summary = "Get a sprint by ID", description = "Retrieves a specific sprint by its ID")
@@ -141,7 +141,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.getSprintById(projectId, sprintId, principal));
+    return ResponseEntity.ok(sprintService.getSprintById(projectId, sprintId, principal));
   }
 
   @Operation(summary = "Update a sprint", description = "Updates the specified sprint")
@@ -187,7 +187,7 @@ public class SprintController {
     }
 
     return ResponseEntity.ok(
-        SprintService.updateSprint(projectId, sprintId, updateSprintRequest, principal));
+        sprintService.updateSprint(projectId, sprintId, updateSprintRequest, principal));
   }
 
   @Operation(summary = "Delete a sprint", description = "Deletes the specified sprint")
@@ -211,7 +211,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    SprintService.deleteSprint(projectId, sprintId, principal);
+    sprintService.deleteSprint(projectId, sprintId, principal);
     return ResponseEntity.noContent().build();
   }
 
@@ -222,6 +222,6 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.getIssuesBySprint(projectId, sprintId, principal));
+    return ResponseEntity.ok(sprintService.getIssuesBySprint(projectId, sprintId, principal));
   }
 }

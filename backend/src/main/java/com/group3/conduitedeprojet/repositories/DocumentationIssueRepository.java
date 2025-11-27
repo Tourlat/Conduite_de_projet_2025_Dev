@@ -1,4 +1,4 @@
-package com.group3.conduitedeprojet.repository;
+package com.group3.conduitedeprojet.repositories;
 
 import com.group3.conduitedeprojet.models.DocumentationIssue;
 import java.util.List;
