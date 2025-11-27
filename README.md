@@ -2,18 +2,18 @@
 
 This repository contains the source code for the Conduite de Projet 2025 development project. It includes both the backend and frontend components of the application.
 
-## Project Structure
+## 📐 Project Structure
 
 - [backend](./backend/): Contains the Spring Boot backend application.
 - [frontend](./frontend/): Contains the Vue.js frontend application.
 
-## Prerequisites
+## 📋 Prerequisites
 
 - Java 21 or higher
 - Maven
 - Node.js and npm
 
-## Project Configuration
+## ⚙️ Project Configuration
 
 ### Backend
 1. Copy `backend/.env.example` to `backend/.env`
@@ -93,7 +93,7 @@ mvn spotless:apply
 2. Setup by following these [steps](https://github.com/google/google-java-format?tab=readme-ov-file#intellij-jre-config)
 3. In the IntelliJ settings under [google java format settings](jetbrains://idea/settings?name=google-java-format+Settings) set `Default Google Java Style` and not `AOSP`.
 
-## Running the Application
+## ▶️ Running the Application
 
 ### Running using Docker
 
@@ -133,7 +133,7 @@ To start the database run the following command.
 docker compose up --build database
 ```
 
-## Testing
+## 🧪 Testing
 
 ### Frontend Tests
 
@@ -166,7 +166,7 @@ To run the backend tests, either run them using IntelliJ or VSCode or run them f
 mvn verify
 ```
 
-## Deployment
+## 🚀 Deployment
 
 ### Initial Setup of VM
 
@@ -210,7 +210,7 @@ git clone https://github.com/Tourlat/Conduite_de_projet_2025_Dev.git
 sudo docker-compose up --build -d
 ```
 
-## Documentation
+## 📚 Documentation 
 
 ###  Frontend Documentation
 
