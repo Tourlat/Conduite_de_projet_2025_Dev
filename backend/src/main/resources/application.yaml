@@ -21,3 +21,9 @@ security:
 app:
   frontend:
     url: ${FRONTEND_URL:http://localhost:5173}
+
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:false}
