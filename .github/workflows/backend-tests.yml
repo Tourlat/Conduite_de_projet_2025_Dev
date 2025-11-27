@@ -46,7 +46,7 @@ jobs:
       - name: Extract JaCoCo coverage
         id: coverage
         run: |
-          FILE=target/site/jacoco/jacoco.xml
+          FILE=backend/target/site/jacoco/jacoco.xml
           LINE_COVERED=$(xmllint --xpath "sum(//counter[@type='LINE']/@covered)" $FILE)
           LINE_MISSED=$(xmllint --xpath "sum(//counter[@type='LINE']/@missed)" $FILE)
           
