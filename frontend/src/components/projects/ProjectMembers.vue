@@ -72,9 +72,7 @@ interface User {
   name: string
 }
 
-interface Member extends User {
-  // Membres du projet
-}
+type Member = User
 
 interface Message {
   text: string

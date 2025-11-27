@@ -7,7 +7,7 @@
         <button class="btn-close" @click="$emit('close')">&times;</button>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="release-form">
+      <form class="release-form" @submit.prevent="handleSubmit">
         <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
 
         <div class="form-section">

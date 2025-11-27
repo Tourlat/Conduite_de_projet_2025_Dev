@@ -1,10 +1,10 @@
 <template>
-  <div class="status-dropdown" ref="dropdownRef">
+  <div ref="dropdownRef" class="status-dropdown">
     <button 
       class="status-button"
       :class="`status-${currentStatus.toLowerCase()}`"
-      @click="toggleDropdown"
       :disabled="disabled"
+      @click="toggleDropdown"
     >
       <span>{{ getStatusLabel(currentStatus) }}</span>
       <svg 

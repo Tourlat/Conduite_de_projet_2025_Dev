@@ -19,9 +19,9 @@
             {{ link.issueStatus }}
           </span>
           <button
-            @click="handleUnlink(link.issueId)"
             class="btn-unlink"
             title="Délier cette issue"
+            @click="handleUnlink(link.issueId)"
           >
             ✕
           </button>
@@ -41,9 +41,9 @@
         </option>
       </select>
       <button
-        @click="handleLink"
         :disabled="!selectedIssueId"
         class="btn-link"
+        @click="handleLink"
       >
         Lier
       </button>

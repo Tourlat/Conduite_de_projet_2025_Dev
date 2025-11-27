@@ -5,7 +5,7 @@
             <font-awesome-icon :icon="['fas', 'angle-left']" /> Retour au projet
         </button>
       <h2>Documentation du Projet</h2>
-      <button @click="startCreating" class="btn-new">
+      <button class="btn-new" @click="startCreating">
         Nouveau Document
       </button>
     </div>

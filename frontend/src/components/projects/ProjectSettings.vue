@@ -4,7 +4,7 @@
 
     <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
 
-    <form @submit.prevent="saveSettings" class="settings-form">
+    <form class="settings-form" @submit.prevent="saveSettings">
         
       <div class="form-group">
         <label for="projectName">Nom du projet *</label>
@@ -34,7 +34,7 @@
         <button type="submit" class="btn btn-primary" :disabled="loading">
           {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
         </button>
-        <button type="button" class="btn btn-secondary" @click="resetForm" :disabled="loading">
+        <button type="button" class="btn btn-secondary" :disabled="loading" @click="resetForm">
           Annuler
         </button>
       </div>

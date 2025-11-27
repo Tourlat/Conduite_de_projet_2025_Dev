@@ -7,8 +7,8 @@
       </p>
     </div>
     <div class="doc-actions">
-      <button @click.stop="$emit('edit')" class="btn-edit">Modifier</button>
-      <button @click.stop="$emit('delete')" class="btn-delete">Supprimer</button>
+      <button class="btn-edit" @click.stop="$emit('edit')">Modifier</button>
+      <button class="btn-delete" @click.stop="$emit('delete')">Supprimer</button>
     </div>
   </div>
 </template>

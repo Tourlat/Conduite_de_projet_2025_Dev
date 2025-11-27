@@ -7,7 +7,7 @@
         <button class="btn-close" @click="$emit('close')">&times;</button>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="sprint-form">
+      <form class="sprint-form" @submit.prevent="handleSubmit">
         <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
 
         <SprintFormFields

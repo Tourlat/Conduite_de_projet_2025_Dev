@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="create-task-form">
+  <form class="create-task-form" @submit.prevent="handleSubmit">
     <h3>Créer une nouvelle tâche</h3>
     
     <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>

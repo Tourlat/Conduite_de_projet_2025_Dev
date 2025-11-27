@@ -6,7 +6,7 @@
         <button class="btn-close" @click="$emit('close')">×</button>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="sprint-form">
+      <form class="sprint-form" @submit.prevent="handleSubmit">
         <div v-if="error" class="error-message">
           {{ error }}
         </div>

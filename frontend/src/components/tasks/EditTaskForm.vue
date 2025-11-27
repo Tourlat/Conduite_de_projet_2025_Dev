@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" @click="$emit('close')">&times;</button>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="modal-body">
+      <form class="modal-body" @submit.prevent="handleSubmit">
         <div v-if="message" :class="['message', message.type]">{{ message.text }}</div>
         
         <div class="form-group">

@@ -48,7 +48,7 @@
         <p class="message warning">Cette action est irréversible.</p>
         <div class="modal-actions">
           <button class="btn-cancel" @click="deletingTask = null">Annuler</button>
-          <button class="btn-delete" @click="confirmDelete" :disabled="isDeleting">
+          <button class="btn-delete" :disabled="isDeleting" @click="confirmDelete">
             {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
           </button>
         </div>
