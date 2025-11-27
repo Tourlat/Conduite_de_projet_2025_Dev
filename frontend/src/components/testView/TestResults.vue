@@ -18,7 +18,7 @@ defineProps<{
 
 <style scoped>
 .results-section {
-  background: var(--terminal-bg-secondary);
+  background: var(--terminal-hover);
   border: 1px solid var(--terminal-border);
   border-radius: 8px;
   padding: 1.5rem;
@@ -27,10 +27,12 @@ defineProps<{
 .results-section h3 {
   color: var(--terminal-accent);
   margin-bottom: 1rem;
+  font-size: 1.2rem;
 }
 
 .results-content {
   background: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
   border-radius: 4px;
   padding: 1rem;
   max-height: 400px;
@@ -46,8 +48,16 @@ defineProps<{
   word-wrap: break-word;
 }
 
+.results-content.success {
+  border-left: 4px solid var(--terminal-accent);
+}
+
 .results-content.success pre {
-  color: var(--terminal-green);
+  color: var(--terminal-accent);
+}
+
+.results-content.error {
+  border-left: 4px solid var(--terminal-magenta);
 }
 
 .results-content.error pre {

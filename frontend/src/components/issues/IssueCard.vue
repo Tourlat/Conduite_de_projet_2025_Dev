@@ -47,6 +47,12 @@
         Voir détails
       </button>
       <button 
+        class="btn-small btn-tests"
+        @click="$emit('tests')"
+      >
+        Tests
+      </button>
+      <button 
         class="btn-small btn-edit"
         :disabled="!canModify"
         @click="$emit('edit')"
@@ -81,6 +87,7 @@ const emit = defineEmits<{
   edit: []
   delete: []
   view: []
+  tests: []
   'status-change': [issue: IssueResponse, newStatus: IssueStatus]
   'assign-click': []
 }>()
@@ -276,6 +283,16 @@ h4 {
 
 .btn-view:hover {
   background: rgba(192, 202, 245, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-tests {
+  background: rgba(100, 181, 246, 0.2);
+  color: #64b5f6;
+}
+
+.btn-tests:hover {
+  background: rgba(100, 181, 246, 0.3);
   transform: translateY(-1px);
 }
 

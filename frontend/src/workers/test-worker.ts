@@ -19,7 +19,7 @@ interface WorkerResponse {
   failedCount?: number
 }
 
-// Web Worker pour exécuter le code utilisateur de manière isolée
+// Web Worker execute the user code and tests
 globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
   const { code, tests } = e.data
   
@@ -27,19 +27,19 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
     const TIMEOUT = 5000
     let isTimedOut = false
     
-    // Créer un timeout qui force l'arrêt
+    // Create a timeout that forces termination
     const timeoutId = setTimeout(() => {
       isTimedOut = true
       const response: WorkerResponse = {
         success: false,
-        error: 'Timeout: L\'exécution a été interrompue après 5 secondes (boucle infinie détectée?)',
+        error: 'Timeout: Execution was interrupted after 5 seconds (infinite loop detected?)',
         stack: ''
       }
       globalThis.postMessage(response)
       globalThis.close()
     }, TIMEOUT)
     
-    // Compteur pour vérifier le timeout
+    // Counter to check the timeout
     let iterationCount = 0
     const MAX_ITERATIONS = 1000000
     
@@ -53,17 +53,17 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
       }
     }
     
-    // Système de capture des résultats de tests
+    // Test results capture system
     const testResults: TestResultItem[] = []
     let testCount = 0
     let passedCount = 0
     let failedCount = 0
     
-    // Contexte d'exécution avec système de tests structuré
+    // Execution context with structured test system
     const executionContext = {
       console: {
         log: (...args: unknown[]) => {
-          // Capturer les logs comme messages informatifs
+          // Capture logs as informational messages
           testResults.push({
             type: 'log',
             message: args.map(arg => {
@@ -81,7 +81,7 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
         }
       },
       checkTimeout,
-      // Fonction de test structurée
+      // Structured test function
       test: (description: string, testFn: () => void) => {
         testCount++
         try {
@@ -128,20 +128,20 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
       }
     }
     
-    // Instrumenter le code pour ajouter les vérifications de timeout
+    // Add timeout checks to the user code and tests
     const instrumentedCode = instrumentCodeWithTimeoutChecks(code)
     const instrumentedTests = instrumentCodeWithTimeoutChecks(tests)
     
-    // Créer un environnement isolé qui exécute le code ET les tests ensemble
+    // Create an isolated environment that runs the code AND tests together
     const fullCode = `
       ${instrumentedCode}
       
-      // Séparateur
+      // SSeparator
       
       ${instrumentedTests}
     `
     
-    // Exécuter le code dans un contexte isolé
+    // Execute the code in an isolated context
     const executeCode = new Function(
       'console', 
       'checkTimeout', 
@@ -171,7 +171,7 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
     clearTimeout(timeoutId)
     
     if (!isTimedOut) {
-      // Formater les résultats
+      // Format the output
       const outputLines: string[] = []
       
       for (const result of testResults) {
@@ -187,7 +187,7 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
         }
       }
       
-      // Ajouter un résumé si des tests ont été exécutés
+      // Add a summary if tests were run
       if (testCount > 0) {
         outputLines.push(
           '',
@@ -224,35 +224,35 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
   }
 }
 
-// Fonction pour instrumenter le code avec des vérifications de timeout
+// Instruments the user code to add timeout checks in loops
 function instrumentCodeWithTimeoutChecks(code: string): string {
   let instrumented = code
   
-  // Instrumenter les boucles while
+  // Instrument while loops
   instrumented = instrumented.replace(
     /while\s*\([^)]+\)\s*\{/g, 
     (match: string) => match + '\ncheckTimeout();'
   )
   
-  // Instrumenter les boucles for classiques
+  // Instrument classic for loops
   instrumented = instrumented.replace(
     /for\s*\([^)]*;[^)]*;[^)]*\)\s*\{/g,
     (match: string) => match + '\ncheckTimeout();'
   )
   
-  // Instrumenter les boucles for...of
+  // Instrument for...of loops
   instrumented = instrumented.replace(
     /for\s*\([^)]+of[^)]+\)\s*\{/g,
     (match: string) => match + '\ncheckTimeout();'
   )
   
-  // Instrumenter les boucles for...in
+  // Instrument for...in loops
   instrumented = instrumented.replace(
     /for\s*\([^)]+in[^)]+\)\s*\{/g,
     (match: string) => match + '\ncheckTimeout();'
   )
   
-  // Instrumenter les boucles do-while
+  // Instrument do-while loops
   instrumented = instrumented.replace(
     /do\s*\{/g,
     (match: string) => match + '\ncheckTimeout();'

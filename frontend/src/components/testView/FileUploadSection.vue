@@ -70,7 +70,7 @@ const handleTestFileUpload = (event: Event) => {
 
 <style scoped>
 .upload-section {
-  background: var(--terminal-bg-secondary);
+  background: var(--terminal-hover);
   border: 1px solid var(--terminal-border);
   border-radius: 8px;
   padding: 1rem;
@@ -93,18 +93,20 @@ const handleTestFileUpload = (event: Event) => {
   display: block;
   padding: 0.6rem 1rem;
   background: var(--terminal-bg);
-  color: var(--terminal-text);
+  color: var(--terminal-fg);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
   cursor: pointer;
   text-align: center;
   transition: all 0.2s;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .upload-label:hover {
-  background: var(--terminal-bg-tertiary);
+  background: var(--terminal-hover);
   border-color: var(--terminal-accent);
+  color: var(--terminal-accent);
 }
 
 .file-input {
@@ -113,17 +115,20 @@ const handleTestFileUpload = (event: Event) => {
 
 .btn-download {
   padding: 0.6rem 1.5rem;
-  background: var(--terminal-green);
-  color: var(--terminal-bg);
-  border: none;
+  background: var(--terminal-accent);
+  color: white;
+  border: 1px solid var(--terminal-accent);
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .btn-download:hover {
-  background: var(--terminal-accent);
+  background: var(--terminal-accent-dark);
+  border-color: var(--terminal-accent-dark);
   transform: translateY(-2px);
 }
 </style>

@@ -29,7 +29,7 @@ defineEmits<{
 
 <style scoped>
 .editor-section {
-  background: var(--terminal-bg-secondary);
+  background: var(--terminal-hover);
   border: 1px solid var(--terminal-border);
   border-radius: 8px;
   padding: 1rem;
@@ -50,24 +50,27 @@ defineEmits<{
 
 .btn-reset {
   padding: 0.4rem 0.8rem;
-  background: var(--terminal-bg-tertiary);
-  color: var(--terminal-text);
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.85rem;
+  font-weight: 500;
   transition: all 0.2s;
 }
 
 .btn-reset:hover {
-  background: var(--terminal-border);
+  background: var(--terminal-hover);
+  border-color: var(--terminal-accent);
+  color: var(--terminal-accent);
 }
 
 .code-editor {
   width: 100%;
   min-height: 400px;
   background: var(--terminal-bg);
-  color: var(--terminal-text);
+  color: var(--terminal-fg);
   border: 1px solid var(--terminal-border);
   border-radius: 4px;
   padding: 1rem;
@@ -80,5 +83,6 @@ defineEmits<{
 .code-editor:focus {
   outline: none;
   border-color: var(--terminal-accent);
+  box-shadow: 0 0 0 2px var(--terminal-shadow);
 }
 </style>
