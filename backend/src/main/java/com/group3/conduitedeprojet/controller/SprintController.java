@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/projects/{projectId}/sprints")
 public class SprintController {
 
-  @Autowired private SprintService SprintService;
+  @Autowired private SprintService sprintService;
 
   @PostMapping
   public ResponseEntity<SprintDto> createSprint(
@@ -28,7 +28,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.createSprint(projectId, createSprintRequest, principal));
+    return ResponseEntity.ok(sprintService.createSprint(projectId, createSprintRequest, principal));
   }
 
   @GetMapping
@@ -38,7 +38,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.getSprintsByProject(projectId, principal));
+    return ResponseEntity.ok(sprintService.getSprintsByProject(projectId, principal));
   }
 
   @GetMapping("/{sprintId}")
@@ -48,7 +48,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.getSprintById(projectId, sprintId, principal));
+    return ResponseEntity.ok(sprintService.getSprintById(projectId, sprintId, principal));
   }
 
   @PutMapping("/{sprintId}")
@@ -62,7 +62,7 @@ public class SprintController {
     }
 
     return ResponseEntity.ok(
-        SprintService.updateSprint(projectId, sprintId, updateSprintRequest, principal));
+        sprintService.updateSprint(projectId, sprintId, updateSprintRequest, principal));
   }
 
   @DeleteMapping("/{sprintId}")
@@ -72,7 +72,7 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    SprintService.deleteSprint(projectId, sprintId, principal);
+    sprintService.deleteSprint(projectId, sprintId, principal);
     return ResponseEntity.noContent().build();
   }
 
@@ -83,6 +83,6 @@ public class SprintController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    return ResponseEntity.ok(SprintService.getIssuesBySprint(projectId, sprintId, principal));
+    return ResponseEntity.ok(sprintService.getIssuesBySprint(projectId, sprintId, principal));
   }
 }

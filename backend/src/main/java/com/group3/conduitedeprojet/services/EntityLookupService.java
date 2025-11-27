@@ -8,10 +8,12 @@ import com.group3.conduitedeprojet.exceptions.UserNotFoundException;
 import com.group3.conduitedeprojet.models.Issue;
 import com.group3.conduitedeprojet.models.Project;
 import com.group3.conduitedeprojet.models.Task;
+import com.group3.conduitedeprojet.models.Test;
 import com.group3.conduitedeprojet.models.User;
 import com.group3.conduitedeprojet.repositories.IssueRepository;
 import com.group3.conduitedeprojet.repositories.ProjectRepository;
 import com.group3.conduitedeprojet.repositories.TaskRepository;
+import com.group3.conduitedeprojet.repositories.TestRepository;
 import com.group3.conduitedeprojet.repositories.UserRepository;
 import java.security.Principal;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class EntityLookupService {
   @Autowired private ProjectRepository projectRepository;
   @Autowired private TaskRepository taskRepository;
   @Autowired private IssueRepository issueRepository;
+  @Autowired private TestRepository testRepository;
 
   public Project getProject(UUID projectId) {
     Optional<Project> optionalProject = projectRepository.findById(projectId);
@@ -65,6 +68,14 @@ public class EntityLookupService {
       throw new UserNotFoundException("User with email " + email + " was not found");
     }
     return optionalUser.get();
+  }
+
+  public Test getTest(Long testId) {
+    Optional<Test> optionalTest = testRepository.findById(testId);
+    if (optionalTest.isEmpty()) {
+      throw new TaskNotFoundException("Test with id " + testId + " was not found");
+    }
+    return optionalTest.get();
   }
 
   public void checkPrincipalIsCreator(Project project, Principal principal) {
