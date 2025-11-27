@@ -4,8 +4,8 @@ This repository contains the source code for the Conduite de Projet 2025 develop
 
 ## Project Structure
 
-- `backend/`: Contains the Spring Boot backend application.
-- `frontend/`: Contains the Vue.js frontend application.
+- [backend](./backend/): Contains the Spring Boot backend application.
+- [frontend](./frontend/): Contains the Vue.js frontend application.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ This repository contains the source code for the Conduite de Projet 2025 develop
 - Maven
 - Node.js and npm
 
-## Configuration
+## Project Configuration
 
 ### Backend
 1. Copy `backend/.env.example` to `backend/.env`
@@ -33,6 +33,31 @@ openssl rand -base64 32
 ### Frontend
 1. Copy `frontend/.env.example` to `frontend/.env`
 2. Update `VITE_BACKEND_URL` and `VITE_PORT` as needed
+
+### Commit Hooks
+
+Execute `git config core.hooksPath hooks` in this repository to adjust the path of the git hooks directory.
+
+Make hooks in the [hooks](./hooks/) folder executable by running `chmod +x <path to hook>` on all hooks.
+
+### Linting
+
+For the backend install SonarQube in your IDE/Editor to give you linting suggestions.
+
+For the frontend, ESLint is already configured. You can run the linter using:
+
+```bash
+npm run lint
+```
+
+### Formatting
+
+For the backend, Maven Spotless is configured. 
+If you don't want to use the IDE setup, you can format the code using:
+
+```bash
+mvn spotless:apply
+```
 
 ### IDE Setup
 
@@ -68,38 +93,19 @@ openssl rand -base64 32
 2. Setup by following these [steps](https://github.com/google/google-java-format?tab=readme-ov-file#intellij-jre-config)
 3. In the IntelliJ settings under [google java format settings](jetbrains://idea/settings?name=google-java-format+Settings) set `Default Google Java Style` and not `AOSP`.
 
-### Commit Hooks
-
-Execute `git config core.hooksPath hooks` in this repository to adjust the path of the git hooks directory.
-
-Make hooks in the [hooks](./hooks/) folder executable by running `chmod +x <path to hook>` on all hooks.
-
-### Linting
-
-For the backend install SonarQube in your IDE/Editor to give you linting suggestions.
-
-For the frontend, ESLint is already configured. You can run the linter using:
-
-```bash
-npm run lint
-```
-
-### Formatting
-
-For the backend, Maven Spotless is configured. 
-If you don't want to use the IDE setup, you can format the code using:
-
-```bash
-mvn spotless:apply
-```
-
 ## Running the Application
+
+### Running using Docker
+
+Execute `docker compose up --build -d` in the root directory of the project. This will start the docker containers for the frontend and backend. These containers use the same default ports as described above.
+
+To stop the docker containers execute `docker compose down -v`.
 
 ### Backend
 
 1. Start the application and database using
 
-```
+```bash
 docker compose up --build database backend
 ```
 
@@ -118,13 +124,22 @@ The backend will start on the port specified in `application.properties` (defaul
    ```
    The frontend will start on the port specified in the `.env` file (default is 5173).
 
+
+### Database
+
+To start the database run the following command.
+
+```bash
+docker compose up --build database
+```
+
 ## Testing
 
 ### Frontend Tests
 
 The frontend uses Vitest with Vue Test Utils for unit testing.
 
-### Running Tests
+#### Running Tests
 
 ```bash
 
@@ -143,19 +158,13 @@ npm run test:coverage
 
 The frontend will start on the port specified in the `.env` file (default is 5173).
 
-### Database
+### Backend Tests
 
-To start the database run the following command.
+To run the backend tests, either run them using IntelliJ or VSCode or run them from the command line using the following command.
 
+```bash
+mvn verify
 ```
-docker compose up --build database
-```
-
-### Running using Docker
-
-Execute `docker compose up --build -d` in the root directory of the project. This will start the docker containers for the frontend and backend. These containers use the same default ports as described above.
-
-To stop the docker containers execute `docker compose down -v`.
 
 ## Deployment
 
@@ -167,27 +176,27 @@ To stop the docker containers execute `docker compose down -v`.
 
 3. Connect via SSH
 
-```
+```bash
 ssh -i ~/.ssh/<key name>.pem azureuser@<VM public IP>
 ```
 
 3. Apt Update and Upgrade
 
-```
+```bash
 sudo apt update
 sudo apt upgrade
 ```
 
 4. Install Docker and Docker Compose
 
-```
+```bash
 sudo apt install docker.io
 sudo apt install docker-compose-plugin
 ```
 
 5. Clone repository
 
-```
+```bash
 git clone https://github.com/Tourlat/Conduite_de_projet_2025_Dev.git
 ```
 
@@ -197,7 +206,7 @@ git clone https://github.com/Tourlat/Conduite_de_projet_2025_Dev.git
 
 2. Start application
 
-```
+```bash
 sudo docker-compose up --build -d
 ```
 
@@ -217,9 +226,9 @@ The generated documentation will be available in the `frontend/docs/gen` directo
 
 The documentation of the backend endpoints can be found as OpenAPI specification under [backend/docs/openapi.json](backend/docs/openapi.json).
 
-To regenerate the OpenAPI specification execute the following command. Make sure that the environment varilable `API_DOCS_ENABLED` is set to `true` in [.env](backend/.env).
+To regenerate the OpenAPI specification execute the following command. Make sure that the environment varilable `API_DOCS_ENABLED` is set to `true` in [.env](backend/.env) and the application is running.
 
-```
+```bash
 mvn -DskipTests springdoc-openapi:generate
 ```
 
