@@ -18,6 +18,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
       - name: Run backend formatting check
         working-directory: ./backend
         run: mvn spotless:check
