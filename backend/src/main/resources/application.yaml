@@ -24,4 +24,6 @@ app:
 
 springdoc:
   api-docs:
-    enabled: ${API_DOCS_ENABLED}
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:false}

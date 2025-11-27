@@ -995,6 +995,77 @@
         }
       }
     },
+    "/api/documentation-issues/documentation/{documentationId}/issue/{issueId}": {
+      "post": {
+        "tags": [
+          "documentation-issue-controller"
+        ],
+        "operationId": "linkDocumentationToIssue",
+        "parameters": [
+          {
+            "name": "documentationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentationIssueDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "documentation-issue-controller"
+        ],
+        "operationId": "unlinkDocumentationFromIssue",
+        "parameters": [
+          {
+            "name": "documentationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "tags": [
@@ -1144,6 +1215,74 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/IssueDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentation-issues/issue/{issueId}": {
+      "get": {
+        "tags": [
+          "documentation-issue-controller"
+        ],
+        "operationId": "getDocumentationsByIssue",
+        "parameters": [
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentationIssueDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/documentation-issues/documentation/{documentationId}": {
+      "get": {
+        "tags": [
+          "documentation-issue-controller"
+        ],
+        "operationId": "getIssuesByDocumentation",
+        "parameters": [
+          {
+            "name": "documentationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentationIssueDto"
                   }
                 }
               }
@@ -1605,13 +1744,13 @@
           "enabled": {
             "type": "boolean"
           },
+          "credentialsNonExpired": {
+            "type": "boolean"
+          },
           "accountNonExpired": {
             "type": "boolean"
           },
           "accountNonLocked": {
-            "type": "boolean"
-          },
-          "credentialsNonExpired": {
             "type": "boolean"
           },
           "authorities": {
@@ -1761,6 +1900,35 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "DocumentationIssueDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "documentationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "issueId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "issueTitle": {
+            "type": "string"
+          },
+          "issuePriority": {
+            "type": "string"
+          },
+          "issueStatus": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
           }
         }
       },
