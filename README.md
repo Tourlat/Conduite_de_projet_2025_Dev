@@ -166,6 +166,10 @@ To run the backend tests, either run them using IntelliJ or VSCode or run them f
 mvn verify
 ```
 
+### GitHub Workflows
+
+We execute all tests for all pull requests and for every push on main (see [workflows directory](.github/workflows/)).
+
 ## 🚀 Deployment
 
 ### Initial Setup of VM
