@@ -5,9 +5,9 @@ spring:
   application:
     name: conduitedeprojet
   datasource:
-    url: jdbc:postgresql://database:5432/conduitedeprojet_db
-    username: admin
-    password: admin
+    url: ${POSTGRES_URL:jdbc:postgresql://database:5432/conduitedeprojet_db}
+    username: ${POSTGRES_USER:admin}
+    password: ${POSTGRES_PASSWORD:admin}
   jpa:
     database: POSTGRESQL
     hibernate:
@@ -15,9 +15,15 @@ spring:
 
 security:
   jwt:
-    secret-key: 5St66hi6E8M7oRbgHLpZT/VZgErpyKQXZMhUtAfHr6Y= # Only for development
-    expiration-ms: 3600000 # 1 hour in ms
+    secret-key: ${JWT_SECRET_KEY:changeme}
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000} # 1 hour in ms
 
 app:
   frontend:
-    url: http://localhost:5173
+    url: ${FRONTEND_URL:http://localhost:5173}
+
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:false}

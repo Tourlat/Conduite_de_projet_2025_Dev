@@ -54,6 +54,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import documentationService, { type DocumentationDto } from '../../services/documentationService'
+import documentationIssueService from '../../services/documentationIssueService'
 import MarkdownEditor from './MarkdownEditor.vue'
 import DocumentationCard from './DocumentationCard.vue'
 import DocumentationViewModal from './DocumentationViewModal.vue'
@@ -96,12 +97,25 @@ const cancelEdit = () => {
   editingDoc.value = undefined
 }
 
-const handleSave = async (doc: DocumentationDto) => {
+const handleSave = async (doc: DocumentationDto, issueIds: number[] = []) => {
   try {
     if (doc.id) {
+      // Modification d'un document existant
       await documentationService.updateDocumentation(projectId, doc.id, doc)
     } else {
-      await documentationService.createDocumentation(projectId, doc)
+      // Création d'un nouveau document
+      const created = await documentationService.createDocumentation(projectId, doc)
+      
+      // Lier les issues si elles ont été sélectionnées pendant la création
+      if (created.id && issueIds.length > 0) {
+        for (const issueId of issueIds) {
+          try {
+            await documentationIssueService.linkDocumentationToIssue(created.id, issueId)
+          } catch (error) {
+            console.error(`Failed to link issue ${issueId}:`, error)
+          }
+        }
+      }
     }
     await loadDocs()
     isEditing.value = false

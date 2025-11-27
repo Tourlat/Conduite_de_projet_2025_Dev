@@ -16,6 +16,14 @@
           v-model="localDoc.content"
           placeholder="# Votre contenu Markdown ici"
         ></textarea>
+
+        <!-- Section de liaison avec les issues -->
+        <IssueLinker
+          :linked-issues="linkedIssues"
+          :available-issues="availableIssues"
+          @link="handleLinkIssue"
+          @unlink="handleUnlinkIssue"
+        />
       </div>
       
       <div class="preview-section">
@@ -36,24 +44,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { marked } from 'marked'
 import type { DocumentationDto } from '../../services/documentationService'
+import documentationIssueService, {
+  type DocumentationIssueDto
+} from '../../services/documentationIssueService'
+import axios from 'axios'
+import IssueLinker from './IssueLinker.vue'
 
 const props = defineProps<{
   initialDoc?: DocumentationDto
 }>()
 
 const emit = defineEmits<{
-  (e: 'save', doc: DocumentationDto): void
+  (e: 'save', doc: DocumentationDto, issueIds: number[]): void
   (e: 'cancel'): void
 }>()
+
+const route = useRoute()
+const projectId = route.params.id as string
 
 const localDoc = ref<DocumentationDto>({
   title: '',
   content: '',
   ...props.initialDoc
 })
+
+const linkedIssues = ref<DocumentationIssueDto[]>([])
+const availableIssues = ref<any[]>([])
+const pendingIssueIds = ref<number[]>([])
 
 // Configure marked to handle line breaks
 marked.setOptions({
@@ -65,16 +86,165 @@ const parsedContent = computed(() => {
   return marked(localDoc.value.content || '')
 })
 
-const save = () => {
-  emit('save', localDoc.value)
+const loadLinkedIssues = async () => {
+  if (localDoc.value.id) {
+    try {
+      linkedIssues.value = await documentationIssueService.getIssuesByDocumentation(
+        localDoc.value.id
+      )
+    } catch (error) {
+      console.error('Error loading linked issues:', error)
+    }
+  }
 }
 
-watch(() => props.initialDoc, (newVal) => {
-    if (newVal) {
-        localDoc.value = { ...newVal }
+const loadAvailableIssues = async () => {
+  try {
+    const response = await axios.get(`/api/projects/${projectId}/issues`)
+    availableIssues.value = response.data
+    
+    // Charger les tâches pour chaque issue
+    for (const issue of availableIssues.value) {
+      try {
+        const tasksResponse = await axios.get(`/api/projects/${projectId}/issues/${issue.id}/tasks`)
+        issue.tasks = tasksResponse.data
+      } catch (error) {
+        console.error(`Error loading tasks for issue ${issue.id}:`, error)
+        issue.tasks = []
+      }
     }
-}, { deep: true })
+  } catch (error) {
+    console.error('Error loading available issues:', error)
+  }
+}
 
+const generateIssuesMarkdown = () => {
+  if (linkedIssues.value.length === 0) return ''
+  
+  let markdown = '\n\n---\n\n## Issues Liées\n\n'
+  
+  linkedIssues.value.forEach((link, index) => {
+    const issue = availableIssues.value.find(i => i.id === link.issueId)
+    
+    markdown += `### ${index + 1}. ${link.issueTitle}\n\n`
+    
+    if (issue?.description) {
+      markdown += `**Description:**\n${issue.description}\n\n`
+    }
+    
+    if (issue?.tasks && issue.tasks.length > 0) {
+      markdown += `**Tâches associées:**\n\n`
+      issue.tasks.forEach((task: any) => {
+        markdown += `- **${task.title}**`
+        if (task.description) {
+          markdown += `: ${task.description}`
+        }
+        markdown += '\n'
+      })
+      markdown += '\n'
+    }
+  })
+  
+  return markdown
+}
+
+const updateContentWithIssues = () => {
+  const content = localDoc.value.content || ''
+  
+  // Supprimer l'ancienne section "Issues Liées" si elle existe
+  const issuesSectionRegex = /\n*---\n*## Issues Liées\n\n[\s\S]*?(?=\n\n---|$)/
+  let cleanContent = content.replace(issuesSectionRegex, '')
+  
+  // Ajouter la nouvelle section
+  const issuesMarkdown = generateIssuesMarkdown()
+  localDoc.value.content = cleanContent + issuesMarkdown
+}
+
+const handleLinkIssue = async (issueId: number) => {
+  // Si le document existe déjà, lier immédiatement
+  if (localDoc.value.id) {
+    try {
+      await documentationIssueService.linkDocumentationToIssue(
+        localDoc.value.id,
+        issueId
+      )
+      await loadLinkedIssues()
+      updateContentWithIssues()
+    } catch (error: any) {
+      console.error('Error linking issue:', error)
+      if (error.response?.status === 500) {
+        alert('Cette issue est déjà liée à cette documentation')
+      } else {
+        alert('Erreur lors de la liaison de l\'issue')
+      }
+    }
+  } else {
+    // Si le document n'existe pas encore, ajouter à la liste pending
+    if (!pendingIssueIds.value.includes(issueId)) {
+      pendingIssueIds.value.push(issueId)
+      // Simuler un linkedIssue pour l'affichage
+      const issue = availableIssues.value.find(i => i.id === issueId)
+      if (issue) {
+        linkedIssues.value.push({
+          id: 0,
+          documentationId: 0,
+          issueId: issue.id,
+          issueTitle: issue.title,
+          issuePriority: issue.priority,
+          issueStatus: issue.status
+        })
+        updateContentWithIssues()
+      }
+    }
+  }
+}
+
+const handleUnlinkIssue = async (issueId: number) => {
+  // Si le document existe déjà, délier immédiatement
+  if (localDoc.value.id) {
+    try {
+      await documentationIssueService.unlinkDocumentationFromIssue(localDoc.value.id, issueId)
+      await loadLinkedIssues()
+      updateContentWithIssues()
+    } catch (error) {
+      console.error('Error unlinking issue:', error)
+      alert('Erreur lors de la suppression de la liaison')
+    }
+  } else {
+    // Si le document n'existe pas encore, retirer de la liste pending
+    pendingIssueIds.value = pendingIssueIds.value.filter(id => id !== issueId)
+    linkedIssues.value = linkedIssues.value.filter(link => link.issueId !== issueId)
+    updateContentWithIssues()
+  }
+}
+
+const save = () => {
+  emit('save', localDoc.value, pendingIssueIds.value)
+}
+
+watch(
+  () => props.initialDoc,
+  (newVal) => {
+    if (newVal) {
+      localDoc.value = { ...newVal }
+      loadLinkedIssues().then(() => {
+        if (linkedIssues.value.length > 0) {
+          updateContentWithIssues()
+        }
+      })
+      pendingIssueIds.value = []
+    }
+  },
+  { deep: true }
+)
+
+onMounted(async () => {
+  await loadAvailableIssues()
+  await loadLinkedIssues()
+  if (linkedIssues.value.length > 0) {
+    updateContentWithIssues()
+  }
+})
 </script>
 
 <style scoped>
