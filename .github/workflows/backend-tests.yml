@@ -2,6 +2,10 @@ name: Backend tests
 
 on:
   workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: number
 
 permissions: write-all
 
@@ -56,6 +60,7 @@ jobs:
           echo "percent=$PERCENT" >> $GITHUB_OUTPUT
 
       - name: Comment on PR
+        if: ${{ input.pr_number != '' }}
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -64,6 +69,6 @@ jobs:
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: ${{ input.pr_number }},
               body: `### 📊 Backend Coverage Report\n**Line Coverage:** ${percent}%`
             });

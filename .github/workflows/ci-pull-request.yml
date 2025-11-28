@@ -11,3 +11,5 @@ jobs:
     uses: ./.github/workflows/frontend-tests.yml
   backend-tests:
     uses: ./.github/workflows/backend-tests.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
