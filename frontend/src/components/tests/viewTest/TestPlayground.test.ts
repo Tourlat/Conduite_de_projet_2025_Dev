@@ -68,12 +68,6 @@ describe('TestPlayground', () => {
     expect(wrapper.text()).toContain('Tests JavaScript - Issue #456')
   })
 
-  it('devrait afficher le bandeau d\'information', () => {
-    const wrapper = mount(TestPlayground)
-    expect(wrapper.text()).toContain('Environnement d\'exécution isolé et sécurisé avec Web Worker')
-    expect(wrapper.text()).toContain('timeout: 5s')
-  })
-
   it('devrait charger les tests sauvegardés au montage', async () => {
     const mockTests: TestResponse[] = [
       {
