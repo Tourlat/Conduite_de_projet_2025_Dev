@@ -1,13 +1,9 @@
 <template>
   <div class="test-playground">
-    <h1>Tests JavaScript - Issue #{{ issueId }}</h1>
+    <h1>Tests JavaScript - {{ issueTitle || `Issue #${issueId}` }}</h1>
     
     <div v-if="error" class="error-banner">
       {{ error }}
-    </div>
-
-    <div class="info-banner">
-      <span>Environnement d'exécution isolé et sécurisé avec Web Worker (timeout: 5s)</span>
     </div>
 
     <!-- Saved tests section -->
@@ -79,10 +75,12 @@ import TestResults from './TestResults.vue'
 import { defaultCode, defaultTests } from '../../utils/testDefaults'
 import type { TestResult, WorkerResponse } from '../../types/testRunner'
 import testService, { type TestResponse } from '../../services/testservice'
+import projectService from '../../services/projectService'
 
 const route = useRoute()
 const projectId = ref(route.params.id as string)
 const issueId = ref(Number(route.params.issueId))
+const issueTitle = ref<string>('')
 
 const userCode = ref(defaultCode)
 const userTests = ref(defaultTests)
@@ -93,6 +91,21 @@ const loading = ref(false)
 const error = ref('')
 
 let worker: Worker | null = null
+
+// Load issue details to get the title
+const loadIssueDetails = async () => {
+  if (!projectId.value || !issueId.value) return
+  
+  try {
+    const issues = await projectService.getIssuesByProject(projectId.value)
+    const issue = issues.find(i => i.id === issueId.value)
+    if (issue) {
+      issueTitle.value = issue.title
+    }
+  } catch {
+    // Silent fail, will show Issue #id as fallback
+  }
+}
 
 // Load existing tests from the backend
 const loadTests = async () => {
@@ -283,6 +296,7 @@ const runTests = async () => {
  * Lifecycle Hooks loading saved tests on mount
  */
 onMounted(() => {
+  loadIssueDetails()
   loadTests()
 })
 
