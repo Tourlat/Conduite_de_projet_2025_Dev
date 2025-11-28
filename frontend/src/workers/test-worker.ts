@@ -19,7 +19,10 @@ interface WorkerResponse {
   failedCount?: number
 }
 
-// Web Worker execute the user code and tests
+/**
+ * Global message handler for the web worker.
+ * @param e the message event containing the user code and tests
+ */
 globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
   const { code, tests } = e.data
   
@@ -224,7 +227,11 @@ globalThis.onmessage = function(e: MessageEvent<WorkerMessage>) {
   }
 }
 
-// Instruments the user code to add timeout checks in loops
+/**
+ * Add timeout checks inside loops to prevent infinite loops.
+ * @param code the user code to instrument
+ * @returns the instrumented code with timeout checks
+ */
 function instrumentCodeWithTimeoutChecks(code: string): string {
   let instrumented = code
   

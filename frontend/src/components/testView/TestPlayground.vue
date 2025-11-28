@@ -193,6 +193,9 @@ const handleTestsUpload = (content: string) => {
   userTests.value = content
 }
 
+/**
+ * Download the current code and tests as files
+ */
 const downloadFiles = () => {
   // Download the code file
   const codeBlob = new Blob([userCode.value], { type: 'text/javascript' })

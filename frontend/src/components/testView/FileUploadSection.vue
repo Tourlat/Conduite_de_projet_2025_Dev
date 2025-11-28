@@ -39,6 +39,11 @@ const emit = defineEmits<{
   download: []
 }>()
 
+/**
+ * Handle file upload for code or tests.
+ * @param event the file input change event
+ * @param isCode true if uploading code, false for tests
+ */
 const handleFileUpload = async (event: Event, isCode: boolean) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
@@ -59,10 +64,18 @@ const handleFileUpload = async (event: Event, isCode: boolean) => {
   }
 }
 
+/**
+ * Handle code file upload.
+ * @param event the file input change event
+ */
 const handleCodeFileUpload = (event: Event) => {
   handleFileUpload(event, true)
 }
 
+/**
+ * Handle test file upload.
+ * @param event the file input change event
+ */
 const handleTestFileUpload = (event: Event) => {
   handleFileUpload(event, false)
 }
