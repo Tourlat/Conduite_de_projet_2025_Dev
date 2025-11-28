@@ -69,6 +69,6 @@ jobs:
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ input.pr_number }},
+              issue_number: ${{ inputs.pr_number }},
               body: `### 📊 Backend Coverage Report\n**Line Coverage:** ${percent}%`
             });
