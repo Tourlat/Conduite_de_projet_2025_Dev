@@ -44,6 +44,7 @@ const statusClass = computed(() => {
     case 'CLOSED':
       return 'closed'
   }
+  return 'TODO'
 })
 </script>
 

@@ -5,10 +5,10 @@
       <input
         id="name"
         :value="name"
-        @input="$emit('update:name', ($event.target as HTMLInputElement).value)"
         type="text"
         placeholder="Ex: Sprint 1"
         required
+        @input="$emit('update:name', ($event.target as HTMLInputElement).value)"
       />
     </div>
 
@@ -18,9 +18,9 @@
         <input
           id="startDate"
           :value="startDate"
-          @input="$emit('update:startDate', ($event.target as HTMLInputElement).value)"
           type="datetime-local"
           required
+          @input="$emit('update:startDate', ($event.target as HTMLInputElement).value)"
         />
       </div>
 
@@ -29,9 +29,9 @@
         <input
           id="endDate"
           :value="endDate"
-          @input="$emit('update:endDate', ($event.target as HTMLInputElement).value)"
           type="datetime-local"
           required
+          @input="$emit('update:endDate', ($event.target as HTMLInputElement).value)"
         />
       </div>
     </div>

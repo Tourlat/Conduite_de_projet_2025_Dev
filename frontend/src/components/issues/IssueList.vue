@@ -17,6 +17,7 @@
         @view="openDetailModal(issue)"
         @edit="openEditModal(issue)"
         @delete="handleDelete(issue)"
+        @tests="navigateToTests(issue)"
         @status-change="handleStatusChange"
         @assign-click="openAssignModal(issue)"
       />
@@ -58,7 +59,7 @@
         <p class="message warning">Cette action est irréversible.</p>
         <div class="modal-actions">
           <button class="btn-cancel" @click="deletingIssue = null">Annuler</button>
-          <button class="btn-delete" @click="confirmDelete" :disabled="isDeleting">
+          <button class="btn-delete" :disabled="isDeleting" @click="confirmDelete">
             {{ isDeleting ? 'Suppression...' : 'Supprimer' }}
           </button>
         </div>
@@ -69,12 +70,15 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import type { IssueResponse, IssueStatus } from '../../services/projectService'
 import projectService from '../../services/projectService'
 import IssueCard from './IssueCard.vue'
 import IssueDetailModal from './IssueDetailModal.vue'
 import EditIssueForm from './EditIssueForm.vue'
 import AssignIssueForm from './AssignIssueForm.vue'
+
+const router = useRouter()
 
 interface IssueListProps {
   projectId: string
@@ -148,6 +152,16 @@ const openEditModal = (issue: IssueResponse) => {
 
 const openAssignModal = (issue: IssueResponse) => {
   assigningIssue.value = issue
+}
+
+const navigateToTests = (issue: IssueResponse) => {
+  router.push({
+    name: 'IssueTests',
+    params: {
+      id: props.projectId,
+      issueId: issue.id
+    }
+  })
 }
 
 const handleStatusChange = async (issue: IssueResponse, newStatus: IssueStatus) => {

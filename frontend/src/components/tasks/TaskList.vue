@@ -25,8 +25,8 @@
             <button 
               v-if="canModify"
               class="btn-icon"
-              @click="$emit('edit', task)"
               title="Modifier"
+              @click="$emit('edit', task)"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M11.5 2L14 4.5L5 13.5H2.5V11L11.5 2Z" stroke="currentColor" stroke-width="1.5"/>
@@ -35,8 +35,8 @@
             <button 
               v-if="canModify"
               class="btn-icon btn-delete"
-              @click="$emit('delete', task)"
               title="Supprimer"
+              @click="$emit('delete', task)"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5"/>

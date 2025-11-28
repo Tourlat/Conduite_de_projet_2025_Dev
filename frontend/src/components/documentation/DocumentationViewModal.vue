@@ -3,7 +3,7 @@
     <div class="modal-content" @click.stop>
       <div class="modal-header">
         <h3>{{ doc.title }}</h3>
-        <button @click="$emit('close')" class="btn-close">✕</button>
+        <button class="btn-close" @click="$emit('close')">✕</button>
       </div>
       <div class="modal-body markdown-content" v-html="parsedContent"></div>
     </div>

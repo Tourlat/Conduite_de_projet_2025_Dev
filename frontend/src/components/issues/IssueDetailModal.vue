@@ -9,7 +9,15 @@
           </span>
           <h2>{{ issue.title }}</h2>
         </div>
-        <button type="button" class="btn-close" @click="$emit('close')">&times;</button>
+        <div class="header-actions">
+          <button class="btn-tests" @click="navigateToTests">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Tests
+          </button>
+          <button type="button" class="btn-close" @click="$emit('close')">&times;</button>
+        </div>
       </div>
 
       <div class="modal-body">
@@ -54,10 +62,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import TaskDetails from '../tasks/TaskDetails.vue'
 import userService from '../../services/userService'
 import projectService from '../../services/projectService'
 import type { IssueResponse } from '../../services/projectService'
+
+const router = useRouter()
 
 interface User {
   id: number
@@ -100,6 +111,16 @@ const formatDate = (dateString: string): string => {
   }).format(date)
 }
 
+const navigateToTests = () => {
+  router.push({
+    name: 'IssueTests',
+    params: {
+      id: props.projectId,
+      issueId: props.issue.id
+    }
+  })
+}
+
 // Fetches user name by ID, returns 'Non assigné' if not found or null
 const fetchAssigneeName = async (assigneeId: number | null | undefined): Promise<string> => {
   if (!assigneeId) return 'Non assigné'
@@ -135,6 +156,36 @@ onMounted(async () => {
 .modal-header {
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--terminal-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-tests {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(100, 181, 246, 0.2);
+  color: #64b5f6;
+  border: 1px solid rgba(100, 181, 246, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-tests:hover {
+  background: rgba(100, 181, 246, 0.3);
+  transform: translateY(-1px);
 }
 
 .header-info {

@@ -5,8 +5,8 @@
       <p>Êtes-vous sûr de vouloir supprimer <strong>{{ doc.title }}</strong> ?</p>
       <p class="warning-text">Cette action est irréversible.</p>
       <div class="delete-actions">
-        <button @click="$emit('cancel')" class="btn-cancel-delete">Annuler</button>
-        <button @click="$emit('confirm')" class="btn-confirm-delete">Supprimer</button>
+        <button class="btn-cancel-delete" @click="$emit('cancel')">Annuler</button>
+        <button class="btn-confirm-delete" @click="$emit('confirm')">Supprimer</button>
       </div>
     </div>
   </div>

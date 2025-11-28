@@ -28,15 +28,15 @@
       
       <div class="preview-section">
         <h3>Aperçu</h3>
-        <div v-html="parsedContent" class="markdown-preview"></div>
+        <div class="markdown-preview" v-html="parsedContent"></div>
       </div>
     </div>
     
     <div class="actions">
-      <button @click="$emit('cancel')" class="btn-cancel">
+      <button class="btn-cancel" @click="$emit('cancel')">
         Annuler
       </button>
-      <button @click="save" class="btn-save">
+      <button class="btn-save" @click="save">
         Enregistrer
       </button>
     </div>
@@ -153,7 +153,7 @@ const updateContentWithIssues = () => {
   
   // Supprimer l'ancienne section "Issues Liées" si elle existe
   const issuesSectionRegex = /\n*---\n*## Issues Liées\n\n[\s\S]*?(?=\n\n---|$)/
-  let cleanContent = content.replace(issuesSectionRegex, '')
+  const cleanContent = content.replace(issuesSectionRegex, '')
   
   // Ajouter la nouvelle section
   const issuesMarkdown = generateIssuesMarkdown()

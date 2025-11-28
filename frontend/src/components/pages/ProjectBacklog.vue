@@ -146,9 +146,9 @@ const filterIssues = (issuesList: IssueResponse[]) => {
   
   // Filtre par assignation
   if (assignmentFilter.value === 'assigned') {
-    filtered = filtered.filter(issue => issue.assigneeId != null)
+    filtered = filtered.filter(issue => issue.assigneeId !== null)
   } else if (assignmentFilter.value === 'unassigned') {
-    filtered = filtered.filter(issue => issue.assigneeId == null)
+    filtered = filtered.filter(issue => issue.assigneeId === null)
   }
   
   return filtered

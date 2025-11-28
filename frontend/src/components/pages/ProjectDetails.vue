@@ -343,7 +343,7 @@ onMounted(() => {
 
 .btn-sprints,
 .btn-releases,
-.btn-docs {
+.btn-docs{
   padding: 0.6rem 1.2rem;
   background: var(--terminal-bg);
   color: var(--terminal-accent);

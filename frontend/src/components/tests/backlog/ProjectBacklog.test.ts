@@ -186,7 +186,7 @@ describe('ProjectBacklog', () => {
 
     const columns = wrapper.findAllComponents(BacklogColumn)
     const allIssues = columns.flatMap(col => col.props('issues') as IssueResponse[])
-    expect(allIssues.every(issue => issue.assigneeId != null)).toBe(true)
+    expect(allIssues.every(issue => issue.assigneeId !== null)).toBe(true)
   })
 
   it('devrait filtrer les issues non assignées', async () => {
@@ -207,7 +207,7 @@ describe('ProjectBacklog', () => {
 
     const columns = wrapper.findAllComponents(BacklogColumn)
     const allIssues = columns.flatMap(col => col.props('issues') as IssueResponse[])
-    expect(allIssues.every(issue => issue.assigneeId == null)).toBe(true)
+    expect(allIssues.every(issue => issue.assigneeId === null)).toBe(true)
   })
 
   it('devrait trier par ordre alphabétique par défaut', async () => {

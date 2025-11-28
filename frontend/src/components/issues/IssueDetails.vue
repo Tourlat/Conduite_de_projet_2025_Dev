@@ -77,7 +77,7 @@ const loadIssues = async () => {
   try {
     issues.value = await projectService.getIssuesByProject(props.projectId)
   } catch {
-    
+    // Empty catch block
   } finally {
     loadingIssues.value = false
   }
