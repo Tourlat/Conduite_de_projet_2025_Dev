@@ -2,6 +2,10 @@ name: Backend tests
 
 on:
   workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: number
 
 permissions: write-all
 
@@ -18,6 +22,9 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
       - name: Run backend formatting check
         working-directory: ./backend
         run: mvn spotless:check
@@ -32,3 +39,36 @@ jobs:
           name: backend-test-reports
           path: |
             backend/target/surefire-reports
+
+      - name: Upload backend test coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-coverage-reports
+          path: |
+            backend/target/site/jacoco
+
+      - name: Extract JaCoCo coverage
+        id: coverage
+        run: |
+          FILE=backend/target/site/jacoco/jacoco.xml
+          LINE_COVERED=$(xmllint --xpath "sum(//counter[@type='LINE']/@covered)" $FILE)
+          LINE_MISSED=$(xmllint --xpath "sum(//counter[@type='LINE']/@missed)" $FILE)
+          
+          TOTAL=$((LINE_COVERED + LINE_MISSED))
+          PERCENT=$((100 * LINE_COVERED / TOTAL))
+
+          echo "percent=$PERCENT" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        if: ${{ input.pr_number != '' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const percent = ${{ steps.coverage.outputs.percent }};
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ input.pr_number }},
+              body: `### 📊 Backend Coverage Report\n**Line Coverage:** ${percent}%`
+            });
