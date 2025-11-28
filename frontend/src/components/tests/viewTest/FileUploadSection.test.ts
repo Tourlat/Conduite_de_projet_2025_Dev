@@ -56,11 +56,15 @@ describe('FileUploadSection', () => {
       const content = 'function test() { return 42; }'
       const file = new File([content], 'code.js', { type: 'text/javascript' })
       
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+      
       const input = wrapper.find('#code-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -74,11 +78,15 @@ describe('FileUploadSection', () => {
       const content = 'const x = 1;'
       const file = new File([content], 'code.txt', { type: 'text/plain' })
 
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#code-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -91,11 +99,15 @@ describe('FileUploadSection', () => {
       const content = 'export const test = 1;'
       const file = new File([content], 'code.mjs', { type: 'text/javascript' })
 
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#code-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -108,11 +120,15 @@ describe('FileUploadSection', () => {
       const content = 'const x = 1;'
       const file = new File([content], 'code.js', { type: 'text/javascript' })
 
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#code-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -127,11 +143,15 @@ describe('FileUploadSection', () => {
       const content = 'test("should work", () => { assert(true); })'
       const file = new File([content], 'test.js', { type: 'text/javascript' })
 
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#test-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -145,11 +165,15 @@ describe('FileUploadSection', () => {
       const content = 'test content'
       const file = new File([content], 'test.txt', { type: 'text/plain' })
 
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#test-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -162,11 +186,15 @@ describe('FileUploadSection', () => {
       const content = 'test content'
       const file = new File([content], 'test.js', { type: 'text/javascript' })
 
+      // Mock the text() method for the File object
+      file.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#test-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file]
+        value: [file],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -281,11 +309,16 @@ describe('FileUploadSection', () => {
       const codeFile = new File([codeContent], 'code.js', { type: 'text/javascript' })
       const testFile = new File([testContent], 'test.js', { type: 'text/javascript' })
 
+      // Mock the text() methods for the File objects
+      codeFile.text = vi.fn().mockResolvedValue(codeContent)
+      testFile.text = vi.fn().mockResolvedValue(testContent)
+
       const codeInput = wrapper.find('#code-file-upload')
       const codeEl = codeInput.element as HTMLInputElement
 
       Object.defineProperty(codeEl, 'files', {
-        value: [codeFile]
+        value: [codeFile],
+        configurable: true
       })
 
       await codeInput.trigger('change')
@@ -295,7 +328,8 @@ describe('FileUploadSection', () => {
       const testEl = testInput.element as HTMLInputElement
 
       Object.defineProperty(testEl, 'files', {
-        value: [testFile]
+        value: [testFile],
+        configurable: true
       })
 
       await testInput.trigger('change')
@@ -310,11 +344,16 @@ describe('FileUploadSection', () => {
       const file1 = new File([content], 'code.js', { type: 'text/javascript' })
       const file2 = new File([content], 'code.js', { type: 'text/javascript' })
 
+      // Mock the text() methods for the File objects
+      file1.text = vi.fn().mockResolvedValue(content)
+      file2.text = vi.fn().mockResolvedValue(content)
+
       const input = wrapper.find('#code-file-upload')
       const el = input.element as HTMLInputElement
 
       Object.defineProperty(el, 'files', {
-        value: [file1]
+        value: [file1],
+        configurable: true
       })
 
       await input.trigger('change')
@@ -323,7 +362,8 @@ describe('FileUploadSection', () => {
       expect(el.value).toBe('')
 
       Object.defineProperty(el, 'files', {
-        value: [file2]
+        value: [file2],
+        configurable: true
       })
 
       await input.trigger('change')
