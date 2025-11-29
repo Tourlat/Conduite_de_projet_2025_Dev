@@ -242,8 +242,14 @@ To access the swagger documentation start the backend application and go to the 
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Furthermore, the database schema can be found in [backend/docs/database-schema.md](backend/docs/database-schema.md). To regenerate the database schema execute the following command. The schema will be generated in [backend/docs/schema.sql](backend/docs/schema.sql).
+Furthermore, the database schema can be found in [backend/docs/database-schema.md](backend/docs/database-schema.md). To regenerate the database schema execute the following commands. The schema will be generated in [backend/docs/schema.sql](backend/docs/schema.sql).
 
+Launch the database container:
 ```bash
-mvn clean compile
+docker compose up -d database backend
+```
+
+Then run the following command to generate the schema:
+```
+docker exec -i $(docker compose ps -q database) pg_dump -U admin -d conduitedeprojet_db --schema-only > backend/docs/schema.sql
 ```
