@@ -12,6 +12,14 @@ spring:
     database: POSTGRESQL
     hibernate:
       ddl-auto: update
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            scripts:
+              action: create
+              create-target: docs/schema.sql
+        
 
 security:
   jwt:

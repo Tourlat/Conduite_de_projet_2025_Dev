@@ -241,3 +241,9 @@ To access the swagger documentation start the backend application and go to the 
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
+
+Furthermore, the database schema can be found in [backend/docs/database-schema.md](backend/docs/database-schema.md). To regenerate the database schema execute the following command. The schema will be generated in [backend/docs/schema.sql](backend/docs/schema.sql).
+
+```bash
+mvn clean compile
+```
