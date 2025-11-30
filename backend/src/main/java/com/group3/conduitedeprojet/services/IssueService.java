@@ -37,16 +37,20 @@ public class IssueService {
             .storyPoints(createIssueRequest.getStoryPoints())
             .project(project)
             .priority(createIssueRequest.getPriority())
-            .status(createIssueRequest.getStatus())
             .creator(creator);
 
     if (createIssueRequest.getAssigneeId() != null) {
       issueBuilder.assignee(entityLookupService.getUser(createIssueRequest.getAssigneeId()));
     }
 
+    if (createIssueRequest.getStatus() == null) {
+      issueBuilder.status(Issue.Status.TODO);
+    } else {
+      issueBuilder.status(createIssueRequest.getStatus());
+    }
+
     Issue issue = issueBuilder.build();
-    issueRepository.save(issue);
-    return issue.toIssueDto();
+    return issueRepository.save(issue).toIssueDto();
   }
 
   public List<IssueDto> getIssuesByProject(UUID projectId, Principal principal) {
@@ -111,7 +115,6 @@ public class IssueService {
       issue.setAssignee(user);
     }
 
-    issueRepository.save(issue);
-    return issue.toIssueDto();
+    return issueRepository.save(issue).toIssueDto();
   }
 }

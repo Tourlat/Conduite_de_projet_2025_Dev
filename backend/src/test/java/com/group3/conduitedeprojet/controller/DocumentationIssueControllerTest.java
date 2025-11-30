@@ -52,10 +52,16 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     // Create issue
     var issueBody =
         Map.of(
-            "title", "Implement feature",
-            "description", "Feature description",
-            "priority", "HIGH",
-            "storyPoints", 5);
+            "title",
+            "Implement feature",
+            "description",
+            "Feature description",
+            "priority",
+            "HIGH",
+            "storyPoints",
+            5,
+            "status",
+            "TODO");
 
     var issueResponse =
         mockMvc
@@ -127,10 +133,16 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     // Create two issues
     var issue1Body =
         Map.of(
-            "title", "Bug fix",
-            "description", "Fix the bug",
-            "priority", "HIGH",
-            "storyPoints", 3);
+            "title",
+            "Bug fix",
+            "description",
+            "Fix the bug",
+            "priority",
+            "HIGH",
+            "storyPoints",
+            3,
+            "status",
+            "TODO");
 
     var issue1Response =
         mockMvc
@@ -147,10 +159,16 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
 
     var issue2Body =
         Map.of(
-            "title", "Feature request",
-            "description", "New feature",
-            "priority", "MEDIUM",
-            "storyPoints", 5);
+            "title",
+            "Feature request",
+            "description",
+            "New feature",
+            "priority",
+            "MEDIUM",
+            "storyPoints",
+            5,
+            "status",
+            "TODO");
 
     var issue2Response =
         mockMvc
@@ -232,10 +250,16 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     // Create issue
     var issueBody =
         Map.of(
-            "title", "Update docs",
-            "description", "Update documentation",
-            "priority", "LOW",
-            "storyPoints", 2);
+            "title",
+            "Update docs",
+            "description",
+            "Update documentation",
+            "priority",
+            "LOW",
+            "storyPoints",
+            2,
+            "status",
+            "TODO");
 
     var issueResponse =
         mockMvc
@@ -316,10 +340,16 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     // Create issue
     var issueBody =
         Map.of(
-            "title", "Test issue",
-            "description", "Test",
-            "priority", "MEDIUM",
-            "storyPoints", 3);
+            "title",
+            "Test issue",
+            "description",
+            "Test",
+            "priority",
+            "MEDIUM",
+            "storyPoints",
+            3,
+            "status",
+            "TODO");
 
     var issueResponse =
         mockMvc
