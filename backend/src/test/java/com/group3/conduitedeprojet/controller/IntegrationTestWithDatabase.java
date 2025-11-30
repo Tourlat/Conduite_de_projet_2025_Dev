@@ -6,14 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group3.conduitedeprojet.dto.AuthResponse;
-import com.group3.conduitedeprojet.dto.CreateIssueRequest;
-import com.group3.conduitedeprojet.dto.CreateProjectRequest;
-import com.group3.conduitedeprojet.dto.IssueDto;
 import com.group3.conduitedeprojet.dto.RegisterRequest;
-import com.group3.conduitedeprojet.dto.UserDto;
-import com.group3.conduitedeprojet.models.Issue;
-import com.group3.conduitedeprojet.models.Project;
-import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -74,56 +66,5 @@ public abstract class IntegrationTestWithDatabase {
             .andReturn();
     String content = mvcRes.getResponse().getContentAsString();
     return objectMapper.readValue(content, AuthResponse.class);
-  }
-
-  Project createProject(AuthResponse owner, String name, String description) throws Exception {
-    CreateProjectRequest request =
-        CreateProjectRequest.builder()
-            .name(name)
-            .description(description)
-            .user(UserDto.builder().email(owner.getEmail()).id(owner.getId()).build())
-            .build();
-
-    MvcResult response =
-        mockMvc
-            .perform(
-                post("/api/projects")
-                    .header("Authorization", "Bearer " + owner.getToken())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-    return objectMapper.readValue(response.getResponse().getContentAsString(), Project.class);
-  }
-
-  IssueDto createIssue(
-      UUID projectId,
-      AuthResponse authResponse,
-      String title,
-      String description,
-      Issue.Priority priority,
-      Integer storyPoints,
-      Issue.Status status)
-      throws Exception {
-    var createIssueRequest =
-        CreateIssueRequest.builder()
-            .title(title)
-            .description(description)
-            .storyPoints(storyPoints)
-            .priority(priority)
-            .status(status);
-
-    var response =
-        mockMvc
-            .perform(
-                post("/api/projects/" + projectId + "/issues")
-                    .header("Authorization", "Bearer " + authResponse.getToken())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(createIssueRequest)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-    return objectMapper.readValue(response.getResponse().getContentAsString(), IssueDto.class);
   }
 }
