@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.group3.conduitedeprojet.models</OriginalElement>
+  <nodes>
+    <node x="656.0" y="658.5">com.group3.conduitedeprojet.models.Project</node>
+    <node x="169.5" y="1019.5">com.group3.conduitedeprojet.models.Sprint</node>
+    <node x="1054.5" y="881.0">com.group3.conduitedeprojet.models.Documentation</node>
+    <node x="515.0" y="-50.5">com.group3.conduitedeprojet.models.User</node>
+    <node x="265.0" y="420.5">com.group3.conduitedeprojet.models.Issue</node>
+    <node x="1003.5" y="404.5">com.group3.conduitedeprojet.models.Release</node>
+    <node x="17.0" y="98.5">com.group3.conduitedeprojet.models.Test</node>
+    <node x="-196.5" y="586.0">com.group3.conduitedeprojet.models.Task</node>
+    <node x="626.5" y="1169.5">com.group3.conduitedeprojet.models.DocumentationIssue</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.group3.conduitedeprojet.models.Documentation"
+      target="com.group3.conduitedeprojet.models.Project" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Task"
+      target="com.group3.conduitedeprojet.models.Project" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="331.8865016485223" y="771.7793789590843" />
+      <point x="350.245390453857" y="773.4645493430507" />
+      <point x="369.0362394289656" y="774.4978194136111" />
+      <point x="387.53197796201425" y="774.3265401742219" />
+      <point x="424.0047311644928" y="772.3567898624319" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Test"
+      target="com.group3.conduitedeprojet.models.Issue" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.DocumentationIssue"
+      target="com.group3.conduitedeprojet.models.Documentation" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Issue"
+      target="com.group3.conduitedeprojet.models.Sprint" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Release"
+      target="com.group3.conduitedeprojet.models.User" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Task"
+      target="com.group3.conduitedeprojet.models.Issue" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Release"
+      target="com.group3.conduitedeprojet.models.Project" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="1100.1745110519132" y="508.70407012670455" />
+      <point x="1089.0573931918304" y="515.8905713779847" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Release"
+      target="com.group3.conduitedeprojet.models.Issue" relationship="TO_MANY">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.DocumentationIssue"
+      target="com.group3.conduitedeprojet.models.Issue" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Sprint"
+      target="com.group3.conduitedeprojet.models.Issue" relationship="DEPENDENCY">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Test"
+      target="com.group3.conduitedeprojet.models.User" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Sprint"
+      target="com.group3.conduitedeprojet.models.Project" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Issue"
+      target="com.group3.conduitedeprojet.models.User" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Task"
+      target="com.group3.conduitedeprojet.models.User" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="232.79682757672873" y="426.9560455492956" />
+      <point x="270.3710834987578" y="396.1965234958402" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.User"
+      target="com.group3.conduitedeprojet.models.User" relationship="DEPENDENCY">
+      <point x="79.5" y="-131.0" />
+      <point x="753.5" y="-65.5" />
+      <point x="759.5" y="-71.5" />
+      <point x="848.0" y="-71.5" />
+      <point x="854.0" y="-65.5" />
+      <point x="854.0" y="9.0" />
+      <point x="848.0" y="15.0" />
+      <point x="159.0" y="-65.5" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Project"
+      target="com.group3.conduitedeprojet.models.User" relationship="TO_MANY">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Issue"
+      target="com.group3.conduitedeprojet.models.Release" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.group3.conduitedeprojet.models.Issue"
+      target="com.group3.conduitedeprojet.models.Project" relationship="TO_ONE">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Edge Bundled Organic" zoom="0.5085788386491938" showDependencies="true"
+    x="622.0015695835828" y="631.6909450810185" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
