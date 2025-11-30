@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/** Service responsible for handling user authentication (e.g register and login) */
 @Service
 public class AuthService {
 
@@ -25,6 +26,7 @@ public class AuthService {
 
   @Autowired private AuthenticationManager authenticationManager;
 
+  /** Registers a user and logs them in if register was successful. */
   public AuthResponse register(RegisterRequest request) {
     if (userRepository.findByEmail(request.getEmail()).isPresent()) {
       throw new EmailAlreadyExistsException("Cet email est déjà utilisé");
@@ -51,6 +53,7 @@ public class AuthService {
         .build();
   }
 
+  /** Logs in a user with valid credentials */
   public AuthResponse login(LoginRequest request) {
     try {
       authenticationManager.authenticate(
