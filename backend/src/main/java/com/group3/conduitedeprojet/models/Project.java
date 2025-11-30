@@ -1,5 +1,6 @@
 package com.group3.conduitedeprojet.models;
 
+import com.group3.conduitedeprojet.dto.ProjectDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -58,4 +59,14 @@ public class Project {
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id"))
   private Set<User> collaborators;
+
+  public ProjectDto toProjectDto() {
+    return ProjectDto.builder()
+        .id(id)
+        .name(name)
+        .description(description)
+        .createdAt(createdAt)
+        .creator(creator.toUserDto())
+        .build();
+  }
 }

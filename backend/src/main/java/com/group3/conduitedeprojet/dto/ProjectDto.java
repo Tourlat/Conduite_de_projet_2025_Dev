@@ -11,20 +11,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectResponse {
+public class ProjectDto {
   private UUID id;
   private String name;
   private String description;
   private LocalDateTime createdAt;
-  private CreatorDto creator;
+  private UserDto creator;
 
-  @Data
-  @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class CreatorDto {
-    private Long id;
-    private String email;
-    private String name;
-  }
+  // @Data
+  // @Builder
+  // @NoArgsConstructor
+  // @AllArgsConstructor
+  // public static class CreatorDto {
+  //   private Long id;
+  //   private String email;
+  //   private String name;
+  // }
 }

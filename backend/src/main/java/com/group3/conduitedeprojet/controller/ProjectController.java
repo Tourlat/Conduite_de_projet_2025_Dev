@@ -73,7 +73,7 @@ public class ProjectController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ProjectResponse.class))),
+                    schema = @Schema(implementation = ProjectDto.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - authentication required",
@@ -84,7 +84,7 @@ public class ProjectController {
             content = @Content)
       })
   @GetMapping
-  public ResponseEntity<List<ProjectResponse>> getAllProjects(Principal principal) {
+  public ResponseEntity<List<ProjectDto>> getAllProjects(Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -102,7 +102,7 @@ public class ProjectController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ProjectResponse.class))),
+                    schema = @Schema(implementation = ProjectDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid request data",
@@ -122,7 +122,7 @@ public class ProjectController {
             content = @Content)
       })
   @PutMapping("/{projectId}")
-  public ResponseEntity<ProjectResponse> updateProject(
+  public ResponseEntity<ProjectDto> updateProject(
       @PathVariable UUID projectId,
       @RequestBody UpdateProjectRequest updateProjectRequest,
       Principal principal) {
