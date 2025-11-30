@@ -40,31 +40,26 @@ public class DocumentationIssueService {
 
   @Transactional
   public DocumentationIssueDto linkDocumentationToIssue(Long documentationId, Long issueId) {
-    // Vérifier que la documentation existe
     Documentation documentation =
         documentationRepository
             .findById(documentationId)
             .orElseThrow(() -> new RuntimeException("Documentation not found"));
 
-    // Vérifier que l'issue existe
     Issue issue =
         issueRepository
             .findById(issueId)
             .orElseThrow(() -> new RuntimeException("Issue not found"));
 
-    // Vérifier que l'issue appartient au même projet que la documentation
     if (!issue.getProject().getId().equals(documentation.getProject().getId())) {
       throw new RuntimeException("Issue does not belong to the same project as documentation");
     }
 
-    // Vérifier si la liaison existe déjà
     if (documentationIssueRepository
         .findByDocumentationIdAndIssueId(documentationId, issueId)
         .isPresent()) {
       throw new RuntimeException("Link already exists");
     }
 
-    // Créer la liaison
     DocumentationIssue link =
         DocumentationIssue.builder().documentation(documentation).issue(issue).build();
 

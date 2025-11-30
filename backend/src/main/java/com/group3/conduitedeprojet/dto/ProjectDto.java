@@ -17,14 +17,4 @@ public class ProjectDto {
   private String description;
   private LocalDateTime createdAt;
   private UserDto creator;
-
-  // @Data
-  // @Builder
-  // @NoArgsConstructor
-  // @AllArgsConstructor
-  // public static class CreatorDto {
-  //   private Long id;
-  //   private String email;
-  //   private String name;
-  // }
 }
