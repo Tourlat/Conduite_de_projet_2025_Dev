@@ -67,14 +67,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMounted } from 'vue'
+import { ref, onUnmounted, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import FileUploadSection from './FileUploadSection.vue'
 import CodeEditor from './CodeEditor.vue'
 import TestResults from './TestResults.vue'
 import { defaultCode, defaultTests } from '../../utils/testDefaults'
-import type { TestResult, WorkerResponse } from '../../types/testRunner'
-import testService, { type TestResponse } from '../../services/testservice'
+import type { WorkerResponse } from '../../types/testRunner'
+import testStore from '../../stores/testStore'
 import projectService from '../../services/projectService'
 
 const route = useRoute()
@@ -84,11 +84,13 @@ const issueTitle = ref<string>('')
 
 const userCode = ref(defaultCode)
 const userTests = ref(defaultTests)
-const results = ref<TestResult | null>(null)
-const isRunning = ref(false)
-const savedTests = ref<TestResponse[]>([])
-const loading = ref(false)
-const error = ref('')
+
+// Use store state
+const savedTests = computed(() => testStore.state.savedTests)
+const results = computed(() => testStore.state.results)
+const isRunning = computed(() => testStore.state.isRunning)
+const loading = computed(() => testStore.state.loading)
+const error = computed(() => testStore.state.error)
 
 let worker: Worker | null = null
 
@@ -111,33 +113,28 @@ const loadIssueDetails = async () => {
 const loadTests = async () => {
   if (!projectId.value || !issueId.value) return
   
-  loading.value = true
-  error.value = ''
   try {
-    savedTests.value = await testService.getTestsByIssue(projectId.value, issueId.value)
+    await testStore.loadTests(projectId.value, issueId.value)
   } catch {
-    error.value = 'Erreur lors du chargement des tests'
-  } finally {
-    loading.value = false
+    // Error is already set in the store
   }
 }
 
 // Save in db a new test
 const saveTest = async () => {
   if (!projectId.value || !issueId.value) {
-    error.value = 'Projet ou issue manquant'
+    alert('Projet ou issue manquant')
     return
   }
 
   if (!userCode.value || !userTests.value) {
-    error.value = 'Le code et les tests ne peuvent pas être vides'
+    alert('Le code et les tests ne peuvent pas être vides')
     return
   }
 
-  loading.value = true
-  error.value = ''
+  testStore.clearError()
   try {
-    const createdTest = await testService.createTest(
+    await testStore.createTest(
       projectId.value,
       issueId.value,
       {
@@ -145,18 +142,15 @@ const saveTest = async () => {
         testCode: userTests.value
       }
     )
-    savedTests.value.push(createdTest)
     alert('Test sauvegardé avec succès !')
-    await loadTests()
   } catch {
-    error.value = 'Erreur lors de la sauvegarde du test'
     alert('Erreur lors de la sauvegarde du test')
-  } finally {
-    loading.value = false
   }
 }
+
 // load a saved test into the editors
-const loadSavedTest = (test: TestResponse) => {
+const loadSavedTest = (test: any) => {
+  testStore.loadSavedTest(test)
   userCode.value = test.programCode
   userTests.value = test.testCode
 }
@@ -165,15 +159,11 @@ const loadSavedTest = (test: TestResponse) => {
 const deleteSavedTest = async (testId: number) => {
   if (!confirm('Êtes-vous sûr de vouloir supprimer ce test ?')) return
 
-  loading.value = true
-  error.value = ''
+  testStore.clearError()
   try {
-    await testService.deleteTest(projectId.value, issueId.value, testId)
-    savedTests.value = savedTests.value.filter(t => t.id !== testId)
+    await testStore.deleteTest(projectId.value, issueId.value, testId)
   } catch {
-    error.value = 'Erreur lors de la suppression du test'
-  } finally {
-    loading.value = false
+    // Error is already set in the store
   }
 }
 
@@ -219,8 +209,8 @@ const downloadFiles = () => {
 }
 
 const runTests = async () => {
-  isRunning.value = true
-  results.value = null
+  testStore.setIsRunning(true)
+  testStore.clearResults()
 
   try {
     // Terminate the old worker if it exists
@@ -238,11 +228,11 @@ const runTests = async () => {
     const timeout = setTimeout(() => {
       if (worker) {
         worker.terminate()
-        results.value = {
+        testStore.setResults({
           success: false,
           error: 'Timeout: L\'exécution a été interrompue après 5 secondes'
-        }
-        isRunning.value = false
+        })
+        testStore.setIsRunning(false)
       }
     }, 6000)
 
@@ -252,18 +242,18 @@ const runTests = async () => {
       const { success, output, error, stack } = e.data
 
       if (success) {
-        results.value = {
+        testStore.setResults({
           success: true,
           output
-        }
+        })
       } else {
-        results.value = {
+        testStore.setResults({
           success: false,
           error: `${error}\n\nStack:\n${stack || 'Non disponible'}`
-        }
+        })
       }
 
-      isRunning.value = false
+      testStore.setIsRunning(false)
       worker?.terminate()
       worker = null
     }
@@ -271,11 +261,11 @@ const runTests = async () => {
     // Manage worker errors
     worker.onerror = (error) => {
       clearTimeout(timeout)
-      results.value = {
+      testStore.setResults({
         success: false,
         error: `Erreur du worker: ${error.message}`
-      }
-      isRunning.value = false
+      })
+      testStore.setIsRunning(false)
       worker?.terminate()
       worker = null
     }
@@ -287,11 +277,11 @@ const runTests = async () => {
     })
 
   } catch (error: unknown) {
-    results.value = {
+    testStore.setResults({
       success: false,
       error: `Erreur lors de la création du worker:\n${error instanceof Error ? error.message : String(error)}`
-    }
-    isRunning.value = false
+    })
+    testStore.setIsRunning(false)
   }
 }
 

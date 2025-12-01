@@ -35,6 +35,7 @@ graph TB
             AuthStore[authStore<br/>Authentication]
             ProjectStore[projectStore<br/>Projects]
             ReleaseStore[releaseStore<br/>Releases]
+            TestStore[testStore<br/>Tests]
         end
         
         subgraph "Service Layer"
@@ -58,15 +59,16 @@ graph TB
     Components --> AuthStore
     Components --> ProjectStore
     Components --> ReleaseStore
+    Components --> TestStore
     Components --> Router
     
     AuthStore --> AuthService
     ProjectStore --> ProjectService
     ProjectStore --> UserService
     ReleaseStore --> ReleaseService
+    TestStore --> TestService
     
     Components --> DocService
-    Components --> TestService
     
     AuthService --> Utils
     ProjectService --> Utils
@@ -90,6 +92,7 @@ graph TB
     style AuthStore fill:#fff9c4
     style ProjectStore fill:#fff9c4
     style ReleaseStore fill:#fff9c4
+    style TestStore fill:#fff9c4
 ```
 
 ---
@@ -176,6 +179,7 @@ graph LR
     stores --> authStore[authStore.ts]
     stores --> projectStore[projectStore.ts]
     stores --> releaseStore[releaseStore.ts]
+    stores --> testStore[testStore.ts]
     
     services --> authService[authService.ts]
     services --> projectService[projectService.ts]
@@ -523,43 +527,17 @@ catch (error: any) {
 }
 ```
 
-### 3. Strict Typing
-
-All types are defined and exported from services or `types/`:
-
-```typescript
-interface CreateProjectRequest {
-  name: string
-  description?: string
-  collaborateurs?: string[]
-}
-```
-
-### 4. Reusability
+### 3. Reusability
 
 - Atomic components (IssueCard, StatusDropdown)
 - Centralized services (no direct axios calls in components)
 - Utils for headers and localStorage
 
-### 5. Testing
+### 4. Testing
 
 - Unit tests for services and utils
 - Component tests with Vue Test Utils
 - API and localStorage mocking
-
----
-
-## Future Evolution
-
-### Suggested Improvements
-
-1. **Migration to Pinia**: Official Vue 3 store (more features)
-2. **Reusable Composables**: Extract common logic (useAuth, useProject)
-3. **Enhanced Lazy Loading**: Routes already lazy-loaded, but heavy components too
-4. **Cache Management**: Avoid unnecessary reloads (TanStack Query / VueUse)
-5. **Storybook**: Visual component documentation (already installed!)
-6. **Accessibility**: Improve ARIA labels and keyboard navigation
-7. **Optimistic UI**: Update UI before API response for better UX
 
 ---
 

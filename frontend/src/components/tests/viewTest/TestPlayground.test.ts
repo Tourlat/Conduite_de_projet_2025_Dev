@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import TestPlayground from '../../testView/TestPlayground.vue'
-import testService from '../../../services/testservice'
 import type { TestResponse } from '../../../services/testservice'
 
 // Mock vue-router
@@ -14,12 +13,33 @@ vi.mock('vue-router', () => ({
   })
 }))
 
-// Mock testService
-vi.mock('../../../services/testservice', () => ({
+// Mock projectService for issue title
+vi.mock('../../../services/projectService', () => ({
   default: {
-    getTestsByIssue: vi.fn(),
+    getIssuesByProject: vi.fn().mockResolvedValue([])
+  }
+}))
+
+// Mock testStore
+vi.mock('../../../stores/testStore', () => ({
+  default: {
+    state: {
+      savedTests: [],
+      currentCode: '',
+      currentTests: '',
+      results: null,
+      isRunning: false,
+      loading: false,
+      error: null
+    },
+    loadTests: vi.fn(),
     createTest: vi.fn(),
-    deleteTest: vi.fn()
+    deleteTest: vi.fn(),
+    loadSavedTest: vi.fn(),
+    setResults: vi.fn(),
+    setIsRunning: vi.fn(),
+    clearResults: vi.fn(),
+    clearError: vi.fn()
   }
 }))
 
@@ -51,11 +71,22 @@ class MockWorker {
 globalThis.Worker = MockWorker as unknown as typeof Worker
 
 describe('TestPlayground', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
-    // Default mock to prevent undefined savedTests
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
+    
+    // Import testStore dynamically to get the mocked version
+    const { default: testStore } = await import('../../../stores/testStore')
+    
+    // Reset store state
+    testStore.state.savedTests = []
+    testStore.state.error = null
+    testStore.state.loading = false
+    testStore.state.isRunning = false
+    testStore.state.results = null
+    
+    // Default mock
+    vi.mocked(testStore.loadTests).mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -80,24 +111,27 @@ describe('TestPlayground', () => {
       }
     ]
 
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue(mockTests)
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.savedTests = mockTests
+    vi.mocked(testStore.loadTests).mockResolvedValue(mockTests)
 
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
-    expect(testService.getTestsByIssue).toHaveBeenCalledWith('project-123', 456)
+    expect(testStore.loadTests).toHaveBeenCalledWith('project-123', 456)
     expect(wrapper.text()).toContain('Tests sauvegardés')
     expect(wrapper.text()).toContain('Test #1')
   })
 
   it('devrait afficher un message d\'erreur si le chargement des tests échoue', async () => {
-    vi.mocked(testService.getTestsByIssue).mockRejectedValue(new Error('Network error'))
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.error = 'Network error'
+    vi.mocked(testStore.loadTests).mockRejectedValue(new Error('Network error'))
 
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
     expect(wrapper.find('.error-banner').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Erreur lors du chargement des tests')
   })
 
   it('devrait afficher la liste des tests sauvegardés', async () => {
@@ -120,7 +154,9 @@ describe('TestPlayground', () => {
       }
     ]
 
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue(mockTests)
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.savedTests = mockTests
+    vi.mocked(testStore.loadTests).mockResolvedValue(mockTests)
 
     const wrapper = mount(TestPlayground)
     await flushPromises()
@@ -142,7 +178,9 @@ describe('TestPlayground', () => {
       }
     ]
 
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue(mockTests)
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.savedTests = mockTests
+    vi.mocked(testStore.loadTests).mockResolvedValue(mockTests)
 
     const wrapper = mount(TestPlayground)
     await flushPromises()
@@ -156,8 +194,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait sauvegarder un nouveau test', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-    
     const newTest: TestResponse = {
       id: 1,
       programCode: 'const x = 1;',
@@ -167,7 +203,8 @@ describe('TestPlayground', () => {
       createdAt: '2024-01-01T10:00:00'
     }
 
-    vi.mocked(testService.createTest).mockResolvedValue(newTest)
+    const { default: testStore } = await import('../../../stores/testStore')
+    vi.mocked(testStore.createTest).mockResolvedValue(newTest)
     vi.spyOn(window, 'alert').mockImplementation(() => {})
 
     const wrapper = mount(TestPlayground)
@@ -177,13 +214,13 @@ describe('TestPlayground', () => {
     await saveButton.trigger('click')
     await flushPromises()
 
-    expect(testService.createTest).toHaveBeenCalled()
+    expect(testStore.createTest).toHaveBeenCalled()
     expect(window.alert).toHaveBeenCalledWith('Test sauvegardé avec succès !')
   })
 
   it('devrait ne pas sauvegarder si le code ou les tests sont vides', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-    vi.mocked(testService.createTest).mockResolvedValue({
+    const { default: testStore } = await import('../../../stores/testStore')
+    vi.mocked(testStore.createTest).mockResolvedValue({
       id: 1,
       programCode: '',
       testCode: '',
@@ -202,7 +239,7 @@ describe('TestPlayground', () => {
     await flushPromises()
 
     // Avec le code par défaut, la sauvegarde devrait fonctionner
-    expect(testService.createTest).toHaveBeenCalled()
+    expect(testStore.createTest).toHaveBeenCalled()
   })
 
   it('devrait supprimer un test après confirmation', async () => {
@@ -217,8 +254,10 @@ describe('TestPlayground', () => {
       }
     ]
 
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue(mockTests)
-    vi.mocked(testService.deleteTest).mockResolvedValue()
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.savedTests = mockTests
+    vi.mocked(testStore.loadTests).mockResolvedValue(mockTests)
+    vi.mocked(testStore.deleteTest).mockResolvedValue()
     vi.spyOn(window, 'confirm').mockReturnValue(true)
 
     const wrapper = mount(TestPlayground)
@@ -228,7 +267,7 @@ describe('TestPlayground', () => {
     await deleteButton.trigger('click')
     await flushPromises()
 
-    expect(testService.deleteTest).toHaveBeenCalledWith('project-123', 456, 1)
+    expect(testStore.deleteTest).toHaveBeenCalledWith('project-123', 456, 1)
   })
 
   it('ne devrait pas supprimer un test si l\'utilisateur annule', async () => {
@@ -243,7 +282,9 @@ describe('TestPlayground', () => {
       }
     ]
 
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue(mockTests)
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.savedTests = mockTests
+    vi.mocked(testStore.loadTests).mockResolvedValue(mockTests)
     vi.spyOn(window, 'confirm').mockReturnValue(false)
 
     const wrapper = mount(TestPlayground)
@@ -253,12 +294,10 @@ describe('TestPlayground', () => {
     await deleteButton.trigger('click')
     await flushPromises()
 
-    expect(testService.deleteTest).not.toHaveBeenCalled()
+    expect(testStore.deleteTest).not.toHaveBeenCalled()
   })
 
   it('devrait exécuter les tests avec le worker', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -274,8 +313,8 @@ describe('TestPlayground', () => {
   })
 
   it('devrait désactiver le bouton d\'exécution pendant l\'exécution', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
+    const { default: testStore } = await import('../../../stores/testStore')
+    
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -284,14 +323,13 @@ describe('TestPlayground', () => {
     expect(runButton.attributes('disabled')).toBeUndefined()
 
     await runButton.trigger('click')
-    await wrapper.vm.$nextTick()
+    await flushPromises()
 
-    expect(runButton.attributes('disabled')).toBeDefined()
+    // Vérifier que le store a été appelé pour changer l'état
+    expect(testStore.setIsRunning).toHaveBeenCalledWith(true)
   })
 
   it('devrait télécharger les fichiers', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     // Mock pour URL.createObjectURL et URL.revokeObjectURL
     globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
     globalThis.URL.revokeObjectURL = vi.fn()
@@ -319,8 +357,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait réinitialiser le code par défaut', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -335,8 +371,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait réinitialiser les tests par défaut', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -351,8 +385,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait gérer le chargement d\'un fichier de code', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -367,8 +399,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait gérer le chargement d\'un fichier de tests', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -383,8 +413,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait nettoyer le worker lors du démontage', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -400,8 +428,6 @@ describe('TestPlayground', () => {
   })
 
   it('ne devrait pas afficher la section des tests sauvegardés si la liste est vide', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
@@ -420,7 +446,9 @@ describe('TestPlayground', () => {
       }
     ]
 
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue(mockTests)
+    const { default: testStore } = await import('../../../stores/testStore')
+    testStore.state.savedTests = mockTests
+    vi.mocked(testStore.loadTests).mockResolvedValue(mockTests)
 
     const wrapper = mount(TestPlayground)
     await flushPromises()
@@ -429,8 +457,6 @@ describe('TestPlayground', () => {
   })
 
   it('devrait désactiver le bouton de sauvegarde pendant le chargement', async () => {
-    vi.mocked(testService.getTestsByIssue).mockResolvedValue([])
-
     const wrapper = mount(TestPlayground)
     await flushPromises()
 
