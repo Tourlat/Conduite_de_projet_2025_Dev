@@ -143,12 +143,6 @@ export const myStore = {
 }
 ```
 
-**Advantages**:
-- ✅ Reactive state without Pinia
-- ✅ Encapsulation (no direct mutation)
-- ✅ Native TypeScript
-- ✅ Lightweight
-
 ---
 
 ## Folder Structure
@@ -283,20 +277,20 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    Root[/ Root]
-    Auth[/auth<br/>AuthInterface]
-    Login[/login<br/>LoginForm]
-    Register[/register<br/>RegisterForm]
-    Dashboard[/dashboard<br/>DashBoard]
-    Projects[/projects<br/>CreateProjectForm]
-    ProjectDetails[/projects/:id<br/>ProjectDetails]
-    Backlog[/projects/:id/backlog<br/>ProjectBacklog]
-    Sprints[/projects/:id/sprints<br/>ProjectSprints]
-    SprintDetails[/projects/:id/sprints/:sprintId<br/>SprintDetails]
-    Releases[/projects/:id/releases<br/>ProjectReleases]
-    Docs[/projects/:id/docs<br/>DocumentationList]
-    Tests[/projects/:id/issues/:issueId/tests<br/>TestPlayground]
-    Profile[/profile<br/>UserProfile]
+    Root["/ - Root"]
+    Auth["/auth - AuthInterface"]
+    Login["/login - LoginForm"]
+    Register["/register - RegisterForm"]
+    Dashboard["/dashboard - DashBoard"]
+    Projects["/projects - CreateProjectForm"]
+    ProjectDetails["/projects/:id - ProjectDetails"]
+    Backlog["/projects/:id/backlog - ProjectBacklog"]
+    Sprints["/projects/:id/sprints - ProjectSprints"]
+    SprintDetails["/projects/:id/sprints/:sprintId - SprintDetails"]
+    Releases["/projects/:id/releases - ProjectReleases"]
+    Docs["/projects/:id/docs - DocumentationList"]
+    Tests["/projects/:id/issues/:issueId/tests - TestPlayground"]
+    Profile["/profile - UserProfile"]
     
     Root -->|Logged in| Dashboard
     Root -->|Not logged| Auth
@@ -365,66 +359,72 @@ graph TD
     App[App.vue]
     
     App --> NavBar[NavBar.vue]
-    App --> Router[Router View]
+    App --> RouterView[Router View]
     
-    Router --> Auth[AuthInterface.vue]
-    Router --> Dashboard[DashBoard.vue]
-    Router --> ProjectDetails[ProjectDetails.vue]
+    RouterView --> Auth[AuthInterface.vue]
+    RouterView --> Dashboard[DashBoard.vue]
+    RouterView --> ProjectDetailsPage[ProjectDetails.vue]
+    RouterView --> ProjectBacklogPage[ProjectBacklog.vue]
+    RouterView --> ProjectSprintsPage[ProjectSprints.vue]
+    RouterView --> SprintDetailsPage[SprintDetails.vue]
+    RouterView --> ProjectReleasesPage[ProjectReleases.vue]
+    RouterView --> TestPlaygroundPage[TestPlayground.vue]
+    RouterView --> UserProfilePage[UserProfile.vue]
     
     subgraph "Authentication"
         Auth --> LoginForm[LoginForm.vue]
         Auth --> RegisterForm[RegisterForm.vue]
     end
     
-    subgraph "Dashboard"
-        Dashboard --> ProjectCard[Project Cards]
+    subgraph "Dashboard Components"
+        Dashboard --> ProfileCard[ProfileCard.vue]
+        Dashboard --> ProjectGrid[ProjectGrid.vue]
+        Dashboard --> EmptyProject[EmptyProject.vue]
+        ProjectGrid --> ProjectCard[ProjectCard.vue]
     end
     
-    subgraph "Project Management"
-        ProjectDetails --> CreateProject[CreateProjectForm.vue]
-        ProjectDetails --> ProjectSettings[ProjectSettings.vue]
-        ProjectDetails --> ProjectMembers[ProjectMembers.vue]
+    subgraph "Project Details"
+        ProjectDetailsPage --> ProjectMembers[ProjectMembers.vue]
+        ProjectDetailsPage --> ProjectSettings[ProjectSettings.vue]
     end
     
-    subgraph "Backlog & Issues"
-        ProjectDetails --> Backlog[ProjectBacklog.vue]
-        Backlog --> IssueList[IssueList.vue]
-        Backlog --> CreateIssue[CreateIssueForm.vue]
-        IssueList --> IssueCard[IssueCard.vue]
-        IssueCard --> IssueDetails[IssueDetails.vue]
+    subgraph "Backlog Components"
+        ProjectBacklogPage --> BacklogColumn[BacklogColumn.vue]
+        ProjectBacklogPage --> CreateIssue[CreateIssueForm.vue]
+        BacklogColumn --> BacklogIssueCard[BacklogIssueCard.vue]
+        BacklogColumn --> IssueCard[IssueCard.vue]
+        IssueCard --> IssueDetailModal[IssueDetailModal.vue]
         IssueCard --> EditIssue[EditIssueForm.vue]
         IssueCard --> StatusDropdown[StatusDropdown.vue]
     end
     
-    subgraph "Sprints"
-        ProjectDetails --> SprintList[ProjectSprints.vue]
-        SprintList --> SprintCard[SprintCard.vue]
-        SprintList --> CreateSprint[CreateSprintForm.vue]
-        SprintCard --> SprintDetails[SprintDetails.vue]
-        SprintDetails --> SprintIssuesList[SprintIssuesList.vue]
-        SprintDetails --> EditSprint[EditSprintForm.vue]
-        SprintDetails --> IssueSelector[IssueSelector.vue]
+    subgraph "Sprint Components"
+        ProjectSprintsPage --> CreateSprint[CreateSprintForm.vue]
+        ProjectSprintsPage --> SprintCard[SprintCard.vue]
+        SprintDetailsPage --> SprintInfoCard[SprintInfoCard.vue]
+        SprintDetailsPage --> SprintIssuesList[SprintIssuesList.vue]
+        SprintDetailsPage --> EditSprint[EditSprintForm.vue]
+        SprintDetailsPage --> IssueSelector[IssueSelector.vue]
     end
     
-    subgraph "Releases"
-        ProjectDetails --> ReleaseList[ProjectReleases.vue]
-        ReleaseList --> ReleaseCard[Release Cards]
+    subgraph "Release Components"
+        ProjectReleasesPage --> ReleaseComponents[Release Components]
     end
     
     subgraph "Documentation"
-        ProjectDetails --> DocList[DocumentationList.vue]
-        DocList --> DocViewer[Documentation Viewer]
+        DocumentationPage[DocumentationList.vue] --> DocViewer[Documentation Viewer]
     end
     
-    subgraph "Tests"
-        Backlog --> TestPlayground[TestPlayground.vue]
-        TestPlayground --> FileUpload[FileUploadSection.vue]
+    subgraph "Test Playground"
+        TestPlaygroundPage --> FileUpload[FileUploadSection.vue]
+        TestPlaygroundPage --> CodeEditor[CodeEditor.vue]
+        TestPlaygroundPage --> TestResults[TestResults.vue]
     end
     
     style App fill:#e3f2fd
     style Auth fill:#c8e6c9
     style Dashboard fill:#fff9c4
-    style ProjectDetails fill:#ffe0b2
+    style ProjectDetailsPage fill:#ffe0b2
 ```
 
 ### Reusable Components
@@ -454,15 +454,15 @@ graph LR
     end
     
     subgraph "Backend API Endpoints"
-        AuthAPI[/api/auth/*<br/>login, register]
-        ProjectAPI[/api/projects/*<br/>CRUD projects]
-        IssueAPI[/api/projects/:id/issues<br/>CRUD issues]
-        SprintAPI[/api/projects/:id/sprints<br/>CRUD sprints]
-        TaskAPI[/api/projects/:id/tasks<br/>CRUD tasks]
-        ReleaseAPI[/api/projects/:id/releases<br/>CRUD releases]
-        DocAPI[/api/projects/:id/documentations<br/>CRUD docs]
-        TestAPI[/api/projects/:id/issues/:issueId/tests<br/>Test execution]
-        UserAPI[/api/users<br/>Get users]
+        AuthAPI["/api/auth/* - login, register"]
+        ProjectAPI["/api/projects/* - CRUD projects"]
+        IssueAPI["/api/projects/:id/issues - CRUD issues"]
+        SprintAPI["/api/projects/:id/sprints - CRUD sprints"]
+        TaskAPI["/api/projects/:id/tasks - CRUD tasks"]
+        ReleaseAPI["/api/projects/:id/releases - CRUD releases"]
+        DocAPI["/api/projects/:id/documentations - CRUD docs"]
+        TestAPI["/api/projects/:id/issues/:issueId/tests - Test execution"]
+        UserAPI["/api/users - Get users"]
     end
     
     AS --> AuthAPI
