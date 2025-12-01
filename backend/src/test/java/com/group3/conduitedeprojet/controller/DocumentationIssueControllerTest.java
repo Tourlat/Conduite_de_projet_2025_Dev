@@ -358,4 +358,104 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
                 .header("Authorization", "Bearer " + owner.getToken()))
         .andExpect(status().is5xxServerError());
   }
+
+  @Test
+  void getDocumentationsByIssue_success() throws Exception {
+    var owner = register("getdocsbyissue@example.com", "password123", "GetDocsByIssueTester");
+
+    var projectBody =
+        Map.of(
+            "name", "Project for Get Documentations By Issue",
+            "description", "Test project",
+            "user", Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var projectResponse =
+        mockMvc
+            .perform(
+                post("/api/projects")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(projectBody)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var projectJson = objectMapper.readTree(projectResponse.getResponse().getContentAsString());
+    String projectId = projectJson.get("id").asText();
+
+    var doc1Body = Map.of("title", "Guide A", "content", "# Guide A");
+    var doc2Body = Map.of("title", "Guide B", "content", "# Guide B");
+
+    var doc1Response =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/docs")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(doc1Body)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var doc2Response =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/docs")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(doc2Body)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var doc1Json = objectMapper.readTree(doc1Response.getResponse().getContentAsString());
+    Long doc1Id = doc1Json.get("id").asLong();
+
+    var doc2Json = objectMapper.readTree(doc2Response.getResponse().getContentAsString());
+    Long doc2Id = doc2Json.get("id").asLong();
+
+    var issueBody =
+        Map.of(
+            "title",
+            "Central issue",
+            "description",
+            "Related to multiple docs",
+            "priority",
+            "MEDIUM",
+            "storyPoints",
+            2,
+            "status",
+            "TODO");
+
+    var issueResponse =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/issues")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(issueBody)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var issueJson = objectMapper.readTree(issueResponse.getResponse().getContentAsString());
+    Long issueId = issueJson.get("id").asLong();
+
+    mockMvc
+        .perform(
+            post("/api/documentation-issues/documentation/" + doc1Id + "/issue/" + issueId)
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(
+            post("/api/documentation-issues/documentation/" + doc2Id + "/issue/" + issueId)
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(
+            get("/api/documentation-issues/issue/" + issueId)
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[0].documentationId").exists())
+        .andExpect(jsonPath("$[1].documentationId").exists());
+  }
 }

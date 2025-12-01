@@ -1,5 +1,6 @@
 package com.group3.conduitedeprojet.controller;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -9,6 +10,7 @@ import com.group3.conduitedeprojet.dto.LoginRequest;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 public class UserControllerTest extends IntegrationTestWithDatabase {
 
@@ -78,5 +80,30 @@ public class UserControllerTest extends IntegrationTestWithDatabase {
                 .content(objectMapper.writeValueAsString(loginBad)))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.error").value("INVALID_CREDENTIALS"));
+  }
+
+  @Test
+  void getAllUsers_returns_registered_users() throws Exception {
+    var u = register("alice@example.com", "password123", "Alice");
+
+    mockMvc
+        .perform(MockMvcRequestBuilders.get("/api/users"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[*].email", hasItem(u.getEmail())))
+        .andExpect(jsonPath("$[*].name", hasItem("Alice")));
+  }
+
+  @Test
+  void getUser_by_id_returns_user() throws Exception {
+    var u = register("bob@example.com", "password123", "Bob");
+
+    mockMvc
+        .perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(
+                "/api/users/" + u.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.email").value(u.getEmail()))
+        .andExpect(jsonPath("$.name").value("Bob"))
+        .andExpect(jsonPath("$.id").value(u.getId().intValue()));
   }
 }

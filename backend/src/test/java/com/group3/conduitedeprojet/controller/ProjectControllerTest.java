@@ -1,6 +1,7 @@
 package com.group3.conduitedeprojet.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -342,5 +343,120 @@ public class ProjectControllerTest extends IntegrationTestWithDatabase {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateBody)))
         .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void getAllProjects_requires_auth() throws Exception {
+    mockMvc.perform(get("/api/projects")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void getAllProjects_success_returns_projects() throws Exception {
+    var owner = register("getallowner@example.com", "password123", "GetAllOwner");
+
+    var createBody =
+        Map.of(
+            "name",
+            "Owned Project",
+            "description",
+            "desc",
+            "user",
+            Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    mockMvc
+        .perform(
+            post("/api/projects")
+                .header("Authorization", "Bearer " + owner.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createBody)))
+        .andExpect(status().isOk());
+
+    mockMvc
+        .perform(get("/api/projects").header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").isNotEmpty());
+  }
+
+  @Test
+  void getProjectCollaborators_requires_auth() throws Exception {
+    var owner = register("collabreqowner@example.com", "password123", "OwnerReq");
+
+    var createBody =
+        Map.of(
+            "name",
+            "Project Need Auth",
+            "description",
+            "desc",
+            "user",
+            Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var createRes =
+        mockMvc
+            .perform(
+                post("/api/projects")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createBody)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    String createdJson = createRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+    String projectId = (String) createdMap.get("id");
+
+    mockMvc
+        .perform(get("/api/projects/" + projectId + "/collaborators"))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void getProjectCollaborators_success_returns_collaborators() throws Exception {
+    var owner = register("collabowner@example.com", "password123", "CollabOwner");
+    var collab = register("collabmember@example.com", "password123", "CollabMember");
+
+    var createBody =
+        Map.of(
+            "name",
+            "Project With Members",
+            "description",
+            "desc",
+            "user",
+            Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var createRes =
+        mockMvc
+            .perform(
+                post("/api/projects")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createBody)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    String createdJson = createRes.getResponse().getContentAsString();
+    @SuppressWarnings("unchecked")
+    Map<String, Object> createdMap = objectMapper.readValue(createdJson, Map.class);
+    String projectId = (String) createdMap.get("id");
+
+    var addBody = Map.of("collaborators", List.of(collab.getEmail()));
+
+    mockMvc
+        .perform(
+            post("/api/projects/" + projectId + "/collaborators")
+                .header("Authorization", "Bearer " + owner.getToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(addBody)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2));
+
+    mockMvc
+        .perform(
+            get("/api/projects/" + projectId + "/collaborators")
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[0].email").isNotEmpty());
   }
 }
