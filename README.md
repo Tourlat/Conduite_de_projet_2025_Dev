@@ -223,6 +223,10 @@ npm run doc
 
 The generated documentation will be available in the `frontend/docs/gen` directory.
 
+A view of the project architecture can be found in [frontend/docs/architecture.md](frontend/docs/architecture.md).
+
+In this file, you can find an overview of the main components and their interactions within the frontend application.
+
 ### Backend Documentation
 
 The documentation of the backend endpoints can be found as OpenAPI specification under [backend/docs/openapi.json](backend/docs/openapi.json).
