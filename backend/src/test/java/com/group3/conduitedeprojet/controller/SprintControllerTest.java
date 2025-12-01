@@ -146,7 +146,6 @@ class SprintControllerTest extends IntegrationTestWithDatabase {
     var owner = register("sprintlister@example.com", "password123", "SprintLister");
     String projectId = createProject(owner);
 
-    // Créer 3 sprints
     for (int i = 1; i <= 3; i++) {
       var sprintBody =
           Map.of(
@@ -286,8 +285,6 @@ class SprintControllerTest extends IntegrationTestWithDatabase {
         .andExpect(jsonPath("$[0].id").value(issueId1.intValue()))
         .andExpect(jsonPath("$[1].id").value(issueId2.intValue()));
   }
-
-  // Helper methods
 
   private String createProject(AuthResponse owner) throws Exception {
     var createProjectBody =

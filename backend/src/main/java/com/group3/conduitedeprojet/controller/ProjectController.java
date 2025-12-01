@@ -73,7 +73,7 @@ public class ProjectController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ProjectResponse.class))),
+                    schema = @Schema(implementation = ProjectDto.class))),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - authentication required",
@@ -84,7 +84,7 @@ public class ProjectController {
             content = @Content)
       })
   @GetMapping
-  public ResponseEntity<List<ProjectResponse>> getAllProjects(Principal principal) {
+  public ResponseEntity<List<ProjectDto>> getAllProjects(Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -102,7 +102,7 @@ public class ProjectController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ProjectResponse.class))),
+                    schema = @Schema(implementation = ProjectDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid request data",
@@ -122,7 +122,7 @@ public class ProjectController {
             content = @Content)
       })
   @PutMapping("/{projectId}")
-  public ResponseEntity<ProjectResponse> updateProject(
+  public ResponseEntity<ProjectDto> updateProject(
       @PathVariable UUID projectId,
       @RequestBody UpdateProjectRequest updateProjectRequest,
       Principal principal) {
@@ -252,315 +252,5 @@ public class ProjectController {
 
     return ResponseEntity.ok(
         projectService.removeCollaboratorFromProject(projectId, collaboratorId, principal));
-  }
-
-  @Operation(
-      summary = "Create a new issue in a project",
-      description = "Creates a new issue within the specified project")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Issue successfully created",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = IssueDto.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - authentication required",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - user not member of project",
-            content = @Content),
-        @ApiResponse(responseCode = "404", description = "Project not found", content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-      })
-  @PostMapping("/{projectId}/issues")
-  public ResponseEntity<IssueDto> createIssue(
-      @PathVariable UUID projectId,
-      @RequestBody CreateIssueRequest createIssueRequest,
-      Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(projectService.createIssue(projectId, createIssueRequest, principal));
-  }
-
-  @Operation(
-      summary = "Get all issues in a project",
-      description = "Retrieves all issues associated with the specified project")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Issues successfully retrieved",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = IssueDto.class))),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - authentication required",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - user not member of project",
-            content = @Content),
-        @ApiResponse(responseCode = "404", description = "Project not found", content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-      })
-  @GetMapping("/{projectId}/issues")
-  public ResponseEntity<List<IssueDto>> getProjectIssues(
-      @PathVariable UUID projectId, Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(projectService.getIssuesByProject(projectId, principal));
-  }
-
-  @Operation(
-      summary = "Delete an issue from a project",
-      description = "Deletes the specified issue from the project")
-  @ApiResponses(
-      value = {
-        @ApiResponse(responseCode = "204", description = "Issue successfully deleted"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication required"),
-        @ApiResponse(
-            responseCode = "403",
-            description =
-                "Forbidden - user not authorized to delete this issue (NotAuthorizedException)"),
-        @ApiResponse(
-            responseCode = "404",
-            description =
-                "Project or issue not found (ProjectNotFoundException, IssueNotFoundException)"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-      })
-  @DeleteMapping("/{projectId}/issues/{issueId}")
-  public ResponseEntity<Void> deleteIssue(
-      @PathVariable UUID projectId, @PathVariable Long issueId, Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    projectService.deleteIssue(projectId, issueId, principal);
-    return ResponseEntity.noContent().build();
-  }
-
-  @Operation(
-      summary = "Update an issue",
-      description = "Updates the specified issue in the project")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Issue successfully updated",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = IssueDto.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description =
-                "Invalid request data or issue doesn't belong to project (IssueDoesntBelongToProjectException)",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - authentication required",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - user not authorized (NotAuthorizedException)",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "404",
-            description =
-                "Project or issue not found (ProjectNotFoundException, IssueNotFoundException)",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-      })
-  @PutMapping("/{projectId}/issues/{issueId}")
-  public ResponseEntity<IssueDto> updateIssue(
-      @PathVariable UUID projectId,
-      @PathVariable Long issueId,
-      @RequestBody UpdateIssueRequest updateIssueRequest,
-      Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(
-        projectService.updateIssue(projectId, issueId, updateIssueRequest, principal));
-  }
-
-  @Operation(
-      summary = "Create a task for an issue",
-      description = "Creates a new task within the specified issue")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Task successfully created",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data or issue doesn't belong to project",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - authentication required",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - user not member of project",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Project or issue not found",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-      })
-  @PostMapping("/{projectId}/issues/{issueId}/tasks")
-  public ResponseEntity<TaskDto> createTask(
-      @PathVariable UUID projectId,
-      @PathVariable Long issueId,
-      @RequestBody CreateTaskRequest createTaskRequest,
-      Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(
-        projectService.createTask(projectId, issueId, createTaskRequest, principal));
-  }
-
-  @Operation(
-      summary = "Get all tasks for an issue",
-      description = "Retrieves all tasks associated with the specified issue")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Tasks successfully retrieved",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class))),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - authentication required",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - user not member of project",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Project or issue not found",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-      })
-  @GetMapping("/{projectId}/issues/{issueId}/tasks")
-  public ResponseEntity<List<TaskDto>> getTasksByIssue(
-      @PathVariable UUID projectId, @PathVariable Long issueId, Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(projectService.getTasksByIssue(projectId, issueId, principal));
-  }
-
-  @Operation(summary = "Update a task", description = "Updates the specified task")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Task successfully updated",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = TaskDto.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - authentication required",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - user not authorized",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "404",
-            description = "Project, issue, or task not found",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-      })
-  @PutMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
-  public ResponseEntity<TaskDto> updateTask(
-      @PathVariable UUID projectId,
-      @PathVariable Long issueId,
-      @PathVariable Long taskId,
-      @RequestBody CreateTaskRequest updateTaskRequest,
-      Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    return ResponseEntity.ok(
-        projectService.updateTask(projectId, issueId, taskId, updateTaskRequest, principal));
-  }
-
-  @Operation(summary = "Delete a task", description = "Deletes the specified task")
-  @ApiResponses(
-      value = {
-        @ApiResponse(responseCode = "204", description = "Task successfully deleted"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication required"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - user not authorized"),
-        @ApiResponse(responseCode = "404", description = "Project, issue, or task not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-      })
-  @DeleteMapping("/{projectId}/issues/{issueId}/tasks/{taskId}")
-  public ResponseEntity<Void> deleteTask(
-      @PathVariable UUID projectId,
-      @PathVariable Long issueId,
-      @PathVariable Long taskId,
-      Principal principal) {
-    if (principal == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    projectService.deleteTask(projectId, issueId, taskId, principal);
-    return ResponseEntity.noContent().build();
   }
 }

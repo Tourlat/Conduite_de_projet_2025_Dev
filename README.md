@@ -191,18 +191,15 @@ sudo apt update
 sudo apt upgrade
 ```
 
-4. Install Docker and Docker Compose
-
-```bash
-sudo apt install docker.io
-sudo apt install docker-compose-plugin
-```
+4. [Install Docker and Docker Compose](https://docs.docker.com/engine/install/ubuntu/)
 
 5. Clone repository
 
 ```bash
 git clone https://github.com/Tourlat/Conduite_de_projet_2025_Dev.git
 ```
+
+6. Setup backend `.env`
 
 ### Deployment of new Version
 
@@ -211,7 +208,7 @@ git clone https://github.com/Tourlat/Conduite_de_projet_2025_Dev.git
 2. Start application
 
 ```bash
-sudo docker-compose up --build -d
+sudo docker compose up --build -d
 ```
 
 ## 📚 Documentation 

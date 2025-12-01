@@ -12,7 +12,6 @@ public class TestControllerTest extends IntegrationTestWithDatabase {
 
   @Test
   void createTest_requires_auth() throws Exception {
-    // arbitrary ids; request should fail at security layer
     String projectId = "00000000-0000-0000-0000-000000000000";
     long issueId = 1L;
 
@@ -83,7 +82,6 @@ public class TestControllerTest extends IntegrationTestWithDatabase {
     String projectId = createProject(owner);
     Long issueId = createIssue(projectId, owner.getToken(), "Issue List");
 
-    // Create 2 tests
     createTest(projectId, owner.getToken(), issueId, "class C {}", "assertNotNull(new Object());");
     createTest(projectId, owner.getToken(), issueId, "class D {}", "assertFalse(false);");
 

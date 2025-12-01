@@ -13,7 +13,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
   void linkDocumentationToIssue_success() throws Exception {
     var owner = register("linktest@example.com", "password123", "LinkTester");
 
-    // Create project
     var projectBody =
         Map.of(
             "name", "Project with Links",
@@ -33,7 +32,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var projectJson = objectMapper.readTree(projectResponse.getResponse().getContentAsString());
     String projectId = projectJson.get("id").asText();
 
-    // Create documentation
     var docBody = Map.of("title", "API Documentation", "content", "# API Guide");
 
     var docResponse =
@@ -49,13 +47,18 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var docJson = objectMapper.readTree(docResponse.getResponse().getContentAsString());
     Long docId = docJson.get("id").asLong();
 
-    // Create issue
     var issueBody =
         Map.of(
-            "title", "Implement feature",
-            "description", "Feature description",
-            "priority", "HIGH",
-            "storyPoints", 5);
+            "title",
+            "Implement feature",
+            "description",
+            "Feature description",
+            "priority",
+            "HIGH",
+            "storyPoints",
+            5,
+            "status",
+            "TODO");
 
     var issueResponse =
         mockMvc
@@ -70,7 +73,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var issueJson = objectMapper.readTree(issueResponse.getResponse().getContentAsString());
     Long issueId = issueJson.get("id").asLong();
 
-    // Link documentation to issue
     mockMvc
         .perform(
             post("/api/documentation-issues/documentation/" + docId + "/issue/" + issueId)
@@ -88,7 +90,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
   void getIssuesByDocumentation_success() throws Exception {
     var owner = register("getissues@example.com", "password123", "GetIssuesTester");
 
-    // Create project
     var projectBody =
         Map.of(
             "name", "Project for Get Issues",
@@ -108,7 +109,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var projectJson = objectMapper.readTree(projectResponse.getResponse().getContentAsString());
     String projectId = projectJson.get("id").asText();
 
-    // Create documentation
     var docBody = Map.of("title", "User Guide", "content", "# User Manual");
 
     var docResponse =
@@ -124,13 +124,18 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var docJson = objectMapper.readTree(docResponse.getResponse().getContentAsString());
     Long docId = docJson.get("id").asLong();
 
-    // Create two issues
     var issue1Body =
         Map.of(
-            "title", "Bug fix",
-            "description", "Fix the bug",
-            "priority", "HIGH",
-            "storyPoints", 3);
+            "title",
+            "Bug fix",
+            "description",
+            "Fix the bug",
+            "priority",
+            "HIGH",
+            "storyPoints",
+            3,
+            "status",
+            "TODO");
 
     var issue1Response =
         mockMvc
@@ -147,10 +152,16 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
 
     var issue2Body =
         Map.of(
-            "title", "Feature request",
-            "description", "New feature",
-            "priority", "MEDIUM",
-            "storyPoints", 5);
+            "title",
+            "Feature request",
+            "description",
+            "New feature",
+            "priority",
+            "MEDIUM",
+            "storyPoints",
+            5,
+            "status",
+            "TODO");
 
     var issue2Response =
         mockMvc
@@ -165,7 +176,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var issue2Json = objectMapper.readTree(issue2Response.getResponse().getContentAsString());
     Long issue2Id = issue2Json.get("id").asLong();
 
-    // Link both issues
     mockMvc
         .perform(
             post("/api/documentation-issues/documentation/" + docId + "/issue/" + issue1Id)
@@ -178,7 +188,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
                 .header("Authorization", "Bearer " + owner.getToken()))
         .andExpect(status().isCreated());
 
-    // Get issues by documentation
     mockMvc
         .perform(
             get("/api/documentation-issues/documentation/" + docId)
@@ -193,7 +202,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
   void unlinkDocumentationFromIssue_success() throws Exception {
     var owner = register("unlink@example.com", "password123", "UnlinkTester");
 
-    // Create project
     var projectBody =
         Map.of(
             "name", "Project for Unlink",
@@ -213,7 +221,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var projectJson = objectMapper.readTree(projectResponse.getResponse().getContentAsString());
     String projectId = projectJson.get("id").asText();
 
-    // Create documentation
     var docBody = Map.of("title", "Tech Specs", "content", "# Specifications");
 
     var docResponse =
@@ -229,13 +236,18 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var docJson = objectMapper.readTree(docResponse.getResponse().getContentAsString());
     Long docId = docJson.get("id").asLong();
 
-    // Create issue
     var issueBody =
         Map.of(
-            "title", "Update docs",
-            "description", "Update documentation",
-            "priority", "LOW",
-            "storyPoints", 2);
+            "title",
+            "Update docs",
+            "description",
+            "Update documentation",
+            "priority",
+            "LOW",
+            "storyPoints",
+            2,
+            "status",
+            "TODO");
 
     var issueResponse =
         mockMvc
@@ -250,21 +262,18 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var issueJson = objectMapper.readTree(issueResponse.getResponse().getContentAsString());
     Long issueId = issueJson.get("id").asLong();
 
-    // Link documentation to issue
     mockMvc
         .perform(
             post("/api/documentation-issues/documentation/" + docId + "/issue/" + issueId)
                 .header("Authorization", "Bearer " + owner.getToken()))
         .andExpect(status().isCreated());
 
-    // Unlink documentation from issue
     mockMvc
         .perform(
             delete("/api/documentation-issues/documentation/" + docId + "/issue/" + issueId)
                 .header("Authorization", "Bearer " + owner.getToken()))
         .andExpect(status().isNoContent());
 
-    // Verify link is removed
     mockMvc
         .perform(
             get("/api/documentation-issues/documentation/" + docId)
@@ -277,7 +286,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
   void linkDocumentationToIssue_alreadyExists() throws Exception {
     var owner = register("duplicate@example.com", "password123", "DupTester");
 
-    // Create project
     var projectBody =
         Map.of(
             "name", "Project for Duplicate Test",
@@ -297,7 +305,6 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var projectJson = objectMapper.readTree(projectResponse.getResponse().getContentAsString());
     String projectId = projectJson.get("id").asText();
 
-    // Create documentation
     var docBody = Map.of("title", "README", "content", "# README");
 
     var docResponse =
@@ -313,13 +320,18 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var docJson = objectMapper.readTree(docResponse.getResponse().getContentAsString());
     Long docId = docJson.get("id").asLong();
 
-    // Create issue
     var issueBody =
         Map.of(
-            "title", "Test issue",
-            "description", "Test",
-            "priority", "MEDIUM",
-            "storyPoints", 3);
+            "title",
+            "Test issue",
+            "description",
+            "Test",
+            "priority",
+            "MEDIUM",
+            "storyPoints",
+            3,
+            "status",
+            "TODO");
 
     var issueResponse =
         mockMvc
@@ -334,18 +346,116 @@ public class DocumentationIssueControllerTest extends IntegrationTestWithDatabas
     var issueJson = objectMapper.readTree(issueResponse.getResponse().getContentAsString());
     Long issueId = issueJson.get("id").asLong();
 
-    // Link documentation to issue first time
     mockMvc
         .perform(
             post("/api/documentation-issues/documentation/" + docId + "/issue/" + issueId)
                 .header("Authorization", "Bearer " + owner.getToken()))
         .andExpect(status().isCreated());
 
-    // Try to link again - should fail
     mockMvc
         .perform(
             post("/api/documentation-issues/documentation/" + docId + "/issue/" + issueId)
                 .header("Authorization", "Bearer " + owner.getToken()))
         .andExpect(status().is5xxServerError());
+  }
+
+  @Test
+  void getDocumentationsByIssue_success() throws Exception {
+    var owner = register("getdocsbyissue@example.com", "password123", "GetDocsByIssueTester");
+
+    var projectBody =
+        Map.of(
+            "name", "Project for Get Documentations By Issue",
+            "description", "Test project",
+            "user", Map.of("id", owner.getId(), "email", owner.getEmail()));
+
+    var projectResponse =
+        mockMvc
+            .perform(
+                post("/api/projects")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(projectBody)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var projectJson = objectMapper.readTree(projectResponse.getResponse().getContentAsString());
+    String projectId = projectJson.get("id").asText();
+
+    var doc1Body = Map.of("title", "Guide A", "content", "# Guide A");
+    var doc2Body = Map.of("title", "Guide B", "content", "# Guide B");
+
+    var doc1Response =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/docs")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(doc1Body)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var doc2Response =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/docs")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(doc2Body)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var doc1Json = objectMapper.readTree(doc1Response.getResponse().getContentAsString());
+    Long doc1Id = doc1Json.get("id").asLong();
+
+    var doc2Json = objectMapper.readTree(doc2Response.getResponse().getContentAsString());
+    Long doc2Id = doc2Json.get("id").asLong();
+
+    var issueBody =
+        Map.of(
+            "title",
+            "Central issue",
+            "description",
+            "Related to multiple docs",
+            "priority",
+            "MEDIUM",
+            "storyPoints",
+            2,
+            "status",
+            "TODO");
+
+    var issueResponse =
+        mockMvc
+            .perform(
+                post("/api/projects/" + projectId + "/issues")
+                    .header("Authorization", "Bearer " + owner.getToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(issueBody)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    var issueJson = objectMapper.readTree(issueResponse.getResponse().getContentAsString());
+    Long issueId = issueJson.get("id").asLong();
+
+    mockMvc
+        .perform(
+            post("/api/documentation-issues/documentation/" + doc1Id + "/issue/" + issueId)
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(
+            post("/api/documentation-issues/documentation/" + doc2Id + "/issue/" + issueId)
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(
+            get("/api/documentation-issues/issue/" + issueId)
+                .header("Authorization", "Bearer " + owner.getToken()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[0].documentationId").exists())
+        .andExpect(jsonPath("$[1].documentationId").exists());
   }
 }
