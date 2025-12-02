@@ -20,8 +20,24 @@
       "description": "Project management endpoints"
     },
     {
+      "name": "Documentation Controller",
+      "description": "Handles documentation management for projects"
+    },
+    {
       "name": "Authentication Controller",
       "description": "Handles user registration and login"
+    },
+    {
+      "name": "Issues",
+      "description": "Issue management endpoints"
+    },
+    {
+      "name": "Task",
+      "description": "Task management endpoints"
+    },
+    {
+      "name": "Release Controller",
+      "description": "Handles release management for projects"
     }
   ],
   "paths": {
@@ -154,7 +170,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectResponse"
+                  "$ref": "#/components/schemas/ProjectDto"
                 }
               }
             }
@@ -349,7 +365,7 @@
     "/api/projects/{projectId}/issues/{issueId}": {
       "put": {
         "tags": [
-          "Projects"
+          "Issues"
         ],
         "summary": "Update an issue",
         "description": "Updates the specified issue in the project",
@@ -419,7 +435,7 @@
       },
       "delete": {
         "tags": [
-          "Projects"
+          "Issues"
         ],
         "summary": "Delete an issue from a project",
         "description": "Deletes the specified issue from the project",
@@ -468,10 +484,109 @@
         ]
       }
     },
+    "/api/projects/{projectId}/issues/{issueId}/tests/{testId}": {
+      "put": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "updateTest",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "testId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "deleteTest",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "testId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/projects/{projectId}/issues/{issueId}/tasks/{taskId}": {
       "put": {
         "tags": [
-          "Projects"
+          "Task"
         ],
         "summary": "Update a task",
         "description": "Updates the specified task",
@@ -550,7 +665,7 @@
       },
       "delete": {
         "tags": [
-          "Projects"
+          "Task"
         ],
         "summary": "Delete a task",
         "description": "Deletes the specified task",
@@ -611,8 +726,10 @@
     "/api/projects/{projectId}/docs/{docId}": {
       "put": {
         "tags": [
-          "documentation-controller"
+          "Documentation Controller"
         ],
+        "summary": "Update documentation",
+        "description": "Updates an existing documentation entry for the specified project",
         "operationId": "updateDocumentation",
         "parameters": [
           {
@@ -646,7 +763,27 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Documentation successfully updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentationDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or documentation not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentationDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -659,8 +796,10 @@
       },
       "delete": {
         "tags": [
-          "documentation-controller"
+          "Documentation Controller"
         ],
+        "summary": "Delete documentation",
+        "description": "Deletes a documentation entry from the specified project",
         "operationId": "deleteDocumentation",
         "parameters": [
           {
@@ -683,8 +822,14 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "Documentation successfully deleted"
+          },
+          "404": {
+            "description": "Project or documentation not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -703,7 +848,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectResponse"
+                  "$ref": "#/components/schemas/ProjectDto"
                 }
               }
             }
@@ -870,8 +1015,10 @@
     "/api/projects/{projectId}/releases": {
       "get": {
         "tags": [
-          "release-controller"
+          "Release Controller"
         ],
+        "summary": "Get releases",
+        "description": "Retrieves all releases for the specified project",
         "operationId": "getReleases",
         "parameters": [
           {
@@ -886,7 +1033,33 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successfully retrieved releases",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReleaseDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReleaseDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -902,8 +1075,10 @@
       },
       "post": {
         "tags": [
-          "release-controller"
+          "Release Controller"
         ],
+        "summary": "Create release",
+        "description": "Creates a new release for the specified project",
         "operationId": "createRelease",
         "parameters": [
           {
@@ -928,7 +1103,27 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Release successfully created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -943,7 +1138,7 @@
     "/api/projects/{projectId}/issues": {
       "get": {
         "tags": [
-          "Projects"
+          "Issues"
         ],
         "summary": "Get all issues in a project",
         "description": "Retrieves all issues associated with the specified project",
@@ -991,7 +1186,7 @@
       },
       "post": {
         "tags": [
-          "Projects"
+          "Issues"
         ],
         "summary": "Create a new issue in a project",
         "description": "Creates a new issue within the specified project",
@@ -1051,10 +1246,101 @@
         ]
       }
     },
+    "/api/projects/{projectId}/issues/{issueId}/tests": {
+      "get": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "getTestsForIssue",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "createTest",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "issueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/projects/{projectId}/issues/{issueId}/tasks": {
       "get": {
         "tags": [
-          "Projects"
+          "Task"
         ],
         "summary": "Get all tasks for an issue",
         "description": "Retrieves all tasks associated with the specified issue",
@@ -1111,7 +1397,7 @@
       },
       "post": {
         "tags": [
-          "Projects"
+          "Task"
         ],
         "summary": "Create a task for an issue",
         "description": "Creates a new task within the specified issue",
@@ -1183,8 +1469,10 @@
     "/api/projects/{projectId}/docs": {
       "get": {
         "tags": [
-          "documentation-controller"
+          "Documentation Controller"
         ],
+        "summary": "Get documentation for a project",
+        "description": "Retrieves all documentation entries for the specified project",
         "operationId": "getDocumentation",
         "parameters": [
           {
@@ -1199,7 +1487,33 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successfully retrieved documentation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentationDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentationDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -1215,8 +1529,10 @@
       },
       "post": {
         "tags": [
-          "documentation-controller"
+          "Documentation Controller"
         ],
+        "summary": "Create documentation",
+        "description": "Creates a new documentation entry for the specified project",
         "operationId": "createDocumentation",
         "parameters": [
           {
@@ -1241,7 +1557,27 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Documentation successfully created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentationDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentationDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -1821,22 +2157,7 @@
           }
         }
       },
-      "CreatorDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "email": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "ProjectResponse": {
+      "ProjectDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1854,7 +2175,7 @@
             "format": "date-time"
           },
           "creator": {
-            "$ref": "#/components/schemas/CreatorDto"
+            "$ref": "#/components/schemas/UserDto"
           }
         }
       },
@@ -2003,6 +2324,44 @@
           "sprintId": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "UpdateTestRequest": {
+        "type": "object",
+        "properties": {
+          "programCode": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
+          }
+        }
+      },
+      "TestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "programCode": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
+          },
+          "creatorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "issueId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -2177,6 +2536,12 @@
           "enabled": {
             "type": "boolean"
           },
+          "authorities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrantedAuthority"
+            }
+          },
           "credentialsNonExpired": {
             "type": "boolean"
           },
@@ -2185,12 +2550,6 @@
           },
           "accountNonLocked": {
             "type": "boolean"
-          },
-          "authorities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GrantedAuthority"
-            }
           },
           "username": {
             "type": "string"
@@ -2322,6 +2681,17 @@
           "assigneeId": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "CreateTestRequest": {
+        "type": "object",
+        "properties": {
+          "programCode": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
           }
         }
       },
