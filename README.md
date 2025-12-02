@@ -174,15 +174,9 @@ We execute all tests for all pull requests and for every push on main (see [work
 
 ### Initial Setup of VM
 
-1. Create VM on a cloud provider. We use Azure and all following steps will use Azure. Follow this [tutorial](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/quick-create-portal) to create an Azure VM.
-
-2. Download VM private key from Azure. Move key to `~/.ssh` folder.
+1. Create VM on a cloud provider. We use Azure and all following steps will use Hetzner Cloud. Setup ssh key during VM creation.
 
 3. Connect via SSH
-
-```bash
-ssh -i ~/.ssh/<key name>.pem azureuser@<VM public IP>
-```
 
 3. Apt Update and Upgrade
 
