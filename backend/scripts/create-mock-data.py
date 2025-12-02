@@ -113,9 +113,21 @@ def create_test(token, project_id, issue_id):
     headers = {"Authorization": f"Bearer {token}"}
 
     # Simple placeholder test code
+    program_code = """
+function add(a, b) {
+  return a + b
+}
+""".strip()
+
+    test_code = """
+test("add(2, 3) devrait retourner 5", () => {
+  assertEquals(add(2, 3), 5)
+})
+""".strip()
+
     data = {
-        "programCode": f"print('program for issue {issue_id}')",
-        "testCode": f"assert 1 + 1 == 2  # test for issue {issue_id}"
+        "programCode": program_code,
+        "testCode": test_code
     }
 
     return post(url, data, headers)
